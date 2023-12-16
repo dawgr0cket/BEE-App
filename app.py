@@ -1,9 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
+import sqlite3
 
 
 app = Flask(__name__)
@@ -36,6 +37,10 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=80)], render_kw={"placeholder": "Password"})
     submit = SubmitField("Login")
 
+
+
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -56,6 +61,41 @@ def login():
 def signup():
     form = Signupform()
     return render_template('signup.html', form=form)
+
+
+@app.route('/blog')
+def blog():
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM blog")
+
+    rows = cur.fetchall()
+    con.close()
+
+    return render_template('blog.html', rows=rows)
+
+
+@app.route('/addblog', methods=['POST', 'GET'])
+def addblog():
+    if request.method == "POST":
+        try:
+            title = request.form['title']
+            summary = request.form['summary']
+            files = request.form['files']
+            description = request.form['description']
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute("INSERT INTO blog (title, summary, files, description) VALUES (?,?,?,?)",(title, summary, files, description))
+
+                con.commit()
+        except:
+            con.rollback()
+        finally:
+            con.close()
+            return render_template('blog.html')
+    return render_template('addblog.html')
 
 
 if __name__ == '__main__':
