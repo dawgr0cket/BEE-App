@@ -24,8 +24,25 @@
           <a class="nav-link" href="/blog">Blog</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="/shop">Shop</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
+        </li>
+        {% if 'adminappdev' in session.values() %}
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        {% endif %}
+        {% if 'username' in session %}
+        <li class="nav-item">
+          <a class="nav-link" href="/logout" onpointerdown="Do you want to log out?">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
           <a class="nav-link" href="/login">Login/Signup</a>
         </li>
+        {% endif %}
       </ul>
     </div>
   </div>
