@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
+from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
@@ -14,12 +14,13 @@ app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
 db.init_app(app)
 
 
-class User(db.Model, UserMixin):
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String[20], nullable=False, unique=True)
     email = db.Column(db.String[50], nullable=False)
     password = db.Column(db.String[80], nullable=False)
-
+    date_added = db.Column(db.DateTime, default='utf-8')
+    password_hash = db.Column(db.String(128))
 
 class Signupform(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholders": "Username"})
@@ -27,7 +28,7 @@ class Signupform(FlaskForm):
     submit = SubmitField("Sign Up")
 
     def validate_username(self, username):
-        existing_username = User.query.filter_by(username=username.data).first()
+        existing_username = Users.query.filter_by(username=username.data).first()
         if existing_username:
             raise ValidationError("That username already exists.")
 
@@ -37,7 +38,9 @@ class LoginForm(FlaskForm):
     password = PasswordField(validators=[InputRequired(), Length(min=4, max=80)], render_kw={"placeholder": "Password"})
     submit = SubmitField("Login")
 
-
+class BlogForm(FlaskForm):
+    title = StringField("Title", validators=[InputRequired()])
+    submit = SubmitField("Submit")
 
 
 
@@ -77,7 +80,7 @@ def blog():
     return render_template('blog.html', rows=rows)
 
 
-@app.route('/addblog', methods=['POST', 'GET'])
+@app.route('/addblog', methods=['GET', 'POST'])
 def addblog():
     if request.method == "POST":
         try:
@@ -94,8 +97,9 @@ def addblog():
             con.rollback()
         finally:
             con.close()
-            return render_template('blog.html')
-    return render_template('addblog.html')
+            return redirect(url_for('blog'))
+    else:
+        return render_template('addblog.html')
 
 
 if __name__ == '__main__':
