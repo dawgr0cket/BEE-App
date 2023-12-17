@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Cart{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Cart</h1>
+{% if 'username' in session %}
+<p>{{session['username']}}'s Cart</p>
+{% else %}
+<p>Guest's Cart</p>
+{% endif %}
+{% endblock %}

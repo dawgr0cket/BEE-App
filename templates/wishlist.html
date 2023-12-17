@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Wish List{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Wish List</h1>
+{% if 'username' in session %}
+<p>{{session['username']}}'s Wishlist</p>
+{% else %}
+<p>Guest's Wishlist</p>
+{% endif %}
+{% endblock %}

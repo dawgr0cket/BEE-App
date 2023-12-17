@@ -219,6 +219,16 @@ def eco():
     return render_template('eco.html')
 
 
+@app.route('/wishlist')
+def wishlist():
+    return render_template('wishlist.html')
+
+
+@app.route('/cart')
+def cart():
+    return render_template('cart.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
