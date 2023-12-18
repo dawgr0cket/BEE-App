@@ -199,6 +199,23 @@ def addblog():
         return render_template('addblog.html')
 
 
+@app.route('/editblog/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editblog(id):
+    if request.method == 'POST':
+        pass
+    else:
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        cur.execute("SELECT rowid, * FROM blog WHERE rowid = ?", (id,))
+        row = cur.fetchone()
+        con.close()
+        return render_template('blog.html', row=row)
+
+
+
+
+
 @app.route('/shop')
 def shop():
     return render_template('shop.html')

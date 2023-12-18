@@ -25,13 +25,14 @@
         <li>{{ row["summary"]}}</li>
         <li>{{ row["files"] }}</li>
         <li>{{ row["description"] }}</li>
-            {% if session['username'] == row["rowid"]  %}
-        <li>
-            <form action="/blog" method="POST"><input type="hidden" name="id" value="{{ row['rowid'] }}"><input type="submit" value="Edit"></form> </td>
-            <form onsubmit="return confirm('Are you sure you want to DELETE this Student from the Database?');" action="/blog" method="POST"><input type="hidden" name="id" value="{{ row['rowid'] }}"><input type="submit" value="Delete"></form> </td>
-        </li>
-        </div>
+        {% if session['username'] == row["username"] %}
+            <li>
+                <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>
+                <button action="/blog" method="POST"><input type="hidden" name="id" value="{{ row['rowid'] }}"><input type="submit" value="Delete"></button>
+            </li>
         {% endif %}
+        </div>
+
         {% endfor %}
     </ul>
     <p>Want To Add Your Own Blog?<a href="/addblog">Add Blog</a></p>
