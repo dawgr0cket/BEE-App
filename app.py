@@ -180,13 +180,14 @@ def blog():
 def addblog():
     if request.method == "POST":
         try:
+            username = session['username']
             title = request.form['title']
             summary = request.form['summary']
             files = request.form['files']
             description = request.form['description']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blog (title, summary, files, description) VALUES (?,?,?,?)",(title, summary, files, description))
+                cur.execute("INSERT INTO blog (username, title, summary, files, description) VALUES (?,?,?,?)", (username, title, summary, files, description))
 
                 con.commit()
         except:
