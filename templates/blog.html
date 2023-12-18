@@ -24,7 +24,7 @@
         <li><i>@{{ row["username"] }}</i></li>
         <li>{{ row["summary"]}}</li>
         <li>{{ row["files"] }}</li>
-        <li>{ row["description"] }}</li>
+        <li>{{ row["description"] }}</li>
             {% if session['username'] == row["rowid"]  %}
         <li>
             <form action="/blog" method="POST"><input type="hidden" name="id" value="{{ row['rowid'] }}"><input type="submit" value="Edit"></form> </td>
