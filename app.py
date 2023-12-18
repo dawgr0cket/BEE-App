@@ -187,7 +187,7 @@ def addblog():
             description = request.form['description']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blog (username, title, summary, files, description) VALUES (?,?,?,?)", (username, title, summary, files, description))
+                cur.execute("INSERT INTO blog (username, title, summary, files, description) VALUES (?,?,?,?,?)", (username, title, summary, files, description))
 
                 con.commit()
         except:
