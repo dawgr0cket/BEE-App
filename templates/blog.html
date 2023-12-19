@@ -1,41 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+<style>
+* {
+    text-align: center;
+}
+div.individualblog {
+    text-align;
+    border:5px;
+}
+</style>
+
+</head>
+<body>
 {% extends "base.html" %}
 {% block title %}B.E.E - Blog{% endblock %}
-{% block head %}
-<script>
-    table{
 
-    }
-    li{
-    pad
-    }
-    .individualblog{
-    border:5px;
-    }
-</script>
-{% endblock %}
 {% block content %}
-<h1 class="display-4">Blog</h1>
-<p>This is the blog page!</p>
+
+    <h1 class="display-4">Blog</h1>
+    <p>This is the blog page!</p>
 
     <ul border="1px" type="None">
         {% for row in rows %}
         <div class="individualblog">
-        <li><strong>{{ row["title"] }}</strong></li>
-        <li><i>@{{ row["username"] }}</i></li>
-        <li>{{ row["summary"]}}</li>
-        <li>{{ row["files"] }}</li>
-        <li>{{ row["description"] }}</li>
-        <li>{{ row["datetime"] }}</li>
+            <li><strong>{{ row["title"] }}</strong></li>
+            <li><i>@{{ row["username"] }}</i></li>
+            <li>{{ row["summary"]}}</li>
+            <li>{{ row["files"] }}</li>
+            <li>{{ row["description"] }}</li>
+            <li>{{ row["datetime"] }}</li>
 
-        {% if session['username'] == row["username"] %}
-            <li>
-                <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>
-                <button action="/blog" method="POST"><input type="hidden" name="id" value="{{ row['rowid'] }}"><input type="submit" value="Delete"></button>
-            </li>
-        {% endif %}
+            {% if session['username'] == row["username"] %}
+                <li>
+                    <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>
+                    <button action="/deleteblog" method="POST"><a href="/deleteblog/{{ row['rowid'] }}">Delete</a></button>
+                </li>
+            {% endif %}
         </div>
 
         {% endfor %}
     </ul>
     <p>Want To Add Your Own Blog?<a href="/addblog">Add Blog</a></p>
 {% endblock %}}
+</body>
+</html>

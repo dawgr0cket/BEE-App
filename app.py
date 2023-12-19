@@ -194,13 +194,13 @@ def editblog(id):
     if request.method == 'POST':
         try:
             username = session['username']
-            title = request.form['title']
-            summary = request.form['summary']
-            files = request.form['files']
-            description = request.form['description']
+            new_title = request.form['title']
+            new_summary = request.form['summary']
+            new_files = request.form['files']
+            new_description = request.form['description']
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO blog (username, title, summary, files, description) VALUES (?,?,?,?,?)", (username, title, summary, files, description))
+                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, files = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (username, new_title, new_summary, new_files, new_description, id))
 
                 con.commit()
         except:
@@ -212,13 +212,22 @@ def editblog(id):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
         cur.execute("SELECT * FROM blog WHERE rowid = ?", (id,))
-        userblog = cur.fetchall()
-        userblog = userblog[0]
+        userblogs = cur.fetchall()
+        con.commit()
         con.close()
-        return render_template('editblog.html', userblog=userblog)
+
+        return render_template('editblog.html', userblogs=userblogs, id=id)
 
 
-
+@app.route('/deleteblog/<int:id>')
+@login_required
+def deleteblog(id):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
+    con.commit()
+    con.close()
+    return redirect(url_for('blog'))
 
 
 @app.route('/shop')
