@@ -192,14 +192,30 @@ def addblog():
 @login_required
 def editblog(id):
     if request.method == 'POST':
-        pass
+        try:
+            username = session['username']
+            title = request.form['title']
+            summary = request.form['summary']
+            files = request.form['files']
+            description = request.form['description']
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute("INSERT INTO blog (username, title, summary, files, description) VALUES (?,?,?,?,?)", (username, title, summary, files, description))
+
+                con.commit()
+        except:
+            con.rollback()
+        finally:
+            con.close()
+            return redirect(url_for('blog'))
     else:
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        cur.execute("SELECT rowid, * FROM blog WHERE rowid = ?", (id,))
-        row = cur.fetchone()
+        cur.execute("SELECT * FROM blog WHERE rowid = ?", (id,))
+        userblog = cur.fetchall()
+        userblog = userblog[0]
         con.close()
-        return render_template('blog.html', row=row)
+        return render_template('editblog.html', userblog=userblog)
 
 
 

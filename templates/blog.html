@@ -25,6 +25,8 @@
         <li>{{ row["summary"]}}</li>
         <li>{{ row["files"] }}</li>
         <li>{{ row["description"] }}</li>
+        <li>{{ row["datetime"] }}</li>
+
         {% if session['username'] == row["username"] %}
             <li>
                 <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>

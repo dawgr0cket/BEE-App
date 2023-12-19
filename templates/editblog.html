@@ -69,27 +69,25 @@ a {
 </head>
 <body>
 {% extends "base.html" %}
-{% block title %}B.E.E - Add Blog{% endblock %}
+{% block title %}B.E.E - Edit Blog{% endblock %}
 
 {% block content %}
 
 <form action="/editblog" method="POST">
   <div class="container">
-    <h1>Share Your Experiences!</h1>
-    <p>Create A Blog Post</p>
+    <h1>Edit Your Blog</h1>
     <hr>
-
     <label for="title"><b>Title</b></label>
-    <input type="text" placeholder="Title" name="title" id="title" required>
+    <input type="text" placeholder="Title" name="title" id="title" value='{{ userblog[1] }}' required>
 
     <label for="summary"><b>Summary</b></label>
-    <input type="text" placeholder="Summary" name="summary" id="summary" required>
+    <input type="text" placeholder="Summary" name="summary" id="summary" value="{{ userblog[0] }}" required>
 
     <label for="files"><b>Blog Attachments</b></label><br>
-    <input type="file" placeholder="Blog image" name="files" id="files" required>
+    <input type="file" placeholder="{{ userblog[3] }}" name="files" id="files" value="{{ userblog[3] }}">
     <br>
     <label for="description"><b>Description</b></label>
-    <input type="text" placeholder="Description" name="description" id="description" required>
+    <input type="text" placeholder="Description" name="description" id="description" value="{{ userblog[2] }}" required>
     <hr>
     <button type="submit" class="registerbtn">Update Blog</button>
   </div>
