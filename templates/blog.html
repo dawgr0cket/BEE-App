@@ -8,8 +8,17 @@
     text-align: center;
 }
 div.individualblog {
-    text-align;
-    border:5px;
+    padding: 50px;
+    margin: auto;
+    margin-bottom: 50px;
+    width: 50%;
+    border: 2.5px inset;
+    radius: 10px;
+    border-color: black;
+
+}
+button {
+    border: None;
 }
 </style>
 
@@ -29,14 +38,14 @@ div.individualblog {
             <li><strong>{{ row["title"] }}</strong></li>
             <li><i>@{{ row["username"] }}</i></li>
             <li>{{ row["summary"]}}</li>
-            <li>{{ row["files"] }}</li>
+            <li><img src="{{ row['files'] }}"></li>
             <li>{{ row["description"] }}</li>
             <li>{{ row["datetime"] }}</li>
 
             {% if session['username'] == row["username"] %}
                 <li>
                     <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>
-                    <button action="/deleteblog" method="POST"><a href="/deleteblog/{{ row['rowid'] }}">Delete</a></button>
+                    <button action="/deleteblog" method="POST" onclick="test()"><a href="/deleteblog/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a></button>
                 </li>
             {% endif %}
         </div>
