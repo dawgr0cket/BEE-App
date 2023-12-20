@@ -45,8 +45,8 @@ button {
 
             {% if session['username'] == row["username"] %}
                 <li>
-                    <button action="/editblog" method="POST"><a href="/editblog/{{ row['rowid'] }}">Edit</a></button>
-                    <button action="/deleteblog" method="POST" onclick="test()"><a href="/deleteblog/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a></button>
+                    <a href="/editblog/{{ row['rowid'] }}"><img src="static/img/img_5.png" width="20px"></a>
+                    <a href="/deleteblog/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a>
                 </li>
             {% endif %}
         </div>
