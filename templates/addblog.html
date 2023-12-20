@@ -73,25 +73,28 @@ a {
 
 {% block content %}
 
-<form action="/addblog" method="POST">
+<form action="/addblog" method="POST" enctype="multipart/form-data">
   <div class="container">
     <h1>Share Your Experiences!</h1>
     <p>Create A Blog Post</p>
     <hr>
+    {{ form.hidden_tag() }}
 
-    <label for="title"><b>Title</b></label>
-    <input type="text" placeholder="Title" name="title" id="title" required>
+    {{ form.title.label(class="form-label") }}
+    {{ form.title(class="form-control") }}
+    <br/>
 
-    <label for="summary"><b>Summary</b></label>
-    <input type="text" placeholder="Summary" name="summary" id="summary" required>
+    {{ form.summary.label(class="form-label") }}
+    {{ form.summary(class="form-control") }}
+    <br/>
 
-    <label for="files"><b>Blog Attachments</b></label><br>
-    <input type="file" placeholder="Blog image" name="files" id="files" required>
-    <br>
-    <label for="description"><b>Description</b></label>
-    <input type="text" placeholder="Description" name="description" id="description" required>
-    <hr>
-    <button type="submit" class="registerbtn">Post Blog</button>
+    {{ form.blog_pic.label(class="form-label") }}
+    {{ form.blog_pic(class="form-control") }}
+    <br/>
+    {{ form.description.label(class="form-label") }}
+    {{ form.description(class="form-control") }}
+    <br/>
+		{{ form.submit(class="btn btn-secondary") }}
   </div>
 
   <div class="container signin">

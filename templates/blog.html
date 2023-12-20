@@ -8,27 +8,28 @@
     text-align: center;
 }
 div.individualblog {
-    background-color: lightgrey;
+    background-color: #F7EAEA;
     padding: 50px;
     margin: auto;
     margin-bottom: 50px;
     width: 50%;
-    border: 2.5px;
-    border-radius: 10%;
-    border-color: lightgrey, outset;
+    border: 2.5px outset;
+    border-radius: 5%;
+    border-color: #FFFFEA;
 
 }
-button {
-    border: None;
+.img {
+    border: 3px #F7EAEA outset;
+
 }
 </style>
-
-</head>
-<body>
 {% extends "base.html" %}
 {% block title %}B.E.E - Blog{% endblock %}
 
 {% block content %}
+</head>
+<body>
+
 
     <h1 class="display-4">Blog</h1>
     <p>This is the blog page!</p>
@@ -39,9 +40,12 @@ button {
             <li><strong>{{ row["title"] }}</strong></li>
             <li><i>@{{ row["username"] }}</i></li>
             <li>{{ row["summary"]}}</li>
-            <li><img src="{{ row['files'] }}"></li>
+<!--            <li><img src="{{ row['files'] }}"></li>-->
+            <img src="{{ url_for('static', filename='img/' + row['blog_pic'])}}" class="img" width="300">
             <li>{{ row["description"] }}</li>
             <li>{{ row["datetime"] }}</li>
+
+
 
             {% if session['username'] == row["username"] %}
                 <li>
@@ -49,6 +53,7 @@ button {
                     <a href="/deleteblog/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a>
                 </li>
             {% endif %}
+
         </div>
 
         {% endfor %}
