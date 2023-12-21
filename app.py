@@ -280,6 +280,16 @@ def users():
     return render_template('users.html', rows=rows)
 
 
+@app.route('/deleteuser/<int:id>')
+@login_required
+def deleteuser(id):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM user WHERE rowid = ?", (id,))
+    con.commit()
+    con.close()
+    return redirect(url_for('users'))
+
 
 @app.route('/shop')
 def shop():

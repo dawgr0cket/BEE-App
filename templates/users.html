@@ -33,6 +33,24 @@ ul.admin {
   background-color: #555;
   color: white;
 }
+#users th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 50px;
+  padding-left: 10px;
+  text-align: left;
+  background-color: #F6BDBD;
+  color: white;
+}
+table, td {
+  padding-left: 20px;
+  border: 1px solid;
+}
+
+table {
+  width: 75%;
+  border-collapse: collapse;
+}
 </style>
 </head>
 <body>
@@ -52,14 +70,15 @@ ul.admin {
   <li><a href="#about">About</a></li>
 </ul>
 
-<div style="margin-left:25%;padding:1px 16px;height:1000px;">
+<div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Users</h2>
-    <table border="1">
+    <table id="users">
       <thead>
       <th>User ID</th>
       <th>Username</th>
       <th>Email</th>
       <th>Number of Orders Made</th>
+      <th>Delete</th>
       </thead>
       {% for row in rows %}
       <tr>
