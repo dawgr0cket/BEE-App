@@ -41,11 +41,11 @@ li a:hover:not(.active) {
 
 {% block content %}
 <ul class="admin" style="float: left;">
-  <li><a class="active" href="">Dashboard</a></li>
+  <li><a href="/admindashboard">Dashboard</a></li>
   <li>
     <a href="/orders">Orders</a>
   </li>
-  <li><a href="/users">Users</a></li>
+  <li><a class="active" href="/users">Users</a></li>
   <li><a href="/forms">Forms</a></li>
   <li><a href="/inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
@@ -53,17 +53,24 @@ li a:hover:not(.active) {
 </ul>
 
 <div style="margin-left:25%;padding:1px 16px;height:1000px;">
-  <h2>Fixed Full-height Side Nav</h2>
-  <h3>Try to scroll this area, and see how the sidenav sticks to the page</h3>
-  <p>Notice that this div element has a left margin of 25%. This is because the side navigation is set to 25% width. If you remove the margin, the sidenav will overlay/sit on top of this div.</p>
-  <p>Also notice that we have set overflow:auto to sidenav. This will add a scrollbar when the sidenav is too long (for example if it has over 50 links inside of it).</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
-  <p>Some text..</p>
+  <h2>Users</h2>
+    <table border="2">
+      <thead>
+      <th>User ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Number of Orders Made</th>
+      </thead>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row['user_id'] }}</td>
+        <td>{{ row['username'] }}</td>
+        <td>{{ row['email'] }}</td>
+        <td></td>
+        <td><a href="/deleteuser/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
+      </tr>
+      {% endfor %}
+    </table>
 </div>
 
 </body>

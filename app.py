@@ -260,8 +260,25 @@ def deleteblog(id):
 
 
 @app.route('/admindashboard')
+@login_required
 def dashbboard():
     return render_template('admindashboard.html')
+
+
+@app.route('/users')
+@login_required
+def users():
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM user")
+
+    rows = cur.fetchall()
+    con.close()
+
+    return render_template('users.html', rows=rows)
+
 
 
 @app.route('/shop')
