@@ -3,7 +3,7 @@ import uuid
 from datetime import date, datetime
 import functools
 
-from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-import stripe
+
 
 
 app = Flask(__name__)
@@ -22,9 +22,7 @@ app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
 UPLOAD_FOLDER = 'static/img/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
-# Secret API key
-stripe.api_key = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
-YOUR_DOMAIN = 'http://127.0.0.1:5000/'
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -322,29 +320,5 @@ def cart():
     return render_template('cart.html')
 
 
-@app.route("/create-checkout-session", methods=['POST'])
-def create_checkout_session():
-    try:
-        checkout_session = stripe.checkout.Session.create(
-            line_items=[
-                {
-                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    'price': '{{PRICE_ID}}',
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            ui_mode='embedded',
-            return_url=YOUR_DOMAIN + '/return'
-        )
-    except Exception as e:
-        return str(e)
-
-    return jsonify(clientSecret=session.client_secret)
-
-
 if __name__ == '__main__':
     app.run(debug=True)
-
-if __name__ == "__main__":
-    app.run(port=5000)
