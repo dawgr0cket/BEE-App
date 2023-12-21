@@ -10,13 +10,7 @@
 div.individualblog {
     background-color: #F7EAEA;
     padding: 50px;
-    margin: auto;
-    margin-bottom: 50px;
-    width: 50%;
-    border: 2.5px outset;
-    border-radius: 5%;
-    border-color: #FFFFEA;
-
+    width: 45;
 }
 .img {
     border: 3px #F7EAEA outset;
@@ -34,7 +28,8 @@ div.individualblog {
     <h1 class="display-4">Blog</h1>
     <p>This is the blog page!</p>
 
-    <ul border="1px" type="None">
+    <ul border="1px" type="None" style="background-color: #F7EAEA;margin-right: 250px;margin-left:250px;">
+        <li><strong>B.E.E BLog</strong></li>
         {% for row in rows %}
         <div class="individualblog">
             <li><strong>{{ row["title"] }}</strong></li>

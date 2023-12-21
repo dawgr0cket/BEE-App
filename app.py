@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, PasswordField, SubmitField, FileField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
 import stripe
@@ -68,7 +68,7 @@ class BlogForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     summary = StringField('Summary', validators=[Length(min=1, max=150), DataRequired()])
     blog_pic = FileField("Blog Photo")
-    description = TextAreaField('Blog away...', validators=[Length(min=50, max=800), DataRequired()])
+    description = StringField('Blog away...', validators=[Length(min=50, max=800), DataRequired()])
     submit = SubmitField("Submit")
 
 
@@ -84,11 +84,6 @@ class Blog(db.Model):
 
 @app.route('/')
 def home():
-    if 'adminappdev' in session.values():
-        return render_template('admindashboard.html')
-    # elif 'username' in session:
-    #     return f'Welcome, {session["username"]}!'
-
     return render_template('home.html')
 
 
@@ -211,21 +206,35 @@ def addblog():
 @app.route('/editblog/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editblog(id):
+    form = BlogForm()
+    poster = session['username']
     if request.method == 'POST':
-        try:
-            username = session['username']
-            new_title = request.form['title']
-            new_summary = request.form['summary']
-            new_files = request.form['files']
-            new_description = request.form['description']
+        new_title = request.form['title']
+        new_summary = request.form['summary']
+        new_description = request.form['description']
+        if request.files['blog_pic']:
+            blog_pic = request.files['blog_pic']
+            pic_filename = secure_filename(blog_pic.filename)
+            pic_name = str(uuid.uuid1()) + "_" + pic_filename
+            saver = request.files['blog_pic']
+            saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, files = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (username, new_title, new_summary, new_files, new_description, id))
+                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
 
                 con.commit()
-        except:
-            con.rollback()
-        finally:
+
+            con.close()
+            return redirect(url_for('blog'))
+        else:
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute(
+                    "UPDATE blog SET username = ?, title = ?, summary = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?",
+                    (poster, new_title, new_summary, new_description, id))
+
+                con.commit()
+
             con.close()
             return redirect(url_for('blog'))
     else:
@@ -236,7 +245,7 @@ def editblog(id):
         con.commit()
         con.close()
 
-        return render_template('editblog.html', userblogs=userblogs, id=id)
+        return render_template('editblog.html', userblogs=userblogs, id=id, form=form)
 
 
 @app.route('/deleteblog/<int:id>')
@@ -248,6 +257,11 @@ def deleteblog(id):
     con.commit()
     con.close()
     return redirect(url_for('blog'))
+
+
+@app.route('/admindashboard')
+def dashbboard():
+    return render_template('admindashboard.html')
 
 
 @app.route('/shop')
