@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Profile</h1>
+{% if 'username' in session %}
+<p>{{session['username']}}'s Profile</p>
+<h3>Username:</h3><p>  {{session['username']}}</p>
+<h3>Email:</h3><p>  {{session['email']}}</p>
+<h3>Phone Number:</h3><p>  {{session['phone_no']}}</p>
+<h3>Date Of Birth:</h3><p>  {{session['dob']}}</p>
+<h3>Gender:</h3><p>  {{session['gender']}}</p>
+<a href="/editprofile"><img src="static/img/img_5.png" width="20px"></a>
+
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+<h1 class="display-4">Profile</h1>
+<p>{{session['username']}}'s Profile</p>
+<form action="/editprofile" method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control", value=session['username']) }}
+
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control", value=session['email']) }}
+
+    {{ form.phone_no.label(class="form-label") }}
+    {{ form.phone_no(class="form-control", value=session['phone_no']) }}
+
+    {{ form.dob.label(class="form-label") }}
+    {{ form.dob(class="form-control", value=session['dob']) }}
+
+    {{ form.gender.label(class="form-label") }}
+    {{ form.gender(class="form-control", value=session['gender'], name='p') }}
+
+    {{ form.submit(class="btn btn-secondary") }}
+
+</form>
+
+{% endblock %}

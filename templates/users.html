@@ -43,7 +43,7 @@ ul.admin {
   color: white;
 }
 table, td {
-  padding-left: 20px;
+  padding-left: 10px;
   border: 1px solid;
 }
 
@@ -77,6 +77,8 @@ table {
       <th>User ID</th>
       <th>Username</th>
       <th>Email</th>
+      <th>Phone Number</th>
+      <th>Date Of Birth</th>
       <th>Number of Orders Made</th>
       <th>Delete</th>
       </thead>
@@ -85,8 +87,10 @@ table {
         <td>{{ row['user_id'] }}</td>
         <td>{{ row['username'] }}</td>
         <td>{{ row['email'] }}</td>
+        <td>{{ row['phone_no'] }}</td>
+        <td>{{ row['dob'] }}</td>
         <td></td>
-        <td><a href="/deleteuser/{{ row['rowid'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
+        <td><a href="/deleteuser/{{ row['user_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
       </tr>
       {% endfor %}
     </table>

@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
 
@@ -70,6 +70,16 @@ class BlogForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class UserForm(FlaskForm):
+    username = StringField("Username")
+    email = EmailField('Email')
+    phone_no = IntegerField("Phone Number", validators=[Length(min=8, max=8)])
+    dob = DateField("Date Of Birth")
+    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
+    profile_pic = FileField("Profile Picture")
+    submit = SubmitField("Submit")
+
+
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255))
@@ -110,6 +120,10 @@ def login():
             session['user_id'] = user[0]
             session['username'] = user[1]
             session['email'] = user[2]
+            session['phone_no'] = user[4]
+            session['dob'] = user[5]
+            session['gender'] = user[6]
+            session['profile_pic'] = user[7]
             return redirect(url_for('home'))
 
     return render_template('login.html', error=error)
@@ -117,13 +131,14 @@ def login():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['psw']
         repeatpsw = request.form['psw-repeat']
         db = get_db()
-        error = None
+
         if not username:
             error = 'Username is required.'
         elif not password:
@@ -138,8 +153,7 @@ def signup():
                 error = f"User {username} is already registered."
             else:
                 return redirect(url_for("login"))
-        flash(error)
-    return render_template('signup.html')
+    return render_template('signup.html', error=error)
 
 
 @app.route('/logout')
@@ -315,6 +329,51 @@ def wishlist():
     return render_template('wishlist.html')
 
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+
+@app.route('/editprofile', methods=['GET', 'POST'])
+@login_required
+def editprofile():
+    form = UserForm()
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        phone_no = request.form['phone_no']
+        dob = request.form['dob']
+        gender = ''
+        if request.form['gender']:
+            gender = request.form['gender']
+            session['gender'] = gender
+        session['username'] = request.form['username']
+        session['email'] = request.form['email']
+        session['phone_no'] = request.form['phone_no']
+        session['dob'] = request.form['dob']
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute(
+                "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
+                (username, email, phone_no, dob, gender, session['username']))
+
+            con.commit()
+
+        con.close()
+        return redirect(url_for('profile'))
+
+    return render_template('editprofile.html', form=form)
+
+
+# if request.files['profile_pic']:
+#     profile_pic = request.files['profile_pic']
+#     pic_filename = secure_filename(profile_pic.filename)
+#     pic_name = str(uuid.uuid1()) + "_" + pic_filename
+#     saver = request.files['profile_pic']
+#     saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+# else:
+#     pic_name = 'img_6.png'
 @app.route('/cart')
 def cart():
     return render_template('cart.html')
