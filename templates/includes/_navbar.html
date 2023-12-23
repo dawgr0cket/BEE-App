@@ -69,15 +69,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/logout" onclick="Do you want to log out?">Logout</a>
         </li>
-            {% if session['profile_pic'] == '' %}
-                <li class="nav-item">
-                  <a class="nav-link" href="/profile" ><img src="static/img/img_6.png" width="40"></a>
-                </li>
-            {% else %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="/profile" ><img src="{{url_for('static', filename='img/' + session['profile_pic'])}}" class="img" width="40"></a>
-                  </li>
-            {% endif %}
+        <li class="nav-item">
+        <a class="nav-link" href="/profile" ><img src="{{url_for('static', filename='img/' + session['profile_pic'])}}" width="40"></a>
+        </li>
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="/login">Login/Signup</a>

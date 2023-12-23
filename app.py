@@ -121,14 +121,13 @@ def login():
             session['username'] = user[1]
             session['email'] = user[2]
             # user[3] is their password
-            if user[4] == '':
+            session['phone_no'] = user[4]
+            session['dob'] = user[5]
+            session['gender'] = user[6]
+            if user[7] is None:
                 session['profile_pic'] = 'img_6.png'
             else:
-                session['profile_pic'] = user[4]
-            session['gender'] = user[5]
-            session['dob'] = user[6]
-            session['phone_no'] = user[7]
-
+                session['profile_pic'] = user[7]
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
