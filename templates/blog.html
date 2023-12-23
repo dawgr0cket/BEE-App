@@ -36,7 +36,7 @@ div.individualblog {
             <li><i>@{{ row["username"] }}</i></li>
             <li>{{ row["summary"]}}</li>
 <!--            <li><img src="{{ row['files'] }}"></li>-->
-            <img src="{{ url_for('static', filename='img/' + row['blog_pic'])}}" class="img" width="300">
+            <li><img src="{{url_for('static', filename='img/' + row['blog_pic'])}}" class="img" width="300"></li>
             <li>{{ row["description"] }}</li>
             <li>{{ row["datetime"] }}</li>
 

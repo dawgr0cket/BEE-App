@@ -42,22 +42,22 @@
    <!-- Navigation Bar -->
    <nav class="navbar navbar-expand-lg py-3" style="background-color: #F1DDDD;">
   <div class="container-fluid">
-      <img src="static/img/img.png" alt="">
+      <a href="/" style="color: black;text-decoration: none;font-weight: bold;"><img src="static/img/img.png" alt="">B.E.E</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/shop">Shop</a>
-        </li>
-          <li class="nav-item">
-          <a class="nav-link" href="/blog">blog</a>
-        </li>
-          <li class="nav-item">
           <a class="nav-link" href="/aboutus">About Us</a>
         </li>
-         <li class="nav-item">
+        <li class="nav-item">
+          <a class="nav-link" href="/blog">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/shop">Shop</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
         </li>
         {% if 'adminappdev' in session.values() %}
@@ -67,17 +67,29 @@
         {% endif %}
         {% if 'username' in session %}
         <li class="nav-item">
-          <a class="nav-link" href="/logout" onpointerdown="Do you want to log out?">Logout</a>
+          <a class="nav-link" href="/logout" onclick="Do you want to log out?">Logout</a>
         </li>
+            {% if session['profile_pic'] == '' %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/profile" ><img src="static/img/img_6.png" width="40"></a>
+                </li>
+            {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="/profile" ><img src="{{url_for('static', filename='img/' + session['profile_pic'])}}" class="img" width="40"></a>
+                  </li>
+            {% endif %}
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="/login">Login/Signup</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/profile" ><img src="static/img/img_6.png" width="40"></a>
+        </li>
         {% endif %}
           <li class="nav-item">
               <i class="fa fa-search" aria-hidden="true"></i>
-              <i class="fa fa-shopping-cart"></i>
-              <i class="fa fa-heart"></i>
+              <a href="/cart" style="color: black;"><i class="fa fa-shopping-cart"></i></a>
+              <a href="/wishlist" style="color: black;"><i class="fa fa-heart"></i></a>
         </li>
       </ul>
     </div>

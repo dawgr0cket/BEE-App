@@ -120,12 +120,16 @@ def login():
             session['user_id'] = user[0]
             session['username'] = user[1]
             session['email'] = user[2]
-            session['phone_no'] = user[4]
-            session['dob'] = user[5]
-            session['gender'] = user[6]
-            session['profile_pic'] = user[7]
-            return redirect(url_for('home'))
+            # user[3] is their password
+            if user[4] == '':
+                session['profile_pic'] = 'img_6.png'
+            else:
+                session['profile_pic'] = user[4]
+            session['gender'] = user[5]
+            session['dob'] = user[6]
+            session['phone_no'] = user[7]
 
+            return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
 
@@ -179,7 +183,7 @@ def blog():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM blog")
+    cur.execute("SELECT rowid, * FROM blog ORDER BY rowid DESC")
 
     rows = cur.fetchall()
     con.close()
@@ -232,6 +236,12 @@ def editblog(id):
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
+                cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
+                blog_pic = cur.fetchone()
+                for pic in blog_pic:
+                    location = 'static/img/'
+                    path = os.path.join(location, pic)
+                    os.remove(path)
                 cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
 
                 con.commit()
@@ -265,6 +275,12 @@ def editblog(id):
 def deleteblog(id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
+    blog_pic = cur.fetchone()
+    for pic in blog_pic:
+        location = 'static/img/'
+        path = os.path.join(location, pic)
+        os.remove(path)
     cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
     con.commit()
     con.close()
@@ -344,14 +360,20 @@ def editprofile():
         email = request.form['email']
         phone_no = request.form['phone_no']
         dob = request.form['dob']
-        gender = ''
+        gender = None
         if request.form['gender']:
             gender = request.form['gender']
             session['gender'] = gender
-        session['username'] = request.form['username']
-        session['email'] = request.form['email']
-        session['phone_no'] = request.form['phone_no']
-        session['dob'] = request.form['dob']
+        session['username'] = username
+        session['email'] = email
+        if request.form['phone_no'] == '':
+            session['phone_no'] = None
+        else:
+            session['phone_no'] = phone_no
+        if request.form['dob'] == '':
+            session['dob'] = None
+        else:
+            session['dob'] = dob
         with sqlite3.connect('database.db') as con:
             cur = con.cursor()
             cur.execute(
@@ -362,8 +384,12 @@ def editprofile():
 
         con.close()
         return redirect(url_for('profile'))
-
-    return render_template('editprofile.html', form=form)
+    else:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('SELECT * FROM user WHERE username = ?', (session['username'],))
+            details = cur.fetchone()
+    return render_template('editprofile.html', form=form, details=details)
 
 
 # if request.files['profile_pic']:
