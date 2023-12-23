@@ -2,6 +2,22 @@
 {% block title %}B.E.E - Trade-In Form{% endblock %}
 
 {% block content %}
+
 <h1 class="display-4">Trade-In Form</h1>
 <p>Hello {{session['username']}}! What do you want to trade in?</p>
+<hr>
+<form action="/tradeinform/{{ no_of_clothes }}" method="POST" enctype="multipart/form-data" >
+    {{ form.hidden_tag() }}
+    <p>Please Upload details for {{ no_of_clothes }} clothing items</p>
+    <br>
+    {% for i in range(1, no_of_clothes+1) %}
+        {{ form.tradein_pic.label(class="form-label") }} {{ i }}
+        {{ form.tradein_pic(class="form-control") }}
+        {{ form.description.label(class="form-label") }} {{ i }}
+        {{ form.description(class="form-control") }}
+    {% endfor %}
+    <br>
+    <hr>
+    {{ form.submit(class="btn btn-secondary") }}
+</form>
 {% endblock %}

@@ -9,10 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField
+from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, TextAreaField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-
 
 
 app = Flask(__name__)
@@ -50,16 +49,7 @@ def load_logged_in_user():
         ).fetchone()
 
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
-
-
-class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String[20], nullable=False, unique=True)
-    email = db.Column(db.String[50], nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    password_hash = db.Column(db.String(128))
-    profile_pic = db.Column(db.String(), nullable=True)
+# bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 class BlogForm(FlaskForm):
@@ -80,14 +70,11 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class Blog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255))
-    title = db.Column(db.String(255))
-    summary = db.Column(db.Text)
-    blog_pic = db.Column(db.String(), nullable=True)
-    description = db.Column(db.Text)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+class TradeInForm(FlaskForm):
+    no_of_clothes = SelectField("Number Of Clothes", choices=[1, 2, 3, 4, 5, 6], validators=[DataRequired()])
+    tradein_pic = FileField("Picture Of Clothing Item", validators=[DataRequired()])
+    description = TextAreaField("Description Of Clothing Item", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 
 @app.route('/')
@@ -328,10 +315,34 @@ def tradein():
     return render_template('tradein.html')
 
 
-@app.route('/tradeinform')
+@app.route('/tradeinno', methods=['GET', 'POST'])
 @login_required
-def tradeinform():
-    return render_template('tradeinform.html')
+def tradeinno():
+    form = TradeInForm()
+    if request.method == 'POST':
+        no_of_clothes = int(request.form['no_of_clothes'])
+        return render_template('tradeinform.html', no_of_clothes=no_of_clothes, form=form)
+    return render_template('tradeinno.html', form=form)
+
+
+@app.route('/tradeinform/<int:id>', methods=['GET', 'POST'])
+@login_required
+def tradeinform(id):
+    form = TradeInForm()
+    if request.method == 'POST':
+        username = session['username']
+        tradein_pic = request.files['tradein_pic']
+        description = request.form['description']
+        return render_template('tradein.html', tradein_pic=tradein_pic, description=description)
+        # with sqlite3.connect('database.db') as con:
+        #     cur = con.cursor()
+        #     for i in range(no_of_clothes):
+        #         for l in tradein_pic:
+        #             cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description) VALUES (?,?,?,?)", (username, no_of_clothes, l, ))
+        #
+        #             con.commit()
+        #             con.close()
+    return render_template('tradeinform.html', form=form)
 
 
 @app.route('/eco')
