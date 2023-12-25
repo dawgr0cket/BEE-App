@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import date, datetime
 import functools
-
+from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -305,6 +305,20 @@ def deleteuser(id):
     return redirect(url_for('users'))
 
 
+@app.route('/forms')
+@login_required
+def forms():
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM tradeinform GROUP BY tradein_id")
+    rows = cur.fetchall()
+    cur.execute("SELECT tradein_pic, description FROM tradeinform")
+    lists = cur.fetchall()
+    con.close()
+    return render_template('forms.html', rows=rows, lists=lists)
+
 @app.route('/shop')
 def shop():
     return render_template('shop.html')
@@ -327,23 +341,40 @@ def tradeinno():
 
 @app.route('/tradeinform/<int:id>', methods=['GET', 'POST'])
 @login_required
-def tradeinform(id):
+def tradein_form(id):
     form = TradeInForm()
+    username = session['username']
     if request.method == 'POST':
-        username = session['username']
-        tradein_pic = request.files['tradein_pic']
-        description = request.form['description']
-        return render_template('tradein.html', tradein_pic=tradein_pic, description=description)
-        # with sqlite3.connect('database.db') as con:
-        #     cur = con.cursor()
-        #     for i in range(no_of_clothes):
-        #         for l in tradein_pic:
-        #             cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description) VALUES (?,?,?,?)", (username, no_of_clothes, l, ))
-        #
-        #             con.commit()
-        #             con.close()
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            tradein_pic = request.files.getlist('tradein_pic')
+            descriptions = request.form.getlist('description')
+            tradein_id = Tradeinform()
+            tradein_id = tradein_id.get_tradein_id()
+            for i in range(id):
+                pic = tradein_pic[i]
+                description = descriptions[i]
+                pic_filename = secure_filename(pic.filename)
+                pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                saver = tradein_pic[i]
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+
+                cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
+                con.commit()
+        con.close()
+        return render_template('tradein.html')
+
     return render_template('tradeinform.html', form=form)
 
+
+@app.route('/deletetradein/<int:id>')
+def deletetradein(id):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+    con.commit()
+    con.close()
+    return redirect(url_for('forms'))
 
 @app.route('/eco')
 def eco():

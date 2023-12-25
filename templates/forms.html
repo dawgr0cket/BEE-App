@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+}
+
+ul.admin {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 20%;
+  background-color: #948686;
+  position: sticky;
+  height: 100%;
+  overflow: auto;
+}
+
+.admin li a {
+  display: block;
+  color: #000;
+  padding: 50px 16px;
+  text-decoration: none;
+}
+
+.admin li a.active {
+  background-color: #302A2A;
+  color: white;
+}
+
+.admin li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+#users th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 50px;
+  padding-left: 10px;
+  text-align: left;
+  background-color: #F6BDBD;
+  color: white;
+}
+table, td {
+  padding-left: 10px;
+  border: 1px solid;
+}
+
+table {
+  width: 75%;
+  border-collapse: collapse;
+}
+.img:hover{
+    color: #424242;
+  -webkit-transition: all .3s ease-in;
+  -moz-transition: all .3s ease-in;
+  -ms-transition: all .3s ease-in;
+  -o-transition: all .3s ease-in;
+  transition: all .3s ease-in;
+  opacity: 1;
+  transform: scale(5);
+  -ms-transform: scale(5); /* IE 9 */
+  -webkit-transform: scale(5); /* Safari and Chrome */
+
+}
+</style>
+</head>
+<body>
+{% extends "base.html" %}
+{% block title %}B.E.E - Admin{% endblock %}
+
+{% block content %}
+<ul class="admin" style="float: left;">
+  <li><a href="/admindashboard">Dashboard</a></li>
+  <li>
+    <a href="/orders">Orders</a>
+  </li>
+  <li><a  href="/users">Users</a></li>
+  <li><a class="active" href="/forms">Forms</a></li>
+  <li><a href="/inventory">Inventory</a></li>
+  <li><a href="/add_vouchers">Add Vouchers</a></li>
+  <li><a href="#about">About</a></li>
+</ul>
+
+<div style="margin-left:25%;padding:30px 16px;height:868px;">
+  <h2>Users</h2>
+    <table id="users">
+      <thead>
+      <th>Trade-In ID</th>
+      <th>Username</th>
+      <th>No. Of Clothes</th>
+      <th>Contents</th>
+      <th>Reject</th>
+      <th>Approve</th>
+      <th>Delete</th>
+      </thead>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row['tradein_id'] }}</td>
+          <td>{{ row['username'] }}</td>
+          <td>{{ row['no_of_clothes'] }}</td>
+          <td>
+          {% for list in lists %}
+            <b>Photo:</b><img src="static/img/{{ list['tradein_pic'] }}" class="img" width="70px"><br>
+            <b>Description:</b>{{ list['description'] }}<br>
+          {% endfor %}
+          </td>
+          <td></td>
+          <td></td>
+          <td><a href="/deletetradein/{{ row['tradein_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
+        </tr>
+      {% endfor %}
+    </table>
+</div>
+
+</body>
+</html>
+
+{% endblock %}
