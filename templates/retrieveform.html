@@ -51,6 +51,19 @@ table {
   width: 75%;
   border-collapse: collapse;
 }
+.img:hover{
+    color: #424242;
+  -webkit-transition: all .3s ease-in;
+  -moz-transition: all .3s ease-in;
+  -ms-transition: all .3s ease-in;
+  -o-transition: all .3s ease-in;
+  transition: all .3s ease-in;
+  opacity: 1;
+  transform: scale(5);
+  -ms-transform: scale(5); /* IE 9 */
+  -webkit-transform: scale(5); /* Safari and Chrome */
+
+}
 </style>
 </head>
 <body>
@@ -72,30 +85,18 @@ table {
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Users</h2>
-    <table id="users">
-      <thead>
-      <th>Trade-In ID</th>
-      <th>Username</th>
-      <th>No. Of Clothes</th>
-      <th>Forms</th>
-      <th>Reject</th>
-      <th>Approve</th>
-      <th>Delete</th>
-      </thead>
-      {% for row in rows %}
-        <tr>
-          <td>{{ row['tradein_id'] }}</td>
-          <td>{{ row['username'] }}</td>
-          <td>{{ row['no_of_clothes'] }}</td>
-          <td>
-            <a href="/retrieveform/{{ row['tradein_id'] }}/{{ row['username'] }}">View Form</a>
-          </td>
-          <td></td>
-          <td></td>
-          <td><a href="/deletetradein/{{ row['tradein_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
-        </tr>
-      {% endfor %}
-    </table>
+  <p>Trade ID: {{ id }}</p>
+  {% for user in user %}
+  <p>Username: {{ user['username'] }}</p>
+  <p>Phone Number: {{ user['phone_no'] }}</p>
+  <p>Email: {{ user['email'] }}</p>
+  {% endfor %}
+    {% for row in rows %}
+      <p>Photo of item {{ row['rowid'] }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
+                                                    width="70px"/>
+      <p>Description of item {{ row['rowid'] }}: {{ row['description'] }}</p>
+    {% endfor %}
+          <a href="/forms">Back To forms</a>
 </div>
 
 </body>

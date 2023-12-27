@@ -111,7 +111,7 @@ def login():
             session['phone_no'] = user[4]
             session['dob'] = user[5]
             session['gender'] = user[6]
-            if user[7] is None:
+            if user[7] is None or '':
                 session['profile_pic'] = 'img_6.png'
             else:
                 session['profile_pic'] = user[7]
@@ -314,10 +314,22 @@ def forms():
     cur = con.cursor()
     cur.execute("SELECT rowid, * FROM tradeinform GROUP BY tradein_id")
     rows = cur.fetchall()
-    cur.execute("SELECT tradein_pic, description FROM tradeinform")
-    lists = cur.fetchall()
     con.close()
-    return render_template('forms.html', rows=rows, lists=lists)
+    return render_template('forms.html', rows=rows)
+
+
+@app.route('/retrieveform/<int:id>/<user>')
+def retrieveform(id, user):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute('SELECT rowid, tradein_pic, description FROM tradeinform WHERE tradein_id = ?', (id,))
+    rows = cur.fetchall()
+    cur.execute('SELECT rowid, * FROM user WHERE username = ?', (user,))
+    user = cur.fetchall()
+    con.close()
+    return render_template('retrieveform.html', rows=rows, id=id, user=user)
+
 
 @app.route('/shop')
 def shop():

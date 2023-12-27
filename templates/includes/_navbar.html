@@ -57,7 +57,7 @@
         </li>
         {% if 'adminappdev' in session.values() %}
         <li class="nav-item">
-          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/admindashboard">Dashboard</a>
         </li>
         {% endif %}
         {% if 'username' in session %}
@@ -71,6 +71,15 @@
         {% endif %}
       </ul>
       <div class="navbar-brand d-flex justify-content-end">
+        {% if session['profile_pic'] %}
+        <a href="/profile">
+          <img src="/static/img/session['profile_pic']" width="40px"/>
+        </a>
+        {% else %}
+        <a href="/profile">
+          <img src="static/img/img_6.png" width="40px">
+        </a>
+        {% endif %}
         <a href="/">
           <img src="static/img/img_1.png" alt="" width="30px">
         </a>
