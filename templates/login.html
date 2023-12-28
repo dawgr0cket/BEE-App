@@ -3,23 +3,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-      <style>
-body {
+<style>
+body.login-body {
   font-family: Arial, Helvetica, sans-serif;
-  background-color: black;
+  background-color: #FFFFEA; /* Change to light beige color */
+  margin: 0; /* Added to remove white spaces */
+  padding: 0; /* Added to remove white spaces */
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* Add padding to containers */
-.container {
+.container.login-container {
   padding: 16px;
-  background-color: white;
+  background-color: #add8e6; /* Change to light blue color */
+  width: 400px; /* Reduced width for a narrower form */
+  margin: auto;
+  border-radius: 25px; /* Add rounded corners */
 }
 
-/* Full-width input fields */
+/* Input field styles */
 input[type=text], input[type=password] {
   width: 100%;
   padding: 15px;
@@ -27,6 +27,7 @@ input[type=text], input[type=password] {
   display: inline-block;
   border: none;
   background: #f1f1f1;
+  border-radius: 25px; /* Keep rounded corners */
 }
 
 input[type=text]:focus, input[type=password]:focus {
@@ -34,15 +35,15 @@ input[type=text]:focus, input[type=password]:focus {
   outline: none;
 }
 
-/* Overwrite default styles of hr */
+/* Horizontal rule styles */
 hr {
   border: 1px solid #f1f1f1;
   margin-bottom: 25px;
 }
 
-/* Set a style for the submit button */
+/* Button styles */
 .registerbtn {
-  background-color: #04AA6D;
+  background-color: #ff4500; /* Change to orange color */
   color: white;
   padding: 16px 20px;
   margin: 8px 0;
@@ -50,30 +51,35 @@ hr {
   cursor: pointer;
   width: 100%;
   opacity: 0.9;
+  border-radius: 25px; /* Add rounded corners */
+}
+h1{
+padding: 20px;
 }
 
 .registerbtn:hover {
   opacity: 1;
 }
 
-/* Add a blue text color to links */
+/* Link styles */
 a {
-  color: dodgerblue;
+  color: #0000ff; /* Change to blue color */
 }
 
-/* Set a grey background color and center the text of the "sign in" section */
+/* Sign in section styles */
 .signin {
   background-color: #f1f1f1;
   text-align: center;
 }
 </style>
 </head>
-<body>
+<body class="login-body">
 {% extends "base.html" %}
 {% block title %}B.E.E - Login{% endblock %}
 {% block content %}
 
-<div class="container mt-3">
+<h1 align="center" >Better. Eco-friendly. Efficiency</h1>
+<div class="container login-container mt-3">
   <h2>Login</h2>
   {% if error %}
     <p class=error>{{ error }}</p>
