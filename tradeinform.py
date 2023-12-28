@@ -1,7 +1,7 @@
 tradein_count = 0
 
 
-class Tradeinform:
+class Tradeinform():
 
     def __init__(self):
         global tradein_count

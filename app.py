@@ -1,6 +1,8 @@
 import os
 import uuid
 from datetime import date, datetime
+import numpy as np
+from PIL import Image, ImageDraw
 import functools
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
@@ -66,7 +68,7 @@ class UserForm(FlaskForm):
     phone_no = IntegerField("Phone Number", validators=[Length(min=8, max=8)])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
-    profile_pic = FileField("Profile Picture")
+    profile_pic = FileField("Profile Picture", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
@@ -111,7 +113,7 @@ def login():
             session['phone_no'] = user[4]
             session['dob'] = user[5]
             session['gender'] = user[6]
-            if user[7] is None or '':
+            if user[7] is None:
                 session['profile_pic'] = 'img_6.png'
             else:
                 session['profile_pic'] = user[7]
@@ -299,6 +301,15 @@ def users():
 def deleteuser(id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    cur.execute('SELECT username FROM user WHERE rowid = ?', (id,))
+    user = cur.fetchall()
+    cur.execute('SELECT blog_pic FROM blog WHERE username = ?', (user,))
+    blog_pic = cur.fetchall()
+    for pic in blog_pic:
+        location = 'static/img/'
+        path = os.path.join(location, pic)
+        os.remove(path)
+    cur.execute("DELETE FROM blog WHERE username =?", (user,))
     cur.execute("DELETE FROM user WHERE rowid = ?", (id,))
     con.commit()
     con.close()
@@ -323,7 +334,7 @@ def retrieveform(id, user):
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
     cur = con.cursor()
-    cur.execute('SELECT rowid, tradein_pic, description FROM tradeinform WHERE tradein_id = ?', (id,))
+    cur.execute('SELECT rowid, * FROM tradeinform WHERE tradein_id = ?', (id,))
     rows = cur.fetchall()
     cur.execute('SELECT rowid, * FROM user WHERE username = ?', (user,))
     user = cur.fetchall()
@@ -361,8 +372,8 @@ def tradein_form(id):
             cur = con.cursor()
             tradein_pic = request.files.getlist('tradein_pic')
             descriptions = request.form.getlist('description')
-            tradein_id = Tradeinform()
-            tradein_id = tradein_id.get_tradein_id()
+            tradeinid = Tradeinform()
+            tradein_id = tradeinid.get_tradein_id()
             for i in range(id):
                 pic = tradein_pic[i]
                 description = descriptions[i]
@@ -374,7 +385,7 @@ def tradein_form(id):
                 cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
                 con.commit()
         con.close()
-        return render_template('tradein.html')
+        return redirect(url_for('tradein'))
 
     return render_template('tradeinform.html', form=form)
 
@@ -445,14 +456,17 @@ def editprofile():
     return render_template('editprofile.html', form=form, details=details)
 
 
-# if request.files['profile_pic']:
-#     profile_pic = request.files['profile_pic']
-#     pic_filename = secure_filename(profile_pic.filename)
-#     pic_name = str(uuid.uuid1()) + "_" + pic_filename
-#     saver = request.files['profile_pic']
-#     saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-# else:
-#     pic_name = 'img_6.png'
+@app.route('/editprofilepic/<username>')
+@login_required
+def editprofilepic(username):
+    if request.files['profile_pic']:
+        profile_pic = request.files['profile_pic']
+        pic_filename = secure_filename(profile_pic.filename)
+        pic_name = str(uuid.uuid1()) + "_" + pic_filename
+        saver = request.files['profile_pic']
+        saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+    else:
+        pic_name = 'img_6.png'
 @app.route('/cart')
 def cart():
     return render_template('cart.html')

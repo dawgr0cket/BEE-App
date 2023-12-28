@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+<style>
+  *{
+    text-align: center;
+  }
+</style>
+<div class="displaypfp">
+  <img src="static/img/{{ session['profile_pic'] }}" width="125px">
+</div>
+<form action="/editprofilepic/{{ session['username'] }}" method="POST" enctype="multipart/form-data">
+  {{ form.profile_pic.label(class="form-label") }}
+  { form.profile_pic(class="form-control") }}
+
+  {{ form.submit(class="btn btn-secondary") }}
+
+</form>
+{% endblock %}

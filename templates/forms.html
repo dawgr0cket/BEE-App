@@ -33,7 +33,7 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-#users th {
+#forms th {
   padding-top: 12px;
   padding-bottom: 12px;
   padding-right: 50px;
@@ -55,7 +55,7 @@ table {
 </head>
 <body>
 {% extends "base.html" %}
-{% block title %}B.E.E - Admin{% endblock %}
+{% block title %}B.E.E - Admin/Forms{% endblock %}
 
 {% block content %}
 <ul class="admin" style="float: left;">
@@ -71,8 +71,8 @@ table {
 </ul>
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-  <h2>Users</h2>
-    <table id="users">
+  <h2>Trade-In Forms</h2>
+    <table id="forms">
       <thead>
       <th>Trade-In ID</th>
       <th>Username</th>

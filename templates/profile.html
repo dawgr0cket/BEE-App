@@ -2,16 +2,31 @@
 {% block title %}B.E.E - Profile{% endblock %}
 
 {% block content %}
+<style>
+.button {
+  background-color: #04AA6D;
+  border: none;
+  color: white;
+  padding: 8px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
 <h1 class="display-4">Profile</h1>
-{% if 'username' in session %}
+<div>
+    <img src="static/img/{{ session['profile_pic'] }}" width="100px"><br>
+    <a href="/editprofilepic/{{session['username']}}" class="button">Edit Picture</a>
+</div>
 <p>{{session['username']}}'s Profile</p>
-<h3>Username:</h3><p>  {{session['username']}}</p>
-<h3>Email:</h3><p>  {{session['email']}}</p>
-<h3>Phone Number:</h3><p>  {{session['phone_no']}}</p>
-<h3>Date Of Birth:</h3><p>  {{session['dob']}}</p>
-<h3>Gender:</h3><p>  {{session['gender']}}</p>
+<b>Username:</b><p>  {{session['username']}}</p>
+<b>Email:</b><p>  {{session['email']}}</p>
+<b>Phone Number:</b><p>  {{session['phone_no']}}</p>
+<b>Date Of Birth:</b><p>  {{session['dob']}}</p>
+<b>Gender:</b><p>  {{session['gender']}}</p>
 <a href="/editprofile"><img src="static/img/img_5.png" width="20px"></a>
 
-
-{% endif %}
 {% endblock %}

@@ -91,11 +91,14 @@ table {
   <p>Phone Number: {{ user['phone_no'] }}</p>
   <p>Email: {{ user['email'] }}</p>
   {% endfor %}
+<!--    {% set y = 1 %}-->
     {% for row in rows %}
-      <p>Photo of item {{ row['rowid'] }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
+      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
                                                     width="70px"/>
-      <p>Description of item {{ row['rowid'] }}: {{ row['description'] }}</p>
+      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
+<!--      {% set y = y + 1 %}-->
     {% endfor %}
+
           <a href="/forms">Back To forms</a>
 </div>
 
