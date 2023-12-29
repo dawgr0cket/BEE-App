@@ -456,17 +456,31 @@ def editprofile():
     return render_template('editprofile.html', form=form, details=details)
 
 
-@app.route('/editprofilepic/<username>')
+@app.route('/editprofilepic/<username>', methods=['GET', 'POST'])
 @login_required
 def editprofilepic(username):
-    if request.files['profile_pic']:
+    form = UserForm()
+    if request.method == 'POST':
         profile_pic = request.files['profile_pic']
         pic_filename = secure_filename(profile_pic.filename)
         pic_name = str(uuid.uuid1()) + "_" + pic_filename
         saver = request.files['profile_pic']
         saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+        if session['profile_pic'] != 'img_6.png':
+            location = 'static/img/'
+            path = os.path.join(location, session['profile_pic'])
+            os.remove(path)
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
+            cur.close()
+        session['profile_pic'] = pic_name
+        return redirect(url_for('profile'))
     else:
-        pic_name = 'img_6.png'
+
+        return render_template('editpfp.html', form=form)
+
+
 @app.route('/cart')
 def cart():
     return render_template('cart.html')

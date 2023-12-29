@@ -6,15 +6,21 @@
   *{
     text-align: center;
   }
+  .rounded {
+    clip-path: circle();
+  }
 </style>
+<body>
 <div class="displaypfp">
-  <img src="static/img/{{ session['profile_pic'] }}" width="125px">
+  <img src="/static/img/{{ session['profile_pic'] }}" width="125px" class="rounded">
 </div>
 <form action="/editprofilepic/{{ session['username'] }}" method="POST" enctype="multipart/form-data">
   {{ form.profile_pic.label(class="form-label") }}
-  { form.profile_pic(class="form-control") }}
+  {{ form.profile_pic(class="form-control") }}
 
   {{ form.submit(class="btn btn-secondary") }}
 
 </form>
+<a href="/profile">Back To Profile</a>
+</body>
 {% endblock %}

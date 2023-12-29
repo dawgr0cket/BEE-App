@@ -4,21 +4,24 @@
 {% block content %}
 <style>
 .button {
-  background-color: #04AA6D;
-  border: none;
-  color: white;
-  padding: 8px 25px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
-  margin: 4px 2px;
-  cursor: pointer;
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 8px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.rounded {
+    clip-path: circle();
 }
 </style>
 <h1 class="display-4">Profile</h1>
 <div>
-    <img src="static/img/{{ session['profile_pic'] }}" width="100px"><br>
+    <img src="static/img/{{ session['profile_pic'] }}" width="100px" class="rounded"><br>
     <a href="/editprofilepic/{{session['username']}}" class="button">Edit Picture</a>
 </div>
 <p>{{session['username']}}'s Profile</p>
