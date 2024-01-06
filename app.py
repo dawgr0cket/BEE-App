@@ -1,18 +1,19 @@
 import os
 import uuid
 from datetime import date, datetime
+import numpy as np
+from PIL import Image, ImageDraw
 import functools
-
+from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, TextAreaField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-
 
 
 app = Flask(__name__)
@@ -50,16 +51,7 @@ def load_logged_in_user():
         ).fetchone()
 
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
-
-
-class Users(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String[20], nullable=False, unique=True)
-    email = db.Column(db.String[50], nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    password_hash = db.Column(db.String(128))
-    profile_pic = db.Column(db.String(), nullable=True)
+# bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 class BlogForm(FlaskForm):
@@ -70,14 +62,21 @@ class BlogForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class Blog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255))
-    title = db.Column(db.String(255))
-    summary = db.Column(db.Text)
-    blog_pic = db.Column(db.String(), nullable=True)
-    description = db.Column(db.Text)
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+class UserForm(FlaskForm):
+    username = StringField("Username")
+    email = EmailField('Email')
+    phone_no = IntegerField("Phone Number", validators=[Length(min=8, max=8)])
+    dob = DateField("Date Of Birth")
+    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
+    profile_pic = FileField("Profile Picture", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class TradeInForm(FlaskForm):
+    no_of_clothes = SelectField("Number Of Clothes", choices=[1, 2, 3, 4, 5, 6], validators=[DataRequired()])
+    tradein_pic = FileField("Picture Of Clothing Item", validators=[DataRequired()])
+    description = TextAreaField("Description Of Clothing Item", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 
 @app.route('/')
@@ -110,20 +109,28 @@ def login():
             session['user_id'] = user[0]
             session['username'] = user[1]
             session['email'] = user[2]
+            # user[3] is their password
+            session['phone_no'] = user[4]
+            session['dob'] = user[5]
+            session['gender'] = user[6]
+            if user[7] is None:
+                session['profile_pic'] = 'img_6.png'
+            else:
+                session['profile_pic'] = user[7]
             return redirect(url_for('home'))
-
     return render_template('login.html', error=error)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['psw']
         repeatpsw = request.form['psw-repeat']
         db = get_db()
-        error = None
+
         if not username:
             error = 'Username is required.'
         elif not password:
@@ -138,8 +145,7 @@ def signup():
                 error = f"User {username} is already registered."
             else:
                 return redirect(url_for("login"))
-        flash(error)
-    return render_template('signup.html')
+    return render_template('signup.html', error=error)
 
 
 @app.route('/logout')
@@ -165,7 +171,7 @@ def blog():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM blog")
+    cur.execute("SELECT rowid, * FROM blog ORDER BY rowid DESC")
 
     rows = cur.fetchall()
     con.close()
@@ -218,6 +224,12 @@ def editblog(id):
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
+                cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
+                blog_pic = cur.fetchone()
+                for pic in blog_pic:
+                    location = 'static/img/'
+                    path = os.path.join(location, pic)
+                    os.remove(path)
                 cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
 
                 con.commit()
@@ -251,6 +263,12 @@ def editblog(id):
 def deleteblog(id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
+    blog_pic = cur.fetchone()
+    for pic in blog_pic:
+        location = 'static/img/'
+        path = os.path.join(location, pic)
+        os.remove(path)
     cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
     con.commit()
     con.close()
@@ -283,10 +301,45 @@ def users():
 def deleteuser(id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    cur.execute('SELECT username FROM user WHERE rowid = ?', (id,))
+    user = cur.fetchall()
+    cur.execute('SELECT blog_pic FROM blog WHERE username = ?', (user,))
+    blog_pic = cur.fetchall()
+    for pic in blog_pic:
+        location = 'static/img/'
+        path = os.path.join(location, pic)
+        os.remove(path)
+    cur.execute("DELETE FROM blog WHERE username =?", (user,))
     cur.execute("DELETE FROM user WHERE rowid = ?", (id,))
     con.commit()
     con.close()
     return redirect(url_for('users'))
+
+
+@app.route('/forms')
+@login_required
+def forms():
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM tradeinform GROUP BY tradein_id")
+    rows = cur.fetchall()
+    con.close()
+    return render_template('forms.html', rows=rows)
+
+
+@app.route('/retrieveform/<int:id>/<user>')
+def retrieveform(id, user):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute('SELECT rowid, * FROM tradeinform WHERE tradein_id = ?', (id,))
+    rows = cur.fetchall()
+    cur.execute('SELECT rowid, * FROM user WHERE username = ?', (user,))
+    user = cur.fetchall()
+    con.close()
+    return render_template('retrieveform.html', rows=rows, id=id, user=user)
 
 
 @app.route('/shop')
@@ -299,11 +352,52 @@ def tradein():
     return render_template('tradein.html')
 
 
-@app.route('/tradeinform')
+@app.route('/tradeinno', methods=['GET', 'POST'])
 @login_required
-def tradeinform():
-    return render_template('tradeinform.html')
+def tradeinno():
+    form = TradeInForm()
+    if request.method == 'POST':
+        no_of_clothes = int(request.form['no_of_clothes'])
+        return render_template('tradeinform.html', no_of_clothes=no_of_clothes, form=form)
+    return render_template('tradeinno.html', form=form)
 
+
+@app.route('/tradeinform/<int:id>', methods=['GET', 'POST'])
+@login_required
+def tradein_form(id):
+    form = TradeInForm()
+    username = session['username']
+    if request.method == 'POST':
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            tradein_pic = request.files.getlist('tradein_pic')
+            descriptions = request.form.getlist('description')
+            tradeinid = Tradeinform()
+            tradein_id = tradeinid.get_tradein_id()
+            for i in range(id):
+                pic = tradein_pic[i]
+                description = descriptions[i]
+                pic_filename = secure_filename(pic.filename)
+                pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                saver = tradein_pic[i]
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+
+                cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
+                con.commit()
+        con.close()
+        return redirect(url_for('tradein'))
+
+    return render_template('tradeinform.html', form=form)
+
+
+@app.route('/deletetradein/<int:id>')
+def deletetradein(id):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+    con.commit()
+    con.close()
+    return redirect(url_for('forms'))
 
 @app.route('/eco')
 def eco():
@@ -313,6 +407,78 @@ def eco():
 @app.route('/wishlist')
 def wishlist():
     return render_template('wishlist.html')
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+
+@app.route('/editprofile', methods=['GET', 'POST'])
+@login_required
+def editprofile():
+    form = UserForm()
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        phone_no = request.form['phone_no']
+        dob = request.form['dob']
+        gender = None
+        if request.form['gender']:
+            gender = request.form['gender']
+            session['gender'] = gender
+        session['username'] = username
+        session['email'] = email
+        if request.form['phone_no'] == '':
+            session['phone_no'] = None
+        else:
+            session['phone_no'] = phone_no
+        if request.form['dob'] == '':
+            session['dob'] = None
+        else:
+            session['dob'] = dob
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute(
+                "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
+                (username, email, phone_no, dob, gender, session['username']))
+
+            con.commit()
+
+        con.close()
+        return redirect(url_for('profile'))
+    else:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('SELECT * FROM user WHERE username = ?', (session['username'],))
+            details = cur.fetchone()
+    return render_template('editprofile.html', form=form, details=details)
+
+
+@app.route('/editprofilepic/<username>', methods=['GET', 'POST'])
+@login_required
+def editprofilepic(username):
+    form = UserForm()
+    if request.method == 'POST':
+        profile_pic = request.files['profile_pic']
+        pic_filename = secure_filename(profile_pic.filename)
+        pic_name = str(uuid.uuid1()) + "_" + pic_filename
+        saver = request.files['profile_pic']
+        saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+        if session['profile_pic'] != 'img_6.png':
+            location = 'static/img/'
+            path = os.path.join(location, session['profile_pic'])
+            os.remove(path)
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
+            cur.close()
+        session['profile_pic'] = pic_name
+        return redirect(url_for('profile'))
+    else:
+
+        return render_template('editpfp.html', form=form)
 
 
 @app.route('/cart')

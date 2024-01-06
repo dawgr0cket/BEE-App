@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+<style>
+.button {
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 8px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.rounded {
+    clip-path: circle();
+}
+</style>
+<h1 class="display-4">Profile</h1>
+<div>
+    <img src="static/img/{{ session['profile_pic'] }}" width="100px" class="rounded"><br>
+    <a href="/editprofilepic/{{session['username']}}" class="button">Edit Picture</a>
+</div>
+<p>{{session['username']}}'s Profile</p>
+<b>Username:</b><p>  {{session['username']}}</p>
+<b>Email:</b><p>  {{session['email']}}</p>
+<b>Phone Number:</b><p>  {{session['phone_no']}}</p>
+<b>Date Of Birth:</b><p>  {{session['dob']}}</p>
+<b>Gender:</b><p>  {{session['gender']}}</p>
+<a href="/editprofile"><img src="static/img/img_5.png" width="20px"></a>
+
+{% endblock %}

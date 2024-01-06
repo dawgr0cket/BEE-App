@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Trade-In Form{% endblock %}
+
+{% block content %}
+
+<h1 class="display-4">Trade-In Form</h1>
+<p>Hello {{session['username']}}! What do you want to trade in?</p>
+<hr>
+<form action="/tradeinno" method="POST">
+    {{ form.hidden_tag() }}
+    <br>
+    {{ form.no_of_clothes.label(class="form-label") }}
+    {{ form.no_of_clothes(class="form-control") }}
+    <hr>
+    {{ form.submit(class="btn btn-secondary") }}
+</form>
+{% endblock %}

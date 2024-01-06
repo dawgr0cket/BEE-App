@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<style>
+a.button {
+    background-colour: #F6BDBD
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none:
+    display: inline-block;
+    float: right;
+}
+</style>
+
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+</head>
+<body>
+    <h1 class="display-4">Profile</h1>
+    <p>{{session['username']}}'s Profile</p>
+    <hr>
+    <form action="/editprofile" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <br>
+
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control", value=details[1]) }}
+            <br>
+
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control", value=details[2]) }}
+            <br>
+
+            {{ form.phone_no.label(class="form-label") }}
+            {{ form.phone_no(class="form-control", value=details[3]) }}
+            <br>
+
+            {{ form.dob.label(class="form-label") }}
+            {{ form.dob(class="form-control") }}
+            <br>
+
+            {{ form.gender.label(class="form-label") }}
+            {{ form.gender(class="form-control") }}
+            <br>
+            <hr>
+            {{ form.submit(class="btn btn-secondary") }}
+    </form>
+    <a href="/profile">Discard Changes</a>
+{% endblock %}
+</body>
+</html>

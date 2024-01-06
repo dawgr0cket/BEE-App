@@ -51,6 +51,19 @@ table {
   width: 75%;
   border-collapse: collapse;
 }
+.img:hover{
+    color: #424242;
+  -webkit-transition: all .3s ease-in;
+  -moz-transition: all .3s ease-in;
+  -ms-transition: all .3s ease-in;
+  -o-transition: all .3s ease-in;
+  transition: all .3s ease-in;
+  opacity: 1;
+  transform: scale(5);
+  -ms-transform: scale(5); /* IE 9 */
+  -webkit-transform: scale(5); /* Safari and Chrome */
+
+}
 </style>
 </head>
 <body>
@@ -63,8 +76,8 @@ table {
   <li>
     <a href="/orders">Orders</a>
   </li>
-  <li><a class="active" href="/users">Users</a></li>
-  <li><a href="/forms">Forms</a></li>
+  <li><a  href="/users">Users</a></li>
+  <li><a class="active" href="/forms">Forms</a></li>
   <li><a href="/inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
   <li><a href="#about">About</a></li>
@@ -72,30 +85,21 @@ table {
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Users</h2>
-    <table id="users">
-      <thead>
-      <th>User ID</th>
-      <th>Username</th>
-      <th>Email</th>
-      <th>Phone Number</th>
-      <th>Date Of Birth</th>
-      <th>Gender</th>
-      <th>Number of Orders Made</th>
-      <th>Delete</th>
-      </thead>
-      {% for row in rows %}
-      <tr>
-        <td>{{ row['user_id'] }}</td>
-        <td>{{ row['username'] }}</td>
-        <td>{{ row['email'] }}</td>
-        <td>{{ row['phone_no'] }}</td>
-        <td>{{ row['dob'] }}</td>
-        <td>{{ row['gender'] }}</td>
-        <td></td>
-        <td><a href="/deleteuser/{{ row['user_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
-      </tr>
-      {% endfor %}
-    </table>
+  <p>Trade ID: {{ id }}</p>
+  {% for user in user %}
+  <p>Username: {{ user['username'] }}</p>
+  <p>Phone Number: {{ user['phone_no'] }}</p>
+  <p>Email: {{ user['email'] }}</p>
+  {% endfor %}
+<!--    {% set y = 1 %}-->
+    {% for row in rows %}
+      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
+                                                    width="70px"/>
+      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
+<!--      {% set y = y + 1 %}-->
+    {% endfor %}
+
+          <a href="/forms">Back To forms</a>
 </div>
 
 </body>
