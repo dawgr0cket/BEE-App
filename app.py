@@ -1,7 +1,7 @@
 import os
 import uuid
 from datetime import date, datetime
-import numpy as np
+
 from PIL import Image, ImageDraw
 import functools
 from tradeinform import Tradeinform
