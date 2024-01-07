@@ -33,7 +33,7 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-#forms th {
+#addvouchers th {
   padding-top: 12px;
   padding-bottom: 12px;
   padding-right: 50px;
@@ -63,42 +63,41 @@ table {
   <li>
     <a href="/orders">Orders</a>
   </li>
-  <li><a  href="/users">Users</a></li>
-  <li><a class="active" href="/forms">Forms</a></li>
+  <li><a href="/users">Users</a></li>
+  <li><a href="/forms">Forms</a></li>
   <li><a href="/inventory">Inventory</a></li>
-  <li><a href="/add_vouchers">Add Vouchers</a></li>
+  <li><a class="active" href="/add_vouchers">Add Vouchers</a></li>
   <li><a href="#about">About</a></li>
 </ul>
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-  <h2>Trade-In Forms</h2>
-    <table id="forms">
+  <h2>Add Vouchers</h2>
+  {% if msg %}
+    <b>{{ msg }}</b>
+  {% endif %}
+    <table id="addvouchers">
       <thead>
-      <th>Trade-In ID</th>
+      <th>User Id</th>
       <th>Username</th>
-      <th>No. Of Clothes</th>
-      <th>Forms</th>
-      <th>Status</th>
-      <th>Delete</th>
+      <th>Email</th>
+      <th>Phone Number</th>
+      <th>Number Of Trade-Ins</th>
+      <th>Number Of Orders</th>
+      <th>Give Vouchers</th>
       </thead>
       {% for row in rows %}
-        <tr>
-          <td>{{ row['tradein_id'] }}</td>
+        <tr style="border-bottom: 1px solid black;">
+          <td>{{ row['user_id'] }}</td>
           <td>{{ row['username'] }}</td>
-          <td>{{ row['no_of_clothes'] }}</td>
-          <td>
-            <a href="/retrieveform/{{ row['tradein_id'] }}/{{ row['username'] }}">View Form</a>
-          </td>
-          {% if row['status'] == 0 %}
-          <td><b>Rejected</b></td>
-          {% elif row['status'] == 1 %}
-            <td><b>Accepted</b></td>
-          {% else %}
-            <td><a href="/approveform/{{ row['tradein_id'] }}"><img src="static/img/Green-Tick-Transparent.png" width="20px"></a><a href="/rejectform/{{ row['tradein_id'] }}"><img src="static/img/Red-Cross-PNG-Pic.png" width="20px"></a>
+          <td>{{ row['email'] }}</td>
+          <td>{{ row['phone_no'] }}</td>
+          <td></td>
+          <td></td>
+            <td><a href="/voucher/{{ row['username'] }}/0">{{ voucher1[0] }}</a><br><a href="/voucher/{{ row['username'] }}/1">{{ voucher2[0] }}</a><br><a href="/voucher/{{ row['username'] }}/2">{{ voucher3[0] }}</a>
             </td>
-          {% endif %}
-          <td><a href="/deletetradein/{{ row['tradein_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
         </tr>
+
+
       {% endfor %}
     </table>
 </div>

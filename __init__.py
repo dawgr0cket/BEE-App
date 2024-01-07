@@ -10,7 +10,9 @@ print("Connected to database successfully")
 # conn.execute('CREATE TABLE blog (username VARCHAR(255) NOT NULL,title TEXT, summary TEXT, blog_pic STRING, description TEXT, datetime INT NOT NULL DEFAULT CURRENT_TIMESTAMP)')
 # conn.execute('CREATE TABLE tradeinform (username VARCHAR(255) NOT NULL, no_of_clothes INT, tradein_pic LONGBLOB, description TEXT, datetime INT NOT NULL DEFAULT CURRENT_TIMESTAMP)')
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN tradein_id INT')
-
+# conn.execute('ALTER TABLE tradeinform ADD COLUMN status BOOLEAN')
+# conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code STRING)')
+# conn.execute('CREATE TABLE validvouchers (row_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING)')
 print("Created table successfully!")
 
 conn.close()

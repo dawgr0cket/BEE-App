@@ -1,7 +1,6 @@
 import os
 import uuid
-from datetime import date, datetime
-
+import base64
 from PIL import Image, ImageDraw
 import functools
 from tradeinform import Tradeinform
@@ -329,6 +328,28 @@ def forms():
     return render_template('forms.html', rows=rows)
 
 
+@app.route('/approveform/<int:form_id>')
+@login_required
+def approveform(form_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE tradeinform SET status = ? WHERE tradein_id = ?', (1, form_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('forms'))
+
+
+@app.route('/rejectform/<int:form_id>')
+@login_required
+def rejectform(form_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE tradeinform SET status = ? WHERE tradein_id = ?', (0, form_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('forms'))
+
+
 @app.route('/retrieveform/<int:id>/<user>')
 def retrieveform(id, user):
     con = sqlite3.connect('database.db')
@@ -340,6 +361,60 @@ def retrieveform(id, user):
     user = cur.fetchall()
     con.close()
     return render_template('retrieveform.html', rows=rows, id=id, user=user)
+
+
+@app.route('/add_vouchers')
+@login_required
+def addvouchers():
+    voucher1 = ['$5 OFF DELIVERY', 5, 'Minimum purchase of $30']
+    voucher2 = ['$10 DISCOUNT', 10, 'Minimum purchase of $40']
+    voucher3 = ['$15 DISCOUNT', 15, 'Minimum purchase of $50']
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM user")
+
+    rows = cur.fetchall()
+    con.close()
+    return render_template('add_vouchers.html', voucher1=voucher1, voucher2=voucher2, voucher3=voucher3, rows=rows)
+
+
+@app.route('/voucher/<username>/<int:voucher>')
+@login_required
+def voucher(username, voucher):
+    vouchers = [('$5 OFF DELIVERY', 5, 'Minimum purchase of $30'), ('$10 DISCOUNT', 10, 'Minimum purchase of $40'),
+                ('$15 DISCOUNT', 15, 'Minimum purchase of $50')]
+
+    with sqlite3.connect('database.db') as con:
+        def secure_rand(len=8):
+            token = os.urandom(len)
+            return base64.b64encode(token)
+
+        voucher_code = secure_rand()
+        cur = con.cursor()
+        cur.execute("INSERT INTO validvouchers (code) VALUES (?)", (voucher_code,))
+        cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
+                    (username, vouchers[voucher][0], vouchers[voucher][1], vouchers[voucher][2], voucher_code))
+        con.commit()
+
+    con.close()
+    msg = f"Voucher of {vouchers[voucher][0]} has been added to {username}'s account"
+    flash(msg)
+    return redirect(url_for('addvouchers'))
+
+
+@app.route('/view_vouchers/<username>')
+@login_required
+def view_vouchers(username):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
+    rows = cur.fetchall()
+    con.close()
+    return render_template('view_vouchers.html', rows=rows)
 
 
 @app.route('/shop')
@@ -484,6 +559,11 @@ def editprofilepic(username):
 @app.route('/cart')
 def cart():
     return render_template('cart.html')
+
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 
 if __name__ == '__main__':

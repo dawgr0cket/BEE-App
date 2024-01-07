@@ -45,17 +45,17 @@ body {
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
 <div style="float: left;margin-left:5%;">
-    <h1 class="display-4">Profile</h1>
+    <h1 class="display-4">Vouchers</h1>
+    <p>{{session['username']}}'s Vouchers</p>
+    {% for row in rows %}
     <div>
-        <img src="static/img/{{ session['profile_pic'] }}" width="100px" class="rounded"><br>
-        <a href="/editprofilepic/{{session['username']}}" class="button">Edit Picture</a>
+        <h4>{{ row[2] }}</h4>
+        <h5>Code:</h5>
+        <b>{{ row[5] }}</b>
+        <p>Condition:</p>
+        {{ row[4] }}
+
     </div>
-    <p>{{session['username']}}'s Profile</p>
-    <b>Username:</b><p>  {{session['username']}}</p>
-    <b>Email:</b><p>  {{session['email']}}</p>
-    <b>Phone Number:</b><p>  {{session['phone_no']}}</p>
-    <b>Date Of Birth:</b><p>  {{session['dob']}}</p>
-    <b>Gender:</b><p>  {{session['gender']}}</p>
-    <a href="/editprofile"><img src="static/img/img_5.png" width="20px"></a>
+    {% endfor %}
 </div>
 {% endblock %}
