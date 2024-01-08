@@ -13,9 +13,15 @@ print("Connected to database successfully")
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN status BOOLEAN')
 # conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code STRING)')
 # conn.execute('CREATE TABLE validvouchers (row_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING)')
-# conn.execute('CREATE TABLE inventory (product_name STRING, product_price FLOAT, product_image LONGBLOB, product_description LONGTEXT, product_quantity INT, product_size STRING, product_colour STRING)')
+
+# conn.execute('CREATE TABLE inventory (product_name STRING, product_price FLOAT, product_image LONGBLOB, product_description LONGTEXT, product_quantity INT, shop STRING)')
+# ^ the 'shop' column is BOOLEAN, 0 means product is for eco while 1 means product is for trade in
+
 # conn.execute('CREATE TABLE reviews (product_name STRING, review LONGTEXT)')
 # conn.execute('CREATE TABLE wishlist (username VARCHAR(255) NOT NULL, product_name STRING)')
+# conn.execute('CREATE TABLE inventorysize (product_name STRING, product_size STRING)')
+# conn.execute('CREATE TABLE inventorycolour (product_name STRING, product_colour STRING)')
+
 print("Created table successfully!")
 
 conn.close()

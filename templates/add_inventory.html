@@ -15,16 +15,16 @@
             {{ form.hidden_tag() }}
             <br>
 
+            {{ form.shop.label(class="form-label") }}
+            {{ form.shop(class="form-control") }}
+            <br>
+
             {{ form.product_name.label(class="form-label") }}
             {{ form.product_name(class="form-control") }}
             <br>
 
             {{ form.product_price.label(class="form-label") }}
             {{ form.product_price(class="form-control") }}
-            <br>
-
-            {{ form.product_image.label(class="form-label") }}
-            {{ form.product_image(class="form-control") }}
             <br>
 
             {{ form.product_image.label(class="form-label") }}
@@ -58,23 +58,23 @@
 
             <b>Colour Of Clothes</b>
             <label for="Red"><b>Red</b></label>
-            <input type="checkbox" name="product_colour" id="Red">
+            <input type="checkbox" name="product_colour" id="Red" value="Red">
             <label for="Blue"><b>Blue</b></label>
-            <input type="checkbox" name="product_colour" id="Blue">
+            <input type="checkbox" name="product_colour" id="Blue" value="Blue">
             <label for="Orange"><b>Orange</b></label>
-            <input type="checkbox" name="product_colour" id="Orange">
+            <input type="checkbox" name="product_colour" id="Orange" value="Orange">
             <label for="Green"><b>Green</b></label>
-            <input type="checkbox" name="product_colour" id="Green">
+            <input type="checkbox" name="product_colour" id="Green" value="Green">
             <label for="Purple"><b>Purple</b></label>
-            <input type="checkbox" name="product_colour" id="Purple">
+            <input type="checkbox" name="product_colour" id="Purple" value="Purple">
             <label for="Yellow"><b>Yellow</b></label>
-            <input type="checkbox" name="product_colour" id="Yellow">
+            <input type="checkbox" name="product_colour" id="Yellow" value="Yellow">
             <label for="Black"><b>Black</b></label>
-            <input type="checkbox" name="product_colour" id="Black">
+            <input type="checkbox" name="product_colour" id="Black" value="Black">
             <label for="Pink"><b>Pink</b></label>
-            <input type="checkbox" name="product_colour" id="Pink">
+            <input type="checkbox" name="product_colour" id="Pink" value="Pink">
             <label for="White"><b>White</b></label>
-            <input type="checkbox" name="product_colour" id="White">
+            <input type="checkbox" name="product_colour" id="White" value="White">
             <br>
 
             {{ form.product_quantity.label(class="form-label") }}

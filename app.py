@@ -1,7 +1,6 @@
 import os
 import uuid
 import base64
-from PIL import Image, ImageDraw
 import functools
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
@@ -80,6 +79,7 @@ class TradeInForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     product_name = StringField("Product Name")
+    shop = RadioField("Product for Eco or Trade-In", choices=[('Eco', 'Eco'), ('Trade-In', 'Trade-In')])
     product_price = IntegerField("Product Price", validators=[Length(min=0, max=8)])
     product_image = FileField("Product Images")
     product_description = TextAreaField("Description Of Product", validators=[DataRequired()])
@@ -375,16 +375,16 @@ def retrieveform(id, user):
 @app.route('/admin_inventory')
 @login_required
 def admin_inventory():
-    # con = sqlite3.connect('database.db')
-    # con.row_factory = sqlite3.Row
-    #
-    # cur = con.cursor()
-    # cur.execute("SELECT rowid, * FROM inventory GROUP BY ")
-    #
-    # rows = cur.fetchall()
-    # con.close()
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
 
-    return render_template('admin_inventory.html')
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM inventory GROUP BY product_name")
+    rows = cur.fetchall()
+
+    con.close()
+
+    return render_template('admin_inventory.html', rows=rows)
 
 
 @app.route('/add_inventory', methods=['GET', 'POST'])
@@ -393,6 +393,7 @@ def add_inventory():
     form = ProductForm()
     if request.method == 'POST':
         try:
+            shop = request.form['shop']
             product_name = request.form['product_name']
             product_price = request.form['product_price']
             product_image = request.files.getlist('product_image')
@@ -400,13 +401,85 @@ def add_inventory():
             product_size = request.form.getlist('product_size')
             product_colour = request.form.getlist('product_colour')
             product_quantity = request.form['product_quantity']
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                for image in product_image:
+                    pic = image
+
+                    pic_filename = secure_filename(pic.filename)
+                    if pic_filename != '':
+                        pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                        saver = image
+                        saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+
+                        cur.execute(
+                            "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)",
+                            (shop, product_name, product_price, pic_name, product_description, product_quantity))
+                        con.commit()
+                for size in product_size:
+                    cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)', (product_name, size))
+                    con.commit()
+                for colour in product_colour:
+                    cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)', (product_name, colour))
+                    con.commit()
+            con.close()
         except:
             msg = 'An error has occurred, please try again.'
             flash(msg)
             return redirect(url_for('admin_inventory'))
-
-        return render_template('admin_inventory.html')
+        finally:
+            return redirect(url_for('admin_inventory'))
     return render_template('add_inventory.html', form=form)
+
+
+@app.route('/admin_product/<product_name>')
+@login_required
+def admin_product(product_name):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('SELECT rowid, * FROM inventory WHERE product_name = ?', (product_name,))
+            rows = cur.fetchall()
+            cur.execute('SELECT rowid, * FROM inventorysize WHERE product_name = ?', (product_name,))
+            sizes = cur.fetchall()
+            cur.execute('SELECT rowid, * FROM inventorycolour WHERE product_name = ?', (product_name,))
+            colours = cur.fetchall()
+            cur.execute('SELECT rowid, * FROM reviews WHERE product_name = ?', (product_name,))
+            reviews = cur.fetchall()
+        con.close()
+    except:
+        msg = 'An error has occurred, please try again.'
+        flash(msg)
+        return redirect(url_for('admin_inventory'))
+    finally:
+        return render_template('admin_product.html', rows=rows, sizes=sizes, colours=colours, reviews=reviews)
+
+
+@app.route('/delete_inventory/<product_name>')
+@login_required
+def delete_inventory(product_name):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('SELECT product_image FROM inventory WHERE product_name = ?', (product_name,))
+            images = cur.fetchall()
+            for pic in images:
+                location = 'static/img/'
+                path = os.path.join(location, pic)
+                os.remove(path)
+            cur.execute("DELETE FROM inventory WHERE product_name = ?", (product_name,))
+            cur.execute("DELETE FROM inventorysize WHERE product_name = ?", (product_name,))
+            cur.execute("DELETE FROM inventorycolour WHERE product_name = ?", (product_name,))
+            cur.execute("DELETE FROM wishlist WHERE product_name = ?", (product_name,))
+            cur.execute("DELETE FROM reviews WHERE product_name = ?", (product_name,))
+            con.commit()
+        con.close()
+    except:
+        msg = 'An Error hac occurred!'
+        flash(msg)
+        return redirect(url_for('admin_inventory'))
+    finally:
+        return redirect(url_for('admin_inventory'))
 
 
 @app.route('/add_vouchers')
