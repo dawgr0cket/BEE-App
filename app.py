@@ -81,10 +81,10 @@ class TradeInForm(FlaskForm):
 class ProductForm(FlaskForm):
     product_name = StringField("Product Name")
     product_price = IntegerField("Product Price", validators=[Length(min=0, max=8)])
-    product_image = FileField("Product Image", validators=[DataRequired()])
+    product_image = FileField("Product Images")
     product_description = TextAreaField("Description Of Product", validators=[DataRequired()])
     product_quantity = IntegerField('Product Quantity')
-    product_size = SelectField('Size Of Clothing', choices=['S', 'M', 'L'])
+    submit = SubmitField("Submit")
 
 
 @app.route('/')
@@ -372,10 +372,41 @@ def retrieveform(id, user):
     return render_template('retrieveform.html', rows=rows, id=id, user=user)
 
 
-@app.route('/admin_inventory', methods=['GET', 'POST'])
+@app.route('/admin_inventory')
 @login_required
 def admin_inventory():
-    pass
+    # con = sqlite3.connect('database.db')
+    # con.row_factory = sqlite3.Row
+    #
+    # cur = con.cursor()
+    # cur.execute("SELECT rowid, * FROM inventory GROUP BY ")
+    #
+    # rows = cur.fetchall()
+    # con.close()
+
+    return render_template('admin_inventory.html')
+
+
+@app.route('/add_inventory', methods=['GET', 'POST'])
+@login_required
+def add_inventory():
+    form = ProductForm()
+    if request.method == 'POST':
+        try:
+            product_name = request.form['product_name']
+            product_price = request.form['product_price']
+            product_image = request.files.getlist('product_image')
+            product_description = request.form['product_description']
+            product_size = request.form.getlist('product_size')
+            product_colour = request.form.getlist('product_colour')
+            product_quantity = request.form['product_quantity']
+        except:
+            msg = 'An error has occurred, please try again.'
+            flash(msg)
+            return redirect(url_for('admin_inventory'))
+
+        return render_template('admin_inventory.html')
+    return render_template('add_inventory.html', form=form)
 
 
 @app.route('/add_vouchers')

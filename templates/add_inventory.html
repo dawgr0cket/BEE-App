@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+{% extends "base.html" %}
+{% block title %}B.E.E - Add Inventory{% endblock %}
+
+{% block content %}
+</head>
+<body>
+    <h1 class="display-4">Add Product</h1>
+    <hr>
+    <form action="/add_inventory" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <br>
+
+            {{ form.product_name.label(class="form-label") }}
+            {{ form.product_name(class="form-control") }}
+            <br>
+
+            {{ form.product_price.label(class="form-label") }}
+            {{ form.product_price(class="form-control") }}
+            <br>
+
+            {{ form.product_image.label(class="form-label") }}
+            {{ form.product_image(class="form-control") }}
+            <br>
+
+            {{ form.product_image.label(class="form-label") }}
+            {{ form.product_image(class="form-control") }}
+            <br>
+
+            {{ form.product_image.label(class="form-label") }}
+            {{ form.product_image(class="form-control") }}
+            <br>
+
+            {{ form.product_image.label(class="form-label") }}
+            {{ form.product_image(class="form-control") }}
+            <br>
+
+            {{ form.product_description.label(class="form-label") }}
+            {{ form.product_description(class="form-control") }}
+            <br>
+
+            <b>Size Of Clothes</b>
+            <label for="XS"><b>XS</b></label>
+            <input type="checkbox" name="product_size" id="XS" value="XS">
+            <label for="S"><b>S</b></label>
+            <input type="checkbox" name="product_size" id="S" value="S">
+            <label for="M"><b>M</b></label>
+            <input type="checkbox" name="product_size" id="M" value="M">
+            <label for="L"><b>L</b></label>
+            <input type="checkbox" name="product_size" id="L" value="L">
+            <label for="XL"><b>XL</b></label>
+            <input type="checkbox" name="product_size" id="XL" value="XL">
+            <br>
+
+            <b>Colour Of Clothes</b>
+            <label for="Red"><b>Red</b></label>
+            <input type="checkbox" name="product_colour" id="Red">
+            <label for="Blue"><b>Blue</b></label>
+            <input type="checkbox" name="product_colour" id="Blue">
+            <label for="Orange"><b>Orange</b></label>
+            <input type="checkbox" name="product_colour" id="Orange">
+            <label for="Green"><b>Green</b></label>
+            <input type="checkbox" name="product_colour" id="Green">
+            <label for="Purple"><b>Purple</b></label>
+            <input type="checkbox" name="product_colour" id="Purple">
+            <label for="Yellow"><b>Yellow</b></label>
+            <input type="checkbox" name="product_colour" id="Yellow">
+            <label for="Black"><b>Black</b></label>
+            <input type="checkbox" name="product_colour" id="Black">
+            <label for="Pink"><b>Pink</b></label>
+            <input type="checkbox" name="product_colour" id="Pink">
+            <label for="White"><b>White</b></label>
+            <input type="checkbox" name="product_colour" id="White">
+            <br>
+
+            {{ form.product_quantity.label(class="form-label") }}
+            {{ form.product_quantity(class="form-control") }}
+            <br>
+            <hr>
+            {{ form.submit(class="btn btn-secondary") }}
+    </form>
+    <a href="/admin_inventory">Discard Changes</a>
+{% endblock %}
+</body>
+</html>
