@@ -78,6 +78,15 @@ class TradeInForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class ProductForm(FlaskForm):
+    product_name = StringField("Product Name")
+    product_price = IntegerField("Product Price", validators=[Length(min=0, max=8)])
+    product_image = FileField("Product Image", validators=[DataRequired()])
+    product_description = TextAreaField("Description Of Product", validators=[DataRequired()])
+    product_quantity = IntegerField('Product Quantity')
+    product_size = SelectField('Size Of Clothing', choices=['S', 'M', 'L'])
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -361,6 +370,12 @@ def retrieveform(id, user):
     user = cur.fetchall()
     con.close()
     return render_template('retrieveform.html', rows=rows, id=id, user=user)
+
+
+@app.route('/admin_inventory', methods=['GET', 'POST'])
+@login_required
+def admin_inventory():
+    pass
 
 
 @app.route('/add_vouchers')
