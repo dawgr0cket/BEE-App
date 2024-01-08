@@ -3,7 +3,7 @@ import sqlite3
 conn = sqlite3.connect('database.db')
 print("Connected to database successfully")
 
-#all changes to tables are made here. If changes to tables are to be made, please make a new conn.execute line. This is to keep track of changes
+# all changes to tables are made here. If changes to tables are to be made, please make a new conn.execute line. This is to keep track of changes
 
 # conn.execute("DROP TABLE user")
 # conn.execute('CREATE TABLE user (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, password INT(255) NOT NULL, phone_no INT(8), dob STRING, gender STRING, profile_pic LONGBLOB, datetime INT NOT NULL DEFAULT CURRENT_TIMESTAMP)')
