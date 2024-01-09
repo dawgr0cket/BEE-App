@@ -2,7 +2,7 @@ import os
 import uuid
 import base64
 import functools
-from tradeinform import Tradeinform
+# from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -331,7 +331,7 @@ def forms():
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM tradeinform GROUP BY tradein_id")
+    cur.execute("SELECT rowid, * FROM tradeinentries")
     rows = cur.fetchall()
     con.close()
     return render_template('forms.html', rows=rows)
@@ -567,7 +567,12 @@ def tradein_form(id):
             tradein_pic = request.files.getlist('tradein_pic')
             descriptions = request.form.getlist('description')
             tradeinid = Tradeinform()
-            tradein_id = tradeinid.get_tradein_id()
+            tradein_id = tradeinid.generate_uuid()
+            cur.execute(
+                "INSERT INTO tradeinentries (username, no_of_clothes, tradein_id) VALUES (?,?,?)",
+                (username, id, tradein_id))
+            con.commit()
+
             for i in range(id):
                 pic = tradein_pic[i]
                 description = descriptions[i]
@@ -578,6 +583,7 @@ def tradein_form(id):
 
                 cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
                 con.commit()
+
         con.close()
         return redirect(url_for('tradein'))
 

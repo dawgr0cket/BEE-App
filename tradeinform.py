@@ -1,4 +1,4 @@
-tradein_count = 0
+import uuid
 
 
 class Tradeinform():
@@ -13,3 +13,6 @@ class Tradeinform():
 
     def get_tradein_id(self):
         return self.__trade_id
+
+    def generate_uuid(self):
+        return uuid.uuid1()
