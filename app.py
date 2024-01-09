@@ -82,7 +82,7 @@ class ProductForm(FlaskForm):
     shop = RadioField("Product for Eco or Trade-In", choices=[('Eco', 'Eco'), ('Trade-In', 'Trade-In')])
     product_price = IntegerField("Product Price", validators=[Length(min=0, max=8)])
     product_image = FileField("Product Images")
-    product_description = TextAreaField("Description Of Product", validators=[DataRequired()])
+    product_description = TextAreaField("Description Of Product")
     product_quantity = IntegerField('Product Quantity')
     submit = SubmitField("Submit")
 
@@ -437,6 +437,8 @@ def add_inventory():
 def admin_product(product_name):
     try:
         with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
+
             cur = con.cursor()
             cur.execute('SELECT rowid, * FROM inventory WHERE product_name = ?', (product_name,))
             rows = cur.fetchall()
@@ -481,6 +483,54 @@ def delete_inventory(product_name):
         return redirect(url_for('admin_inventory'))
     finally:
         return redirect(url_for('admin_inventory'))
+
+
+@app.route('/edit_inventory/<product_name>', methods=['GET', 'POST'])
+@login_required
+def edit_inventory(product_name):
+    form = ProductForm()
+    if request.method == 'POST':
+        new_product_name = request.form['product_name']
+        product_price = request.form['product_price']
+        product_quantity = request.form['product_quantity']
+        if request.form['product_description']:
+            product_description = request.form['product_description']
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE inventory SET product_name = ?, product_price = ?, product_description = ?, product_quantity = ? WHERE product_name = ?",
+                        (new_product_name, product_price, product_description, product_quantity, product_name))
+            except:
+                msg='Error in updating inventory'
+                flash(msg)
+                return redirect(url_for('admin_inventory'))
+            finally:
+                return redirect(url_for('admin_inventory'))
+        else:
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE inventory SET product_name = ?, product_price = ?, product_quantity = ? WHERE product_name = ?",
+                        (new_product_name, product_price, product_quantity, product_name))
+            except:
+                msg='Error in updating inventory'
+                flash(msg)
+                return redirect(url_for('admin_inventory'))
+            finally:
+                return redirect(url_for('admin_inventory'))
+    else:
+        with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute('SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name', (product_name,))
+            rows = cur.fetchall()
+            for row in rows:
+                product_price = row[0]
+                product_description = row[1]
+                product_quantity = row[2]
+    return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
 
 
 @app.route('/add_vouchers')

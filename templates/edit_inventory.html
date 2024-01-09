@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+{% extends "base.html" %}
+{% block title %}B.E.E - Add Inventory{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+  margin: 0;
+}
+
+ul.admin {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 20%;
+  background-color: #948686;
+  position: sticky;
+  height: 100%;
+  overflow: auto;
+}
+
+.admin li a {
+  display: block;
+  color: #000;
+  padding: 50px 16px;
+  text-decoration: none;
+}
+
+.admin li a.active {
+  background-color: #302A2A;
+  color: white;
+}
+
+.admin li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+    </style>
+</head>
+<body>
+<ul class="admin" style="float: left;">
+  <li><a href="/admindashboard">Dashboard</a></li>
+  <li>
+    <a href="/orders">Orders</a>
+  </li>
+  <li><a href="/users">Users</a></li>
+  <li><a href="/forms">Forms</a></li>
+  <li><a class="active" href="/admin_inventory">Inventory</a></li>
+  <li><a href="/add_vouchers">Add Vouchers</a></li>
+  <li><a href="#about">About</a></li>
+</ul>
+    <h1 class="display-4">Add Product</h1>
+    <hr>
+    <form action="/edit_inventory/{{ product_name }}" method="POST" style="margin-left:25%;padding:30px 16px;height: 1000px;">
+            {{ form.hidden_tag() }}
+            <br>
+            {{ form.product_name.label(class="form-label") }}
+            {{ form.product_name(class="form-control", value=product_name) }}
+
+            {{ form.product_price.label(class="form-label") }}
+            {{ form.product_price(class="form-control", value=product_price) }}
+            <br>
+
+            {{ form.product_description.label(class="form-label") }}
+            {{ form.product_description(class="form-control") }}
+            <br>
+
+            {{ form.product_quantity.label(class="form-label") }}
+            {{ form.product_quantity(class="form-control", value=product_quantity) }}
+            <br>
+            <hr>
+            {{ form.submit(class="btn btn-secondary") }}
+    <a href="/admin_inventory">Discard Changes</a>
+
+    </form>
+{% endblock %}
+</body>
+</html>
