@@ -588,6 +588,12 @@ def tradein_form(id):
 def deletetradein(id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+    cur.execute("SELECT tradein_pic FROM tradeinform WHERE tradein_id = ?", (id,))
+    tradein_pic =cur.fetchall()
+    for picture in tradein_pic:
+        location ="static/img/"
+        path = os.path.join(location,picture)
+        os.remove(path)
     cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
     con.commit()
     con.close()
