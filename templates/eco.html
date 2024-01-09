@@ -82,34 +82,15 @@
             <hr class="mx-auto">
         </div>
         <div class="row mx-auto container-fluid">
+            {% for row in rows %}
             <div class="product text-center col-lg-3 col-md-4 col-12">
                 <!-- This is where the product list will go. -->
-                <img class="img-fluid mb-1" src="static/img/img.png">
-                <h5 class="p-name">name</h5>
-                <h4 class="p-price">price</h4>
-                <button class="buy-btn">Buy</button>
+                <img class="img-fluid mb-1" src="static/img/{{ row['product_image'] }}">
+                <h5 class="p-name">{{ row['product_name'] }}</h5>
+                <h4 class="p-price">${{ row['product_price'] }}0</h4>
+                <button class="buy-btn">Add To Cart</button>
             </div>
-             <div class="product text-center col-lg-3 col-md-4 col-12">
-                <!-- This is where the product list will go. -->
-                <img class="img-fluid mb-1" src="static/img/img.png">
-                <h5 class="p-name">name</h5>
-                <h4 class="p-price">price</h4>
-                <button class="buy-btn">Buy</button>
-            </div>
-             <div class="product text-center col-lg-3 col-md-4 col-12">
-                <!-- This is where the product list will go. -->
-                <img class="img-fluid mb-1" src="static/img/img.png">
-                <h5 class="p-name">name</h5>
-                <h4 class="p-price">price</h4>
-                <button class="buy-btn">Buy</button>
-            </div>
-             <div class="product text-center col-lg-3 col-md-4 col-12">
-                <!-- This is where the product list will go. -->
-                <img class="img-fluid mb-1" src="static/img/img.png">
-                <h5 class="p-name">name</h5>
-                <h4 class="p-price">price</h4>
-                <button class="buy-btn">Buy</button>
-            </div>
+            {% endfor %}
         </div>
     </section>
 <footer style="background-color: #FFFEA; padding: 20px; text-align: center;">

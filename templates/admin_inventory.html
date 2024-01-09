@@ -43,16 +43,18 @@ ul.admin {
 
 .individualproduct {
   width: 200px;
-  height: 250px;
-  text-align: left;
-  padding-left: 20px;
+  height: 300px;
+  text-align: center;
+  padding: auto;
   background-color: white;
 }
 
-.individualproduct img {
+.productimage img{
+  width: 160px;
+  height: 180px;
   text-align: center;
-  max-width: 90%;
 }
+
 </style>
 </head>
 <body>
@@ -75,13 +77,15 @@ ul.admin {
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Inventory</h2>
   {% for row in rows %}
-    <a href="/admin_product/{{ row['product_name'] }}" class="individualproduct" style="float: left;text-decoration: none;color: black;">
+    <a href="/admin_product/{{ row['product_name'] }}" class="individualproduct" style="float: left;text-decoration: none;color: black;margin-left: 50px;">
       <p style="text-align: center;">Product for {{ row['shop'] }}</p>
-      <img src="static/img/{{ row['product_image'] }}"><br>
+      <div class="productimage"><img src="static/img/{{ row['product_image'] }}"><br></div>
       {{ row['product_name'] }}<br>
       ${{ row['product_price'] }}
+      <object><a href="/delete_inventory/{{ row['product_name'] }}"><img src="static/img/img_4.png" width="20px"></a></object>
+      <object><a href="/edit_inventory/{{ row['product_name'] }}"><img src="static/img/img_5.png" width="20px"></a></object>
     </a><br>
-  <a href="/delete_inventory/{{ row['product_name'] }}"><img src="static/img/img_4.png" width="20px"></a>
+
   {% endfor %}
   <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a>
 </div>

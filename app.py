@@ -460,12 +460,13 @@ def admin_product(product_name):
 def delete_inventory(product_name):
     try:
         with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
             cur = con.cursor()
             cur.execute('SELECT product_image FROM inventory WHERE product_name = ?', (product_name,))
             images = cur.fetchall()
             for pic in images:
                 location = 'static/img/'
-                path = os.path.join(location, pic)
+                path = os.path.join(location, pic['product_image'])
                 os.remove(path)
             cur.execute("DELETE FROM inventory WHERE product_name = ?", (product_name,))
             cur.execute("DELETE FROM inventorysize WHERE product_name = ?", (product_name,))
@@ -543,7 +544,13 @@ def shop():
 
 @app.route('/tradein')
 def tradein():
-    return render_template('tradein.html')
+    with sqlite3.connect('database.db') as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute('SELECT rowid, * FROM inventory WHERE shop = ? GROUP BY product_name', ('Trade-In',))
+        rows = cur.fetchall()
+    con.close()
+    return render_template('tradein.html', rows=rows)
 
 
 @app.route('/tradeinno', methods=['GET', 'POST'])
@@ -608,9 +615,17 @@ def deletetradein(id):
     con.close()
     return redirect(url_for('forms'))
 
+
 @app.route('/eco')
 def eco():
-    return render_template('eco.html')
+    with sqlite3.connect('database.db') as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute('SELECT rowid, * FROM inventory WHERE shop = ? GROUP BY product_name', ('Eco',))
+        rows = cur.fetchall()
+    con.close()
+
+    return render_template('eco.html', rows=rows)
 
 
 @app.route('/wishlist')

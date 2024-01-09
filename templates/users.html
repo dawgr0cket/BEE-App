@@ -85,7 +85,7 @@ table {
       </thead>
       {% for row in rows %}
       <tr>
-        <td>{{ row['user_id'] }}</td>
+        <td>{{ loop.index }}</td>
         <td>{{ row['username'] }}</td>
         <td>{{ row['email'] }}</td>
         <td>{{ row['phone_no'] }}</td>
