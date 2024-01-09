@@ -304,21 +304,21 @@ def users():
     return render_template('users.html', rows=rows)
 
 
-@app.route('/deleteuser/<int:id>')
+@app.route('/delete_user/<int:user_id>')
 @login_required
-def deleteuser(id):
+def delete_user(user_id):
     con = sqlite3.connect('database.db')
     cur = con.cursor()
-    cur.execute('SELECT username FROM user WHERE rowid = ?', (id,))
-    user = cur.fetchall()
-    cur.execute('SELECT blog_pic FROM blog WHERE username = ?', (user,))
-    blog_pic = cur.fetchall()
-    for pic in blog_pic:
-        location = 'static/img/'
-        path = os.path.join(location, pic)
-        os.remove(path)
-    cur.execute("DELETE FROM blog WHERE username =?", (user,))
-    cur.execute("DELETE FROM user WHERE rowid = ?", (id,))
+    cur.execute('DELETE FROM user WHERE user_id = ?', (user_id,))
+    # user = cur.fetchall()
+    # cur.execute('SELECT blog_pic FROM blog WHERE username = ?', (user,))
+    # blog_pic = cur.fetchall()
+    # for pic in blog_pic:
+    #     location = 'static/img/'
+    #     path = os.path.join(location, pic)
+    #     os.remove(path)
+    # cur.execute("DELETE FROM blog WHERE username =?", (user,))
+    # cur.execute("DELETE FROM user WHERE rowid = ?", (id,))
     con.commit()
     con.close()
     return redirect(url_for('users'))
@@ -766,4 +766,4 @@ def checkout():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
