@@ -337,23 +337,23 @@ def forms():
     return render_template('forms.html', rows=rows)
 
 
-@app.route('/approveform/<int:form_id>')
+@app.route('/approveform/<form_id>')
 @login_required
 def approveform(form_id):
     with sqlite3.connect('database.db') as con:
         cur = con.cursor()
-        cur.execute('UPDATE tradeinform SET status = ? WHERE tradein_id = ?', (1, form_id))
+        cur.execute('UPDATE tradeinentries SET status = ? WHERE tradein_id = ?', (1, form_id))
         con.commit()
     con.close()
     return redirect(url_for('forms'))
 
 
-@app.route('/rejectform/<int:form_id>')
+@app.route('/rejectform/<form_id>')
 @login_required
 def rejectform(form_id):
     with sqlite3.connect('database.db') as con:
         cur = con.cursor()
-        cur.execute('UPDATE tradeinform SET status = ? WHERE tradein_id = ?', (0, form_id))
+        cur.execute('UPDATE tradeinentries SET status = ? WHERE tradein_id = ?', (0, form_id))
         con.commit()
     con.close()
     return redirect(url_for('forms'))
