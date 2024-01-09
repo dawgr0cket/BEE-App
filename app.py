@@ -220,16 +220,22 @@ def addblog():
 def editblog(id):
     form = BlogForm()
     poster = session['username']
+
     if request.method == 'POST':
+        # Retrieve updated values from form fields
         new_title = request.form['title']
         new_summary = request.form['summary']
         new_description = request.form['description']
+
         if request.files['blog_pic']:
+            # Save uploaded image in a specific folder
             blog_pic = request.files['blog_pic']
             pic_filename = secure_filename(blog_pic.filename)
             pic_name = str(uuid.uuid1()) + "_" + pic_filename
             saver = request.files['blog_pic']
             saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+
+            # Remove previous image from folder
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
                 cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
@@ -238,13 +244,15 @@ def editblog(id):
                     location = 'static/img/'
                     path = os.path.join(location, pic)
                     os.remove(path)
-                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
 
+                 # Update blog details in the database
+                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
                 con.commit()
 
             con.close()
             return redirect(url_for('blog'))
         else:
+            # Update blog details in the database without changing the image
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
                 cur.execute(
@@ -256,6 +264,7 @@ def editblog(id):
             con.close()
             return redirect(url_for('blog'))
     else:
+        # Retrieve blog details from the database
         con = sqlite3.connect('database.db')
         cur = con.cursor()
         cur.execute("SELECT * FROM blog WHERE rowid = ?", (id,))
@@ -269,17 +278,25 @@ def editblog(id):
 @app.route('/deleteblog/<int:id>')
 @login_required
 def deleteblog(id):
+    # Connect to database
     con = sqlite3.connect('database.db')
     cur = con.cursor()
+
+    # Retrieve the blog post's picture filename
     cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
     blog_pic = cur.fetchone()
+
+    # Delete the picture from the directory
     for pic in blog_pic:
         location = 'static/img/'
         path = os.path.join(location, pic)
         os.remove(path)
+
+    # Delete the blog post from the database
     cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
     con.commit()
     con.close()
+
     return redirect(url_for('blog'))
 
 
