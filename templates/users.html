@@ -92,7 +92,7 @@ table {
         <td>{{ row['dob'] }}</td>
         <td>{{ row['gender'] }}</td>
         <td></td>
-        <td><a href="/delete_user/{{ row['user_id'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
+        <td><a href="/delete_user/{{ row['user_id'] }}/{{ row['username'] }}"><img src="static/img/img_4.png" width="20px"></a></td>
       </tr>
       {% endfor %}
     </table>
