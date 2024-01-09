@@ -2,7 +2,7 @@ import os
 import uuid
 import base64
 import functools
-# from tradeinform import Tradeinform
+from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -359,7 +359,7 @@ def rejectform(form_id):
     return redirect(url_for('forms'))
 
 
-@app.route('/retrieveform/<int:id>/<user>')
+@app.route('/retrieveform/<id>/<user>')
 def retrieveform(id, user):
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
@@ -567,7 +567,8 @@ def tradein_form(id):
             tradein_pic = request.files.getlist('tradein_pic')
             descriptions = request.form.getlist('description')
             tradeinid = Tradeinform()
-            tradein_id = tradeinid.generate_uuid()
+            tradein_id = str(tradeinid.generate_uuid())
+            tradein_id = tradein_id[:8]
             cur.execute(
                 "INSERT INTO tradeinentries (username, no_of_clothes, tradein_id) VALUES (?,?,?)",
                 (username, id, tradein_id))
@@ -593,14 +594,16 @@ def tradein_form(id):
 @app.route('/deletetradein/<int:id>')
 def deletetradein(id):
     con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
     cur = con.cursor()
     cur.execute("SELECT tradein_pic FROM tradeinform WHERE tradein_id = ?", (id,))
-    tradein_pic =cur.fetchall()
+    tradein_pic = cur.fetchall()
     for picture in tradein_pic:
-        location ="static/img/"
+        location = "static/img/"
         path = os.path.join(location,picture)
         os.remove(path)
     cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+    cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
     con.commit()
     con.close()
     return redirect(url_for('forms'))

@@ -1,7 +1,10 @@
 import uuid
 
 
-class Tradeinform():
+tradein_count = 0
+
+
+class Tradeinform:
 
     def __init__(self):
         global tradein_count
