@@ -591,7 +591,7 @@ def tradein_form(id):
     return render_template('tradeinform.html', form=form)
 
 
-@app.route('/deletetradein/<int:id>')
+@app.route('/deletetradein/<id>')
 def deletetradein(id):
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
@@ -600,7 +600,7 @@ def deletetradein(id):
     tradein_pic = cur.fetchall()
     for picture in tradein_pic:
         location = "static/img/"
-        path = os.path.join(location,picture)
+        path = os.path.join(location, picture['tradein_pic'])
         os.remove(path)
     cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
     cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
