@@ -78,7 +78,8 @@ table {
         <b>{{ row[5] }}</b>
         <p>Condition:</p>
         {{ row[4] }}
-        <a href="/delete_vouchers/{{ rowid }}">delete row</a>
+        <a href="/delete_vouchers/{{ row[5] }}">delete voucher</a>
+        <a href="/update_vouchers/{{ row[5] }}">update voucher</a>
     </div>
     {% endfor %}
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+{% extends "base.html" %}
+{% block title %}B.E.E - Add Inventory{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+  margin: 0;
+}
+
+ul.admin {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 20%;
+  background-color: #948686;
+  position: sticky;
+  height: 100%;
+  overflow: auto;
+}
+
+.admin li a {
+  display: block;
+  color: #000;
+  padding: 50px 16px;
+  text-decoration: none;
+}
+
+.admin li a.active {
+  background-color: #302A2A;
+  color: white;
+}
+
+.admin li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+    </style>
+</head>
+<body>
+<ul class="admin" style="float: left;">
+  <li><a href="/admindashboard">Dashboard</a></li>
+  <li>
+    <a href="/orders">Orders</a>
+  </li>
+  <li><a href="/users">Users</a></li>
+  <li><a href="/forms">Forms</a></li>
+  <li><a class="active" href="/admin_inventory">Inventory</a></li>
+  <li><a href="/add_vouchers">Add Vouchers</a></li>
+  <li><a href="#about">About</a></li>
+</ul>
+    <h1 class="display-4">Add Vouchers</h1>
+    <hr>
+    <form method="POST" action="/create_vouchers" style="margin-left:25%;padding:30px 16px;height: 1000px;">
+        <br>
+
+            {{ form.voucher_name.label(class="form-label") }}
+            {{ form.voucher_name(class="form-control", value = voucher_name) }}
+
+            {{ form.discount.label(class="form-label") }}
+            {{ form.discount(class="form-control", value = discount) }}
+            <br>
+
+            {{ form.condition.label(class="form-label") }}
+            {{ form.condition(class="form-control") }}
+            <br>
+
+            <hr>
+            {{ form.submit(class="btn btn-secondary") }}
+    <a href="/admin_inventory">Discard Changes</a>
+
+    </form>
+{% endblock %}
+</body>
+</html>

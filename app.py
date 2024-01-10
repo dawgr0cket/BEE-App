@@ -643,6 +643,27 @@ def retrieve_vouchers(username):
     con.close()
     return render_template('retrieve_vouchers.html', rows=rows)
 
+
+@app.route('/delete_vouchers/<code>')
+@login_required
+def delete_vouchers(code):
+    try:
+        con = sqlite3.connect('database.db')
+        cur = con.cursor()
+        cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,)) # addvouchers is a table
+        con.commit()
+        con.close()
+    except:
+        msg = 'An Error has occurred!'
+        flash(msg)
+        return redirect(url_for('addvouchers'))
+    finally:
+        msg = f'Voucher has been deleted!'
+        flash(msg)
+        return redirect(url_for('addvouchers'))
+
+
+
 @app.route('/create_vouchers', methods=['GET', 'POST'])
 @login_required
 def create_vouchers():
@@ -659,11 +680,11 @@ def create_vouchers():
             discount = request.form['discount']
             condition = request.form['condition']
             with sqlite3.connect('database.db') as con:
-                def secure_rand(len=8):
-                    token = os.urandom(len)
-                    return base64.b64encode(token)
-
-                voucher_code = secure_rand()
+                # def secure_rand(len=8):
+                #     token = os.urandom(len)
+                #     return base64.b64encode(token)
+                code = str(uuid.uuid1())
+                voucher_code = code[:8]
                 cur = con.cursor()
                 cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
                             (username, voucher_name, discount, condition, voucher_code))
@@ -675,6 +696,99 @@ def create_vouchers():
             return redirect(url_for('addvouchers'))
     return render_template('create_vouchers.html', form=form, users=users)
 
+
+@app.route('/update_vouchers/<code_name>', methods=['GET', 'POST']) # <code_name> is to pass in parameter
+@login_required
+def update_vouchers(code_name):
+    form = VoucherForm()
+    if request.method == 'POST':#check if form is posted
+        title = request.form['voucher_name'] #Get information from form
+        value = request.form['discount']
+        if request.form['condition']:# If statement to check if data is passed in
+            condition = request.form['condition']
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE addvouchers SET title = ?, value = ?, condition = ? WHERE code = ?",
+                        (title, value, condition, code_name)) #Use from 705-707
+            except:
+                msg = 'Failed to change code'
+                flash(msg)
+                return redirect(url_for('addvouchers'))
+            finally:
+                return redirect(url_for('addvouchers'))
+        else:
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE addvouchers SET title = ?, value = ? WHERE code = ?",
+                        (title, value, code_name))
+            except:
+                msg = 'Failed to change code'
+                flash(msg)
+                return redirect(url_for('addvouchers'))
+            finally:
+                return redirect(url_for('addvouchers'))
+    with sqlite3.connect('database.db') as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute(
+            'SELECT title, value FROM addvouchers WHERE code = ?',
+            (code_name,)) #code_name is the passed in argument
+        rows = cur.fetchall()
+        for row in rows:
+            voucher_name = row[0]
+            discount = row[1]
+    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount)# form=form passes in into updatevoucher.html
+
+"""
+def edit_inventory(product_name):
+    form = ProductForm()
+    if request.method == 'POST':
+        new_product_name = request.form['product_name']
+        product_price = request.form['product_price']
+        product_quantity = request.form['product_quantity']
+        if request.form['product_description']:
+            product_description = request.form['product_description']
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE inventory SET product_name = ?, product_price = ?, product_description = ?, product_quantity = ? WHERE product_name = ?",
+                        (new_product_name, product_price, product_description, product_quantity, product_name))
+            except:
+                msg='Error in updating inventory'
+                flash(msg)
+                return redirect(url_for('admin_inventory'))
+            finally:
+                return redirect(url_for('admin_inventory'))
+        else:
+            try:
+                with sqlite3.connect('database.db') as con:
+                    cur = con.cursor()
+                    cur.execute(
+                        "UPDATE inventory SET product_name = ?, product_price = ?, product_quantity = ? WHERE product_name = ?",
+                        (new_product_name, product_price, product_quantity, product_name))
+            except:
+                msg='Error in updating inventory'
+                flash(msg)
+                return redirect(url_for('admin_inventory'))
+            finally:
+                return redirect(url_for('admin_inventory'))
+    else:
+        with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute('SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name', (product_name,))
+            rows = cur.fetchall()
+            for row in rows:
+                product_price = row[0]
+                product_description = row[1]
+                product_quantity = row[2]
+    return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
+"""
 # @app.route('/voucher/<username>/<int:voucher>')
 # @login_required
 # def voucher(username, voucher):
