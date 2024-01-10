@@ -131,8 +131,8 @@ class ProductForm(FlaskForm):
 class VoucherForm(FlaskForm):
     voucher_name = StringField("Voucher Name")
     discount = IntegerField('Discount')
-
-
+    condition = TextAreaField('Condition')
+    submit = SubmitField("Submit")
 
 @app.route('/')
 def home():
@@ -630,18 +630,51 @@ def addvouchers():
     return render_template('add_vouchers.html', rows = rows)
 
 
-@app.route('/retrieve_vouchers/{username}')
+@app.route('/retrieve_vouchers/<username>')
 @login_required
 def retrieve_vouchers(username):
-    con = sqlite3.connect('database.db')
-    con.row_factory = sqlite3.Row
+    with sqlite3.connect('database.db') as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
 
-    cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
-
-    rows = cur.fetchall()
+        rows = cur.fetchall()
+        con.commit()
     con.close()
     return render_template('retrieve_vouchers.html', rows=rows)
+
+@app.route('/create_vouchers', methods=['GET', 'POST'])
+@login_required
+def create_vouchers():
+    form = VoucherForm()
+    with sqlite3.connect('database.db') as con:
+        con.row_factory = sqlite3.Row
+
+        cur = con.cursor()
+        cur.execute("SELECT rowid, * FROM user")
+        users = cur.fetchall()
+        if request.method == 'POST':
+            username = request.form['user']
+            voucher_name = request.form['voucher_name']
+            discount = request.form['discount']
+            condition = request.form['condition']
+            with sqlite3.connect('database.db') as con:
+                def secure_rand(len=8):
+                    token = os.urandom(len)
+                    return base64.b64encode(token)
+
+                voucher_code = secure_rand()
+                cur = con.cursor()
+                cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
+                            (username, voucher_name, discount, condition, voucher_code))
+                con.commit()
+
+            con.close()
+            msg = f"Voucher of {voucher_name} has been added to {username}'s account"
+            flash(msg)
+            return redirect(url_for('addvouchers'))
+    return render_template('create_vouchers.html', form=form, users=users)
+
 # @app.route('/voucher/<username>/<int:voucher>')
 # @login_required
 # def voucher(username, voucher):

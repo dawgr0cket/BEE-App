@@ -71,13 +71,16 @@ table {
 </ul>
 
 
-{% for row in rows %}
-  <p>{{ row['user_id'] }}</p>
-  <p>{{ row['username'] }}</p>
-  <p>{{ row['email'] }}</p>
-  <p>{{ row['phone_no'] }}</p>
-  <p><a href="/retrieve_vouchers/{{ row['username'] }}">Retrieve</a></p>
-{% endfor %}
+    {% for row in rows %}
+    <div>
+        <h4>{{ row[2] }}</h4>
+        <h5>Code:</h5>
+        <b>{{ row[5] }}</b>
+        <p>Condition:</p>
+        {{ row[4] }}
+
+    </div>
+    {% endfor %}
 
 
 </body>
