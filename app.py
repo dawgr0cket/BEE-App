@@ -587,12 +587,11 @@ def edit_inventory(product_name):
     return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
 
 
+"""
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
 
-    
-"""
     voucher1 = ['$5 OFF DELIVERY', 5, 'Minimum purchase of $30']
     voucher2 = ['$10 DISCOUNT', 10, 'Minimum purchase of $40']
     voucher3 = ['$15 DISCOUNT', 15, 'Minimum purchase of $50']
