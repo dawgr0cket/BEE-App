@@ -8,12 +8,52 @@
 {% else %}
 <p>Guest's Cart</p>
 {% endif %}
+<script>
+let data = 1;
+
+//printing default value of data that is 0 in h2 tag
+document.getElementById("counting").innerText = data;
+
+//creation of increment function
+function increment() {
+    data = data + 1;
+    document.getElementById("counting").innerText = data;
+
+}
+//creation of decrement function
+function decrement() {
+
+    data = data - 1;
+    document.getElementById("counting").innerText = data;
+
+}
+
+</script>
+<table>
 {% for row in rows %}
+    <thead>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+    </thead>
     {% for l in row %}
-    <p>{{ l['product_name'] }}</p>
-    <img src="/static/img/{{ l['product_image'] }}" width="100px">
-    <p>{{ l['product_price'] }}</p>
+    <tr>
+        <td>
+            <p>{{ l['product_name'] }}</p>
+            <object><img src="/static/img/{{ l['product_image'] }}" width="100px"></object>
+        </td>
+        <td>
+            <p>{{ l['product_price'] }}</p>
+        </td>
+        <td>
+            <button onclick="increment()">+</button><h2 id="counting">1</h2><button onclick="decrement()">-</button>
+        </td>
+        <td>
+            <a href="/delete_cart/{{ l['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
+        </td>
+    </tr>
     {% endfor %}
 {% endfor %}
-
+</table>
+<button><a href="/create-checkout-session/{{ session['username'] }}">Pay Now</a></button>
 {% endblock %}

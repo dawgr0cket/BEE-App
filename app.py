@@ -29,8 +29,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
 
 
-@app.route('/create-checkout-session', methods=['POST'])
-def create_checkout_session():
+@app.route('/create-checkout-session/<username>', methods=['POST'])
+def create_checkout_session(username):
+    # with sqlite3.connect('database.db') as con:
+    #     cur = con.cursor()
+    #     cur.execute('SELECT rowid, product_name, product_price FROM cart WHERE username = ?', (username,))
+    #     rows = cur.fetchall()
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -852,6 +856,23 @@ def cart(username):
         return redirect(url_for('shop'))
     finally:
         return render_template('cart.html', products=products, rows=rows)
+
+
+@app.route('/delete_cart/<product_name>/<username>')
+@login_required
+def delete_cart(product_name, username):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('DELETE FROM cart WHERE username = ? AND product_name = ?', (username, product_name))
+            con.commit()
+        con.close()
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('cart', username=username))
+    finally:
+        return redirect(url_for('cart', username=username))
 
 
 @app.route('/checkout')
