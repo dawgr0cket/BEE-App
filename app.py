@@ -619,12 +619,29 @@ def addvouchers():
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
-    return render_template('add_voucher')
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM user")
+
+    rows = cur.fetchall()
+    con.close()
+    return render_template('add_vouchers.html', rows = rows)
 
 
-@app.route('/')
+@app.route('/retrieve_vouchers/{username}')
+@login_required
+def retrieve_vouchers(username):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
 
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
 
+    rows = cur.fetchall()
+    con.close()
+    return render_template('retrieve_vouchers.html', rows=rows)
 # @app.route('/voucher/<username>/<int:voucher>')
 # @login_required
 # def voucher(username, voucher):
