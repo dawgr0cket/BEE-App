@@ -741,7 +741,7 @@ def update_vouchers(code_name):
         for row in rows:
             voucher_name = row[0]
             discount = row[1]
-    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount)# form=form passes in into updatevoucher.html
+    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount, code_name=code_name)# form=form passes in into updatevoucher.html
 
 """
 def edit_inventory(product_name):

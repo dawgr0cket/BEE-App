@@ -55,7 +55,7 @@ ul.admin {
 </ul>
     <h1 class="display-4">Add Vouchers</h1>
     <hr>
-    <form method="POST" action="/create_vouchers" style="margin-left:25%;padding:30px 16px;height: 1000px;">
+    <form method="POST" action="/update_vouchers/{{ code_name }}" style="margin-left:25%;padding:30px 16px;height: 1000px;">
         <br>
 
             {{ form.voucher_name.label(class="form-label") }}
