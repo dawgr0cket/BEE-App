@@ -590,6 +590,9 @@ def edit_inventory(product_name):
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
+
+    
+"""
     voucher1 = ['$5 OFF DELIVERY', 5, 'Minimum purchase of $30']
     voucher2 = ['$10 DISCOUNT', 10, 'Minimum purchase of $40']
     voucher3 = ['$15 DISCOUNT', 15, 'Minimum purchase of $50']
@@ -602,7 +605,7 @@ def addvouchers():
     rows = cur.fetchall()
     con.close()
     return render_template('add_vouchers.html', voucher1=voucher1, voucher2=voucher2, voucher3=voucher3, rows=rows)
-
+"""
 
 @app.route('/voucher/<username>/<int:voucher>')
 @login_required
