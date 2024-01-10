@@ -80,7 +80,6 @@ table {
       <th>Phone Number</th>
       <th>Number Of Trade-Ins</th>
       <th>Number Of Orders</th>
-      <th>Give Vouchers</th>
       </thead>
       {% for row in rows %}
         <tr style="border-bottom: 1px solid black;">
@@ -90,13 +89,12 @@ table {
           <td>{{ row['phone_no'] }}</td>
           <td></td>
           <td></td>
-            <td><a href="/voucher/{{ row['username'] }}/0">{{ voucher1[0] }}</a><br><a href="/voucher/{{ row['username'] }}/1">{{ voucher2[0] }}</a><br><a href="/voucher/{{ row['username'] }}/2">{{ voucher3[0] }}</a>
+            <td><a href="/"></a>
             </td>
         </tr>
-
-
       {% endfor %}
     </table>
+      <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a>
 </div>
 
 </body>

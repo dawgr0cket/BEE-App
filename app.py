@@ -128,6 +128,12 @@ class ProductForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class VoucherForm(FlaskForm):
+    voucher_name = StringField("Voucher Name")
+    discount = IntegerField('Discount')
+
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -610,42 +616,53 @@ def addvouchers():
     return render_template('add_vouchers.html', voucher1=voucher1, voucher2=voucher2, voucher3=voucher3, rows=rows)
 """
 
-
-@app.route('/voucher/<username>/<int:voucher>')
+@app.route('/add_vouchers')
 @login_required
-def voucher(username, voucher):
-    vouchers = [('$5 OFF DELIVERY', 5, 'Minimum purchase of $30'), ('$10 DISCOUNT', 10, 'Minimum purchase of $40'),
-                ('$15 DISCOUNT', 15, 'Minimum purchase of $50')]
-
-    with sqlite3.connect('database.db') as con:
-        def secure_rand(len=8):
-            token = os.urandom(len)
-            return base64.b64encode(token)
-
-        voucher_code = secure_rand()
-        cur = con.cursor()
-        cur.execute("INSERT INTO validvouchers (code) VALUES (?)", (voucher_code,))
-        cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
-                    (username, vouchers[voucher][0], vouchers[voucher][1], vouchers[voucher][2], voucher_code))
-        con.commit()
-
-    con.close()
-    msg = f"Voucher of {vouchers[voucher][0]} has been added to {username}'s account"
-    flash(msg)
-    return redirect(url_for('addvouchers'))
+def addvouchers():
+    return render_template('add_voucher')
 
 
-@app.route('/view_vouchers/<username>')
-@login_required
-def view_vouchers(username):
-    con = sqlite3.connect('database.db')
-    con.row_factory = sqlite3.Row
+@app.route('/')
 
-    cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
-    rows = cur.fetchall()
-    con.close()
-    return render_template('view_vouchers.html', rows=rows)
+
+# @app.route('/voucher/<username>/<int:voucher>')
+# @login_required
+# def voucher(username, voucher):
+#     vouchers = [('$5 OFF DELIVERY', 5, 'Minimum purchase of $30'), ('$10 DISCOUNT', 10, 'Minimum purchase of $40'),
+#                 ('$15 DISCOUNT', 15, 'Minimum purchase of $50')]
+#
+#     with sqlite3.connect('database.db') as con:
+#         def secure_rand(len=8):
+#             token = os.urandom(len)
+#             return base64.b64encode(token)
+#
+#         voucher_code = secure_rand()
+#         cur = con.cursor()
+#         cur.execute("INSERT INTO validvouchers (code) VALUES (?)", (voucher_code,))
+#         cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
+#                     (username, vouchers[voucher][0], vouchers[voucher][1], vouchers[voucher][2], voucher_code))
+#         con.commit()
+#
+#     con.close()
+#     msg = f"Voucher of {vouchers[voucher][0]} has been added to {username}'s account"
+#     flash(msg)
+#     return redirect(url_for('addvouchers'))
+
+
+# @app.route('/view_vouchers/<username>')
+# @login_required
+# def view_vouchers(username):
+#     con = sqlite3.connect('database.db')
+#     con.row_factory = sqlite3.Row
+#
+#     cur = con.cursor()
+#     cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
+#     rows = cur.fetchall()
+#     con.close()
+#     return render_template('view_vouchers.html', rows=rows)
+
+
+
 
 
 @app.route('/shop')
