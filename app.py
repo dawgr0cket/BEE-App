@@ -35,7 +35,7 @@ def create_checkout_session():
         payment_method_types=['card'],
         line_items=[{
             'price_data': {
-                'currency': 'usd',
+                'currency': 'sgd',
                 'product_data': {
                     'name': 'T-shirt',
                 },
@@ -591,7 +591,12 @@ def edit_inventory(product_name):
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
+<<<<<<< HEAD
 
+=======
+    pass
+    """
+>>>>>>> c2d74457864d1d3891c3bbb171b6205e62ac8546
     voucher1 = ['$5 OFF DELIVERY', 5, 'Minimum purchase of $30']
     voucher2 = ['$10 DISCOUNT', 10, 'Minimum purchase of $40']
     voucher3 = ['$15 DISCOUNT', 15, 'Minimum purchase of $50']
@@ -811,9 +816,42 @@ def editprofilepic(username):
         return render_template('editpfp.html', form=form)
 
 
-@app.route('/cart')
-def cart():
-    return render_template('cart.html')
+@app.route('/add_to_cart/<product_name>/<username>')
+def add_to_cart(product_name, username):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute("INSERT INTO cart (username, product_name) VALUES (?, ?)", (username, product_name))
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('shop'))
+    finally:
+        msg = 'Added to cart'
+        flash(msg)
+        return redirect(url_for('eco'))
+
+
+@app.route('/cart/<username>')
+@login_required
+def cart(username):
+    try:
+        product_list = []
+        with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute("SELECT product_name FROM cart WHERE = ?", (username,))
+            products = cur.fetchall()
+            for product in products:
+                cur.execute("SELECT * FROM inventory WHERE product_name = ? GROUP BY product_name", (product,))
+                row = cur.fetchall()
+                product_list.append(row)
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('shop'))
+    finally:
+        return render_template('cart.html', product_list=product_list)
 
 
 @app.route('/checkout')
