@@ -55,6 +55,11 @@ def success():
     return render_template('success.html')
 
 
+@app.route('/cancel')
+def cancel():
+    return 'Payment canceled.'
+
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
