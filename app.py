@@ -2,6 +2,7 @@ import os
 import uuid
 import base64
 import functools
+import stripe
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -18,9 +19,40 @@ app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY') # add in secret key
+app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
+app.config['STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
+
+
 UPLOAD_FOLDER = 'static/img/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
+
+
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': 'T-shirt',
+                },
+                'unit_amount': 2000,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url=url_for('success', _external=True),
+        cancel_url=url_for('cancel', _external=True),
+    )
+    return {'id': session.id}
+
+
+@app.route('/success')
+def success():
+    return render_template('success.html')
 
 
 def get_db():
