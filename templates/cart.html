@@ -8,4 +8,12 @@
 {% else %}
 <p>Guest's Cart</p>
 {% endif %}
+{% for row in rows %}
+    {% for l in row %}
+    <p>{{ l['product_name'] }}</p>
+    <img src="/static/img/{{ l['product_image'] }}" width="100px">
+    <p>{{ l['product_price'] }}</p>
+    {% endfor %}
+{% endfor %}
+
 {% endblock %}

@@ -23,7 +23,7 @@ print("Connected to database successfully")
 # conn.execute('CREATE TABLE wishlist (username VARCHAR(255) NOT NULL, product_name STRING)')
 # conn.execute('CREATE TABLE inventorysize (product_name STRING, product_size STRING)')
 # conn.execute('CREATE TABLE inventorycolour (product_name STRING, product_colour STRING)')
-# conn.execute('DROP TABLE tradeinform')
+# conn.execute('DROP TABLE cart')
 print("Created table successfully!")
 
 conn.close()

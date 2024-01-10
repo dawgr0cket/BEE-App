@@ -88,7 +88,7 @@
                 <img class="img-fluid mb-1" src="static/img/{{ row['product_image'] }}">
                 <h5 class="p-name">{{ row['product_name'] }}</h5>
                 <h4 class="p-price">${{ row['product_price'] }}0</h4>
-                <button class="buy-btn" ><a href="/add_to_cart/{{ row['product_name'] }}/session['username']">Add To Cart</a></button>
+                <button class="buy-btn" ><a href="/add_to_cart/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
             </div>
             {% endfor %}
         </div>

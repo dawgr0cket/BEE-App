@@ -833,21 +833,25 @@ def add_to_cart(product_name, username):
 def cart(username):
     try:
         product_list = []
+        rows = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute("SELECT product_name FROM cart WHERE = ?", (username,))
+            cur.execute("SELECT product_name FROM cart WHERE username = ?", (username,))
             products = cur.fetchall()
             for product in products:
-                cur.execute("SELECT * FROM inventory WHERE product_name = ? GROUP BY product_name", (product,))
+                product_list.append(product['product_name'])
+
+            for l in product_list:
+                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ? GROUP BY product_name", (l,))
                 row = cur.fetchall()
-                product_list.append(row)
+                rows.append(row)
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', product_list=product_list)
+        return render_template('cart.html', products=products, rows=rows)
 
 
 @app.route('/checkout')
