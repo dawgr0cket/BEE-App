@@ -51,6 +51,9 @@
       max-height: 100%;
       vertical-align: middle;
     }
+    .dropdown:hover .dropdown-menu {
+    display: block;
+    }
   </style>
 </head>
 <body>
@@ -69,8 +72,12 @@
         <li class="nav-item">
           <a class="nav-link" href="/blog">Blog</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/shop">Shop</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Shop</a>
+         <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="/eco">Eco</a></li>
+          <li><a class="dropdown-item" href="/tradein">Trade In</a></li>
+         </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
