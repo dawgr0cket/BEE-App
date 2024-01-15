@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background-color: #FFFFEA;
+}
+.button {
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 8px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.rounded {
+    clip-path: circle();
+}
+.profilenav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 15%;
+    background-color: #948686;
+    position: sticky;
+    height: 100%;
+    overflow: auto;
+}
+
+.profilenav li a {
+  display: block;
+  color: #000;
+  padding: 40px 13px;
+  text-decoration: none;
+}
+
+.profilenav li a.active {
+  background-color: #302A2A;
+  color: white;
+}
+
+.profilenav li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+#tradein th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 50px;
+  padding-left: 10px;
+  text-align: left;
+  background-color: #F6BDBD;
+  color: white;
+}
+table, td {
+  padding-left: 10px;
+  border: 1px solid;
+}
+
+table {
+  width: 75%;
+  border-collapse: collapse;
+}
+</style>
+<ul class="profilenav" style="float: left;">
+    <li><a href="/orderhistory">Order History</a></li>
+    <li><a href="/usertradeins">Trade-In</a></li>
+    <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
+</ul>
+<div style="float: left;margin-left:5%;">
+    <h1 class="display-4">Trade-In Forms</h1>
+    <p>{{session['username']}}'s Trade-In Forms</p>
+    <table id="tradein">
+      <thead>
+      <th>Trade-In No.</th>
+      <th>Trade-In ID</th>
+      <th>No. Of Clothes</th>
+      <th>Status</th>
+      <th>Date Of Submission</th>
+      <th>View Form</th>
+      </thead>
+      {% for tradein in tradeins %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ tradein[6] }}</td>
+        <td>{{ tradein[2] }}</td>
+        {% if rows[loop.index - 1][0] is none %}
+            <td><p><b>Pending</b></p></td>
+        {% elif rows[loop.index - 1][0] == 0 %}
+            <td><p><b>Rejected</b></p></td>
+        {% else %}
+          <td><p><b>Approved</b></p></td>
+        {% endif %}
+
+        <td>{{ tradein[5] }}</td>
+
+        <td><a href="/user_retrieveform/{{ tradein[6] }}">View</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+</div>
+{% endblock %}

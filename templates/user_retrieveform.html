@@ -48,23 +48,41 @@ body {
   background-color: #555;
   color: white;
 }
+
+#tradein th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 50px;
+  padding-left: 10px;
+  text-align: left;
+  background-color: #F6BDBD;
+  color: white;
+}
+table, td {
+  padding-left: 10px;
+  border: 1px solid;
+}
+
+table {
+  width: 75%;
+  border-collapse: collapse;
+}
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/orderhistory">Order History</a></li>
     <li><a href="/view_tradeins/{{ session['username'] }}">Trade-In</a></li>
-    <li><a href="/view_vouchers/{{ session['username'] }}" class="active">Vouchers</a></li>
+    <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
 <div style="float: left;margin-left:5%;">
-    <h1 class="display-4">Vouchers</h1>
-    <p>{{session['username']}}'s Vouchers</p>
+    <h1 class="display-4">Trade-In Forms</h1>
+        <p>Trade-In ID: {{ rows[0][6] }}</p>
+        <p>No. Of Clothes: {{ rows[0][2] }}</p>
     {% for row in rows %}
-    <div>
-        <h4>{{ row[2] }}</h4>
-        <h5>Code:</h5>
-        <b>{{ row[5] }}</b>
-        <p>Condition:</p>
-        {{ row[4] }}
-    </div>
+      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
+                                                    width="70px"/>
+      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
+
     {% endfor %}
+
 </div>
 {% endblock %}

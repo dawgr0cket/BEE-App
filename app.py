@@ -1,6 +1,6 @@
 import os
 import uuid
-import base64
+import shortuuid
 import functools
 import stripe
 from tradeinform import Tradeinform
@@ -641,7 +641,7 @@ def retrieve_vouchers(username):
         rows = cur.fetchall()
         con.commit()
     con.close()
-    return render_template('retrieve_vouchers.html', rows=rows)
+    return render_template('retrieve_vouchers.html', rows=rows, username=username)
 
 
 @app.route('/delete_vouchers/<code>')
@@ -683,8 +683,7 @@ def create_vouchers():
                 # def secure_rand(len=8):
                 #     token = os.urandom(len)
                 #     return base64.b64encode(token)
-                code = str(uuid.uuid1())
-                voucher_code = code[:8]
+                voucher_code = str(shortuuid.uuid())
                 cur = con.cursor()
                 cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
                             (username, voucher_name, discount, condition, voucher_code))
@@ -813,19 +812,47 @@ def edit_inventory(product_name):
 #     return redirect(url_for('addvouchers'))
 
 
-# @app.route('/view_vouchers/<username>')
-# @login_required
-# def view_vouchers(username):
-#     con = sqlite3.connect('database.db')
-#     con.row_factory = sqlite3.Row
-#
-#     cur = con.cursor()
-#     cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
-#     rows = cur.fetchall()
-#     con.close()
-#     return render_template('view_vouchers.html', rows=rows)
+@app.route('/view_vouchers/<username>')
+@login_required
+def view_vouchers(username):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
+    rows = cur.fetchall()
+    con.close()
+    return render_template('view_vouchers.html', rows=rows)
 
 
+@app.route('/view_tradeins/<username>')
+@login_required
+def view_tradeins(username):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+    cur.execute("SELECT status FROM tradeinentries WHERE username = ?", (username,))
+    rows = cur.fetchall()
+    cur.execute("SELECT rowid, * FROM tradeinform WHERE username = ? GROUP BY tradein_id", (username,))
+    tradeins = cur.fetchall()
+    con.close()
+    return render_template('view_tradeins.html', rows=rows, tradeins=tradeins)
+
+
+@app.route('/user_retrieveform/<tradein_id>')
+@login_required
+def user_retrieveform(tradein_id):
+    con = sqlite3.connect('database.db')
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute('SELECT rowid, * FROM tradeinform WHERE tradein_id = ?', (tradein_id,))
+    rows = cur.fetchall()
+    cur.execute('SELECT rowid, * FROM tradeinform WHERE tradein_id = ?', (tradein_id,))
+    rows = cur.fetchall()
+
+    con.close()
+    return render_template('user_retrieveform.html', rows=rows)
 
 
 

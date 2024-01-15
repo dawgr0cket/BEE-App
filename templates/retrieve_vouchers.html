@@ -69,19 +69,23 @@ table {
   <li><a class="active" href="/add_vouchers">Add Vouchers</a></li>
   <li><a href="#about">About</a></li>
 </ul>
-
-
-    {% for row in rows %}
-    <div>
-        <h4>{{ row[2] }}</h4>
-        <h5>Code:</h5>
-        <b>{{ row[5] }}</b>
-        <p>Condition:</p>
-        {{ row[4] }}
-        <a href="/delete_vouchers/{{ row[5] }}">delete voucher</a>
-        <a href="/update_vouchers/{{ row[5] }}">update voucher</a>
-    </div>
-    {% endfor %}
+    <h1 class="display-4">Vouchers</h1>
+    <p>{{ username }}'s Vouchers</p>
+    {% if rows is defined and texts|length == 0 %}
+        <h4> No vouchers yet!</h4>
+    {% else %}
+        {% for row in rows %}
+        <div>
+            <h4>{{ row[2] }}</h4>
+            <h5>Code:</h5>
+            <b>{{ row[5] }}</b>
+            <p>Condition:</p>
+            {{ row[4] }}
+            <a href="/delete_vouchers/{{ row[5] }}">delete voucher</a>
+            <a href="/update_vouchers/{{ row[5] }}">update voucher</a>
+        </div>
+        {% endfor %}
+    {% endif %}
 
 
 </body>
