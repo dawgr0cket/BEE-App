@@ -1,0 +1,30 @@
+{"intents": [
+  {"tag":  "greetings",
+  "patterns": ["hello", "hey", "hi", "what's up?"],
+  "responses": ["Hello!", "Hi!", "Hey!", "What can I do for you!"]
+  },
+  {"tag": "goodbye",
+  "patterns": ["see you soon", "see you next time", "goodbye", "bye"],
+  "responses": ["Goodbye!", "See you soon!", "See you next time!"]
+  },
+  {"tag": "shop",
+  "patterns": ["what do you sell?", "recommended products", "what are your products?"],
+  "responses": ["BEE is a clothing shop focusing on promoting sustainability. We sell a variety of products such as shirts, pants, dresses, shoes. We also take in well-loved clothes looking for a second home!"]
+  },
+  {"tag": "shipping",
+  "patterns": ["where do you ship", "what are the shipping rates", "how fast is shipping"],
+  "responses": ["We only ship within Singapore with a flat rate of $5. Purchases can be expected to receive within 3 working days."]
+  },
+  {"tag": "blog",
+  "patterns": ["how to add blogs", "how to create a blog"],
+  "responses": ["Ensure that you have signed in to your account. From the top navigation bar, click on 'blog', find 'add blog', and start writing!"]
+  },
+  {"tag": "trade-in",
+  "patterns": ["how to trade in clothing", "how does the trade-in works"],
+  "responses": ["Start by filling in our trade-in form on our website. Our staffs will review your clothes and if it is approved, you can send it to us immediately. Once we received your clothes, shopping vouchers will be gifted straight into your account."]
+  },
+  {"tag": "hours",
+  "patterns": ["what are the opening hours of your shop", "where is your shop located", "operating hours"],
+  "responses": ["Unfortunately, we do not have a physical store. :("]
+  }
+]}
