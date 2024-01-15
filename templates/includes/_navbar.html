@@ -7,9 +7,32 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <style>
+    /* Add the following styles for the mobile navbar */
+   @media (max-width: 767px) {
+    .navbar-toggler {
+      background-color: #CCCCFF;
+      border-color: #000000;
+    }
+    .navbar-toggler-icon {
+      background-color: #CCCCFF;
+    }
+    .navbar-nav {
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar-nav li {
+      text-align: center;
+      margin: 5px 0;
+    }
+    .navbar-brand,
+    .navbar-brand p {
+      text-align: center;
+    }
+  }
+
     .navbar-nav {
       width: 100%;
-      display:flex;
+      display: flex;
       align-items: center;
       justify-content: space-around;
       margin-right: 500px;
@@ -24,12 +47,12 @@
     .navbar-brand img {
       margin-right: 15px;
     }
-    .bg{
-      background-color:#F1DDDD !important;
+    .bg {
+      background-color: #F1DDDD !important;
     }
     .navbar-dark .navbar-nav .nav-link {
-      color: #000000 !important; /* Change this to your desired color */
-      font-size: 20px
+      color: #000000 !important;
+      font-size: 20px;
     }
     .navbar-brand p {
       color: black;
@@ -52,7 +75,7 @@
       vertical-align: middle;
     }
     .dropdown:hover .dropdown-menu {
-    display: block;
+      display: block;
     }
   </style>
 </head>
@@ -64,6 +87,10 @@
       <img src="static/img/img.png" alt="" width="50px">
       <p>B.E.E</p>
     </a>
+    <!-- Add the responsive class for toggling the navigation bar on smaller screens -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -74,10 +101,10 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Shop</a>
-         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/eco">Eco</a></li>
-          <li><a class="dropdown-item" href="/tradein">Trade In</a></li>
-         </ul>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/eco">Eco</a></li>
+            <li><a class="dropdown-item" href="/tradein">Trade In</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
@@ -101,13 +128,13 @@
         {% if session['profile_pic'] %}
         <a href="/profile">
           <div class="item">
-          <img src="/static/img/{{ session['profile_pic'] }}" width="50px" class="rounded"/>
+            <img src="/static/img/{{ session['profile_pic'] }}" width="50px" class="rounded"/>
           </div>
         </a>
         {% else %}
         <a href="/profile">
           <div class="item">
-          <img src="static/img/img_6.png" width="50px" class="rounded">
+            <img src="static/img/img_6.png" width="50px" class="rounded">
           </div>
         </a>
         {% endif %}
