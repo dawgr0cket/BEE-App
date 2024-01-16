@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stripe Payment</title>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div id="payment-form">
+      <input type="text" id="cardholder-name" placeholder="Cardholder Name">
+      <div id="card-element"></div>
+      <input type="text" id="address" placeholder="Address">
+      <button id="pay-button">Pay</button>
+    </div>
+
+    <script>
+      // Set your Stripe publishable key
+      var stripe = Stripe('pk_test_51OXo7EE7eSiwC8HINmXeqKjUfYXu9wrOW0jJ1JwFjqyUfkqSdofrl1c41rFxfsXQDJp1xOozWfAptREuraUHklvx00wl8Zg5xl');
+      var elements = stripe.elements();
+
+      var cardElement = elements.create('card');
+      cardElement.mount('#card-element');
+
+      var form = document.getElementById('payment-form');
+      var payButton = document.getElementById('pay-button');
+
+      payButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        payButton.disabled = true;
+
+        stripe.confirmCardPayment("{{ client_secret }}", {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: document.getElementById('cardholder-name').value,
+              address: {
+                line1: document.getElementById('address').value
+              }
+            }
+          }
+        }).then(function(result) {
+          if (result.error) {
+            // Handle error
+          } else {
+            // Payment succeeded
+            // You can perform additional actions here, such as showing a success message
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
