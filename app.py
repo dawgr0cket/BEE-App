@@ -13,7 +13,8 @@ from werkzeug.utils import secure_filename
 from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, TextAreaField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-
+# from flask import Flask, render_template, request, jsonify
+# from chatbot import get_response
 
 app = Flask(__name__)
 db = SQLAlchemy()
@@ -1086,6 +1087,19 @@ def delete_cart(product_name, username):
 @app.route('/checkout')
 def checkout():
     return render_template('checkout.html')
+
+
+# @app.get("/")
+# def index_get():
+#     return render_template("chatbot.html")
+#
+#
+# @app.post("/predict")
+# def predict():
+#     text = request.get_json().get("message")
+#     response = get_response(text)
+#     message = {"answer": response}
+#     return jsonify(message)
 
 
 if __name__ == '__main__':
