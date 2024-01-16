@@ -1,27 +1,40 @@
 import os
+import urllib.parse
 import uuid
+import ast
 import shortuuid
 import functools
 import stripe
 from tradeinform import Tradeinform
-from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, TextAreaField
+from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, \
+    TextAreaField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-
 
 app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
-stripe.api_key = os.environ.get('sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF') # add in secret key
-app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
-app.config['STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
+# stripe.api_key = os.environ.get(
+#     'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF')  # add in secret key
+# app.config[
+#     'STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
+# app.config[
+#     'STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
+stripe.api_key = os.environ.get(
+    'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX')  # add in secret key
+app.config[
+    'STRIPE_PUBLIC_KEY'] = 'pk_test_51OXo7EE7eSiwC8HINmXeqKjUfYXu9wrOW0jJ1JwFjqyUfkqSdofrl1c41rFxfsXQDJp1xOozWfAptREuraUHklvx00wl8Zg5xl'
+app.config[
+    'STRIPE_SECRET_KEY'] = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
+endpoint_secret = 'whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac'
+
 
 
 UPLOAD_FOLDER = 'static/img/'
@@ -29,39 +42,91 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
 
 
-@app.route('/create-checkout-session/<username>', methods=['POST'])
-def create_checkout_session(username):
-    # with sqlite3.connect('database.db') as con:
-    #     cur = con.cursor()
-    #     cur.execute('SELECT rowid, product_name, product_price FROM cart WHERE username = ?', (username,))
-    #     rows = cur.fetchall()
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{
+# @app.route('/create-checkout-session/<rows>', methods=['POST'])
+def create_stripe_checkout_session(lists):
+    stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
+    decoded_url = urllib.parse.unquote(lists)  # Decode the URL
+    start_index = decoded_url.find("[")  # Find the start index of the list
+    end_index = decoded_url.find("]") + 1  # Find the end index of the list
+    list_str = decoded_url[start_index:end_index]  # Extract the list string
+    lists = ast.literal_eval(list_str)
+    line_items = []
+    for row in lists:
+        item = {
             'price_data': {
                 'currency': 'sgd',
-                'product_data': {
-                    'name': 'T-shirt',
-                },
-                'unit_amount': 2000,
+                'unit_amount': int(row['price'] * 100),
+                "product_data": {
+                    "name": row['name'],
+                    "images": ["static/img/" + row['image']],
+                }
             },
-            'quantity': 1,
-        }],
+            'quantity': 1
+        }
+        line_items.append(item)
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
         mode='payment',
-        success_url=url_for('success', _external=True),
-        cancel_url=url_for('cancel', _external=True),
+        success_url='http://localhost:5000/success',
+        cancel_url='http://localhost:5000/cancel'
     )
-    return {'id': session.id}
+    return session
+
+
+@app.route('/checkout/<lists>')
+def checkout(lists):
+    session_id = create_stripe_checkout_session(lists)
+    return redirect(session_id.url, code=303)
+    # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
+    # return render_template('checkout.html')
+
+
+
+@app.route('/payment')
+def payment():
+    return render_template('payment.html')
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+    sig_header = request.headers['whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        raise e
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+      payment_intent = event['data']['object']
+    # ... handle other event types
+    else:
+      print('Unhandled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
 
 
 @app.route('/success')
 def success():
-    return render_template('success.html')
+    msg = 'Successful Purchase'
+    flash(msg)
+    return redirect(url_for('home'))
 
 
 @app.route('/cancel')
 def cancel():
-    return 'Payment canceled.'
+    msg = 'Payment canceled.'
+    flash(msg)
+    return redirect(url_for('home'))
 
 
 def get_db():
@@ -134,6 +199,7 @@ class VoucherForm(FlaskForm):
     condition = TextAreaField('Condition')
     submit = SubmitField("Submit")
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -194,7 +260,8 @@ def signup():
             error = 'Confirm Password has to be the same.'
         if error is None:
             try:
-                db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)", (username, email, generate_password_hash(password)))
+                db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
+                           (username, email, generate_password_hash(password)))
                 db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered."
@@ -250,7 +317,8 @@ def addblog():
         saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
         with sqlite3.connect('database.db') as con:
             cur = con.cursor()
-            cur.execute("INSERT INTO blog (username, title, summary, blog_pic, description) VALUES (?,?,?,?,?)", (poster, title, summary, pic_name, description))
+            cur.execute("INSERT INTO blog (username, title, summary, blog_pic, description) VALUES (?,?,?,?,?)",
+                        (poster, title, summary, pic_name, description))
 
             con.commit()
 
@@ -292,8 +360,10 @@ def editblog(id):
                     path = os.path.join(location, pic)
                     os.remove(path)
 
-                 # Update blog details in the database
-                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
+                # Update blog details in the database
+                cur.execute(
+                    "UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?",
+                    (poster, new_title, new_summary, pic_name, new_description, id))
                 con.commit()
 
             con.close()
@@ -481,10 +551,12 @@ def add_inventory():
                             (shop, product_name, product_price, pic_name, product_description, product_quantity))
                         con.commit()
                 for size in product_size:
-                    cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)', (product_name, size))
+                    cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)',
+                                (product_name, size))
                     con.commit()
                 for colour in product_colour:
-                    cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)', (product_name, colour))
+                    cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)',
+                                (product_name, colour))
                     con.commit()
             con.close()
         except:
@@ -566,7 +638,7 @@ def edit_inventory(product_name):
                         "UPDATE inventory SET product_name = ?, product_price = ?, product_description = ?, product_quantity = ? WHERE product_name = ?",
                         (new_product_name, product_price, product_description, product_quantity, product_name))
             except:
-                msg='Error in updating inventory'
+                msg = 'Error in updating inventory'
                 flash(msg)
                 return redirect(url_for('admin_inventory'))
             finally:
@@ -579,7 +651,7 @@ def edit_inventory(product_name):
                         "UPDATE inventory SET product_name = ?, product_price = ?, product_quantity = ? WHERE product_name = ?",
                         (new_product_name, product_price, product_quantity, product_name))
             except:
-                msg='Error in updating inventory'
+                msg = 'Error in updating inventory'
                 flash(msg)
                 return redirect(url_for('admin_inventory'))
             finally:
@@ -588,13 +660,17 @@ def edit_inventory(product_name):
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute('SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name', (product_name,))
+            cur.execute(
+                'SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name',
+                (product_name,))
             rows = cur.fetchall()
             for row in rows:
                 product_price = row[0]
                 product_description = row[1]
                 product_quantity = row[2]
-    return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
+    return render_template('edit_inventory.html', form=form, product_price=product_price,
+                           product_description=product_description, product_quantity=product_quantity,
+                           product_name=product_name)
 
 
 """
@@ -616,6 +692,7 @@ def addvouchers():
     return render_template('add_vouchers.html', voucher1=voucher1, voucher2=voucher2, voucher3=voucher3, rows=rows)
 """
 
+
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
@@ -627,7 +704,7 @@ def addvouchers():
 
     rows = cur.fetchall()
     con.close()
-    return render_template('add_vouchers.html', rows = rows)
+    return render_template('add_vouchers.html', rows=rows)
 
 
 @app.route('/retrieve_vouchers/<username>')
@@ -650,7 +727,7 @@ def delete_vouchers(code):
     try:
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,)) # addvouchers is a table
+        cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,))  # addvouchers is a table
         con.commit()
         con.close()
     except:
@@ -661,7 +738,6 @@ def delete_vouchers(code):
         msg = f'Voucher has been deleted!'
         flash(msg)
         return redirect(url_for('addvouchers'))
-
 
 
 @app.route('/create_vouchers', methods=['GET', 'POST'])
@@ -696,21 +772,21 @@ def create_vouchers():
     return render_template('create_vouchers.html', form=form, users=users)
 
 
-@app.route('/update_vouchers/<code_name>', methods=['GET', 'POST']) # <code_name> is to pass in parameter
+@app.route('/update_vouchers/<code_name>', methods=['GET', 'POST'])  # <code_name> is to pass in parameter
 @login_required
 def update_vouchers(code_name):
     form = VoucherForm()
-    if request.method == 'POST':#check if form is posted
-        title = request.form['voucher_name'] #Get information from form
+    if request.method == 'POST':  # check if form is posted
+        title = request.form['voucher_name']  # Get information from form
         value = request.form['discount']
-        if request.form['condition']:# If statement to check if data is passed in
+        if request.form['condition']:  # If statement to check if data is passed in
             condition = request.form['condition']
             try:
                 with sqlite3.connect('database.db') as con:
                     cur = con.cursor()
                     cur.execute(
                         "UPDATE addvouchers SET title = ?, value = ?, condition = ? WHERE code = ?",
-                        (title, value, condition, code_name)) #Use from 705-707
+                        (title, value, condition, code_name))  # Use from 705-707
             except:
                 msg = 'Failed to change code'
                 flash(msg)
@@ -735,12 +811,14 @@ def update_vouchers(code_name):
         cur = con.cursor()
         cur.execute(
             'SELECT title, value FROM addvouchers WHERE code = ?',
-            (code_name,)) #code_name is the passed in argument
+            (code_name,))  # code_name is the passed in argument
         rows = cur.fetchall()
         for row in rows:
             voucher_name = row[0]
             discount = row[1]
-    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount, code_name=code_name)# form=form passes in into updatevoucher.html
+    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount,
+                           code_name=code_name)  # form=form passes in into updatevoucher.html
+
 
 """
 def edit_inventory(product_name):
@@ -788,6 +866,8 @@ def edit_inventory(product_name):
                 product_quantity = row[2]
     return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
 """
+
+
 # @app.route('/voucher/<username>/<int:voucher>')
 # @login_required
 # def voucher(username, voucher):
@@ -855,7 +935,6 @@ def user_retrieveform(tradein_id):
     return render_template('user_retrieveform.html', rows=rows)
 
 
-
 @app.route('/shop')
 def shop():
     return render_template('shop.html')
@@ -908,7 +987,9 @@ def tradein_form(id):
                 saver = tradein_pic[i]
                 saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
 
-                cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
+                cur.execute(
+                    "INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)",
+                    (username, id, pic_name, description, tradein_id))
                 con.commit()
 
         con.close()
@@ -1037,19 +1118,21 @@ def add_to_cart(product_name, username):
     finally:
         msg = 'Added to cart'
         flash(msg)
-        return redirect(url_for('eco'))
+        return redirect(url_for('shop'))
 
 
 @app.route('/cart/<username>')
 @login_required
 def cart(username):
     try:
+        lists = []
         product_list = []
         rows = []
+        t = 0
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute("SELECT product_name FROM cart WHERE username = ?", (username,))
+            cur.execute("SELECT * FROM cart WHERE username = ?", (username,))
             products = cur.fetchall()
             for product in products:
                 product_list.append(product['product_name'])
@@ -1058,12 +1141,23 @@ def cart(username):
                 cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ? GROUP BY product_name", (l,))
                 row = cur.fetchall()
                 rows.append(row)
+
+            for i in rows:
+                list_1 = {
+                        'name': i[t][1],
+                        'price': i[t][2],
+                        'image': i[t][3],
+                }
+
+                lists.append(list_1)
+                t += 1
+
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', products=products, rows=rows)
+        return render_template('cart.html', rows=rows, lists=lists)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1083,9 +1177,12 @@ def delete_cart(product_name, username):
         return redirect(url_for('cart', username=username))
 
 
-@app.route('/checkout')
-def checkout():
-    return render_template('checkout.html')
+# @app.route('/checkout/<lists>')
+# def checkout(lists):
+#     session_id = create_stripe_checkout_session(lists)
+#     return redirect(session_id..url, code=303)
+#     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
+#     # return render_template('checkout.html')
 
 
 if __name__ == '__main__':
