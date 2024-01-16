@@ -1,10 +1,12 @@
+import ast
 import os
+import urllib.parse
 import uuid
 import shortuuid
 import functools
 import stripe
 from tradeinform import Tradeinform
-from flask import Flask, render_template, request, redirect, url_for, Blueprint, flash, g, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
@@ -20,9 +22,20 @@ app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
-stripe.api_key = os.environ.get('sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF') # add in secret key
-app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
-app.config['STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
+
+# stripe.api_key = os.environ.get(
+#     'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF')  # add in secret key
+# app.config[
+#     'STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
+# app.config[
+#     'STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
+stripe.api_key = os.environ.get(
+    'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX')  # add in secret key
+app.config[
+    'STRIPE_PUBLIC_KEY'] = 'pk_test_51OXo7EE7eSiwC8HINmXeqKjUfYXu9wrOW0jJ1JwFjqyUfkqSdofrl1c41rFxfsXQDJp1xOozWfAptREuraUHklvx00wl8Zg5xl'
+app.config[
+    'STRIPE_SECRET_KEY'] = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
+endpoint_secret = 'whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac'
 
 
 UPLOAD_FOLDER = 'static/img/'
@@ -30,29 +43,80 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
 
 
-@app.route('/create-checkout-session/<username>', methods=['POST'])
-def create_checkout_session(username):
-    # with sqlite3.connect('database.db') as con:
-    #     cur = con.cursor()
-    #     cur.execute('SELECT rowid, product_name, product_price FROM cart WHERE username = ?', (username,))
-    #     rows = cur.fetchall()
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{
+# @app.route('/create-checkout-session/<rows>', methods=['POST'])
+def create_stripe_checkout_session(lists):
+    stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
+    decoded_url = urllib.parse.unquote(lists)  # Decode the URL
+    start_index = decoded_url.find("[")  # Find the start index of the list
+    end_index = decoded_url.find("]") + 1  # Find the end index of the list
+    list_str = decoded_url[start_index:end_index]  # Extract the list string
+    lists = ast.literal_eval(list_str)
+    line_items = []
+    for row in lists:
+        item = {
             'price_data': {
                 'currency': 'sgd',
-                'product_data': {
-                    'name': 'T-shirt',
-                },
-                'unit_amount': 2000,
+                'unit_amount': int(row['price'] * 100),
+                "product_data": {
+                    "name": row['name'],
+                    "images": ["static/img/" + row['image']]
+                }
             },
-            'quantity': 1,
-        }],
+            'quantity': 1
+        }
+        line_items.append(item)
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
         mode='payment',
-        success_url=url_for('success', _external=True),
-        cancel_url=url_for('cancel', _external=True),
+        success_url='http://localhost:5000/success',
+        cancel_url='http://localhost:5000/cancel',
+        billing_address_collection='required',
+        shipping_address_collection={
+            'allowed_countries': ['SG'],
+        }
     )
-    return {'id': session.id}
+    return session
+
+
+@app.route('/checkout/<lists>')
+def checkout(lists):
+    session_id = create_stripe_checkout_session(lists)
+    return redirect(session_id.url, code=303)
+    # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
+    # return render_template('checkout.html')
+
+
+@app.route('/payment')
+def payment():
+    return render_template('payment.html')
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    event = None
+    payload = request.data
+    sig_header = request.headers['whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        raise e
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        raise e
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+    # ... handle other event types
+    else:
+        print('Unhandled event type {}'.format(event['type']))
+
+    return jsonify(success=True)
 
 
 @app.route('/success')
@@ -461,32 +525,32 @@ def add_inventory():
             shop = request.form['shop']
             product_name = request.form['product_name']
             product_price = request.form['product_price']
-            product_image = request.files.getlist('product_image')
+            product_image = request.files['product_image']
             product_description = request.form['product_description']
             product_size = request.form.getlist('product_size')
-            product_colour = request.form.getlist('product_colour')
             product_quantity = request.form['product_quantity']
+
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                for image in product_image:
-                    pic = image
-
-                    pic_filename = secure_filename(pic.filename)
-                    if pic_filename != '':
-                        pic_name = str(uuid.uuid1()) + "_" + pic_filename
-                        saver = image
-                        saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-
-                        cur.execute(
-                            "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)",
-                            (shop, product_name, product_price, pic_name, product_description, product_quantity))
-                        con.commit()
                 for size in product_size:
                     cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)', (product_name, size))
                     con.commit()
-                for colour in product_colour:
-                    cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)', (product_name, colour))
+
+                pic_filename = secure_filename(product_image.filename)
+                if pic_filename != '':
+                    pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                    saver = product_image
+                    saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+
+                    cur.execute(
+                        "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)",
+                        (shop, product_name, product_price, pic_name, product_description, product_quantity))
                     con.commit()
+
+                # for colour in product_colour:
+                #     cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)',
+                #                 (product_name, colour))
+                #     con.commit()
             con.close()
         except:
             msg = 'An error has occurred, please try again.'
@@ -509,8 +573,6 @@ def admin_product(product_name):
             rows = cur.fetchall()
             cur.execute('SELECT rowid, * FROM inventorysize WHERE product_name = ?', (product_name,))
             sizes = cur.fetchall()
-            cur.execute('SELECT rowid, * FROM inventorycolour WHERE product_name = ?', (product_name,))
-            colours = cur.fetchall()
             cur.execute('SELECT rowid, * FROM reviews WHERE product_name = ?', (product_name,))
             reviews = cur.fetchall()
         con.close()
@@ -519,7 +581,7 @@ def admin_product(product_name):
         flash(msg)
         return redirect(url_for('admin_inventory'))
     finally:
-        return render_template('admin_product.html', rows=rows, sizes=sizes, colours=colours, reviews=reviews)
+        return render_template('admin_product.html', rows=rows, sizes=sizes, reviews=reviews)
 
 
 @app.route('/delete_inventory/<product_name>')
@@ -537,7 +599,6 @@ def delete_inventory(product_name):
                 os.remove(path)
             cur.execute("DELETE FROM inventory WHERE product_name = ?", (product_name,))
             cur.execute("DELETE FROM inventorysize WHERE product_name = ?", (product_name,))
-            cur.execute("DELETE FROM inventorycolour WHERE product_name = ?", (product_name,))
             cur.execute("DELETE FROM wishlist WHERE product_name = ?", (product_name,))
             cur.execute("DELETE FROM reviews WHERE product_name = ?", (product_name,))
             con.commit()
@@ -1047,6 +1108,7 @@ def cart(username):
     try:
         product_list = []
         rows = []
+        lists = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1059,12 +1121,21 @@ def cart(username):
                 cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ? GROUP BY product_name", (l,))
                 row = cur.fetchall()
                 rows.append(row)
+
+            for i in rows:
+                list_1 = {
+                    'name': i[0][1],
+                    'price': i[0][2],
+                    'image': i[0][3],
+                }
+
+                lists.append(list_1)
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', products=products, rows=rows)
+        return render_template('cart.html', products=products, rows=rows, lists=lists)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1082,11 +1153,6 @@ def delete_cart(product_name, username):
         return redirect(url_for('cart', username=username))
     finally:
         return redirect(url_for('cart', username=username))
-
-
-@app.route('/checkout')
-def checkout():
-    return render_template('checkout.html')
 
 
 # @app.get("/")
