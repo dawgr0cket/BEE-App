@@ -1,7 +1,58 @@
-{% extends "base.html" %}
-{% block title %}B.E.E - About Us{% endblock %}
+<!DOCTYPE html>
+<html>
+{% extends "base.html" %} {% block title %}B.E.E - Blog{% endblock %} {% block content %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+   *{
+    margin:0px;
+    padding:0px;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    .header {
+            background-image: url('static/img/bee.jpg');
+            background-size: cover;
+            height: 300px;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
 
-{% block content %}
-<h1 class="display-4">About Us</h1>
-<p>Get Started!</p>
-{% endblock %}}
+        .h1{
+        padding 20px;
+        }
+
+        .Goals {
+            display: flex;
+            justify-content: space-around;
+            padding: 50px 0;
+        }
+
+        .goal {
+            flex-basis: 30%;
+            text-align: center;
+        }
+</style>
+<body>
+<div class="header">
+        <h1>Better. Eco-friendly. Efficiency.</h1>
+    </div>
+    <h1 align="center">Our Goals</h1>
+    <div class="Goals">
+        <div class="goal">
+            <h2>Raise Awareness</h2>
+            <p>We aim to educate and inform our visitors about the importance of sustainability. Through our insightful blog posts and informative content on our “About Us” page, we provide valuable knowledge about sustainable practices. Our goal is to inspire you to make more environmentally friendly choices in your daily life.</p>
+        </div>
+        <div class="goal">
+            <h2>Promote Sustainable Shopping</h2>
+            <p>We believe that every purchase is an opportunity to make a positive impact. That’s why we offer a wide range of sustainable products, making it easy for you to shop sustainably. We are committed to helping our customers make eco-friendly choices without compromising on quality or convenience.</p>
+        </div>
+        <div class="goal">
+            <h2>Reduce Waste</h2>
+            <p>We hope to reducing the amount of waste by spreading the information people will be able to make more environmentally friendly decisions.</p>
+        </div>
+    </div>
+</body>
+    {% endblock %}
+</html>
