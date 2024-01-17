@@ -185,14 +185,15 @@ emailInput.addEventListener('input', validateEmail);
 <form action="/signup" method="POST">
   <div class="container">
     <h1 align="center">Sign Up</h1>
+    {% if error %}
       <p class=error><b>{{ error }}</b></p>
-
+    {% endif %}
 
     <label for="username"><b>Username</b></label>
-    <input type="text" placeholder="Username" name="username" id="username" required>
+    <input type="text" placeholder="Username" name="username" id="username" autocomplete="off" required>
 
     <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Email" name="email" id="email" oninput="validateEmail()" required>
+    <input type="text" placeholder="Email" name="email" id="email" oninput="validateEmail()" autocomplete="off" required>
     <p id="emailError" class="error"></p>
     <div id="noticePopup" class="popup">
       <span id="popupText"></span>

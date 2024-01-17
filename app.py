@@ -46,6 +46,28 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db.init_app(app)
 
 
+def create_product_and_price(name, price, currency, image_url, quantity, sizes):
+    # Create product
+    product = stripe.Product.create(name=name, images=['static/img/'+image_url], metadata={'sizes':sizes})
+
+    # Create price
+    price = stripe.Price.create(
+        unit_amount=price,
+        currency=currency,
+        product=product.id,
+    )
+
+    # Update product inventory
+    stripe.Product.modify(
+        product.id,
+        metadata={
+            'quantity': quantity
+        }
+    )
+
+    return product.id, price.id
+
+
 # @app.route('/create-checkout-session/<rows>', methods=['POST'])
 def create_stripe_checkout_session(lists):
     stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
@@ -267,8 +289,12 @@ def signup():
                                (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
                     con.commit()
                 con.close()
-            except con.IntegrityError:
-                error = f"User {username} is already registered."
+            except con.IntegrityError as e:
+                error_message = str(e)
+                if "username" in error_message:
+                    error = f"Username '{username}' is already registered."
+                elif "email" in error_message:
+                    error = f"Email '{email}' is already registered."
             else:
                 return redirect(url_for("login"))
     return render_template('signup.html', error=error)
@@ -551,10 +577,10 @@ def add_inventory():
                     pic_name = str(uuid.uuid1()) + "_" + pic_filename
                     saver = product_image
                     saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-
+                    product_id, price_id = create_product_and_price(product_name, product_price, 'sgd', pic_name, product_quantity, product_size)
                     cur.execute(
-                        "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)",
-                        (shop, product_name, product_price, pic_name, product_description, product_quantity))
+                        "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity, product_id, price_id) VALUES (?,?,?,?,?,?,?,?)",
+                        (shop, product_name, product_price, pic_name, product_description, product_quantity, product_id, price_id))
                     con.commit()
 
                 # for colour in product_colour:
@@ -562,6 +588,7 @@ def add_inventory():
                 #                 (product_name, colour))
                 #     con.commit()
             con.close()
+
         except:
             msg = 'An error has occurred, please try again.'
             flash(msg)

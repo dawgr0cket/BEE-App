@@ -125,16 +125,10 @@
         {% endif %}
       </ul>
       <div class="navbar-brand d-flex justify-content-end">
-        {% if session['profile_pic'] %}
+        {% if 'profile_pic' in session %}
         <a href="/profile">
           <div class="item">
             <img src="/static/img/{{ session['profile_pic'] }}" width="50px" class="rounded"/>
-          </div>
-        </a>
-        {% else %}
-        <a href="/profile">
-          <div class="item">
-            <img src="static/img/img_6.png" width="50px" class="rounded">
           </div>
         </a>
         {% endif %}
