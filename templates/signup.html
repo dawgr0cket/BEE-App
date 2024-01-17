@@ -26,7 +26,7 @@ input[type=text], input[type=password] {
   border-radius: 25px; /* Increase border radius for rounder corners */
 }
 
-.registerbtn {
+.registerbtn, .registerbtn:enabled {
   background-color:#ff6e40;
   color: white;
   padding: 16px 20px;
@@ -40,6 +40,11 @@ input[type=text], input[type=password] {
   margin-left: auto; 
   margin-right: auto; 
  }
+
+.registerbtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 
  label{
      display:block;/* Make labels block elements to match layout in image*/
@@ -56,14 +61,83 @@ input[type=text], input[type=password] {
   h1{
 padding: 17px;
 }
+
+.popup {
+  visibility: hidden;
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+
+.popup.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+
 </style>
+<script>
+  function validatePassword() {
+    var password = document.getElementById("psw").value;
+    var strengthText = document.getElementById("strength-text");
+    var popup = document.getElementById("popup");
+    var submitButton = document.getElementById("submit-button");
+
+    // Define the password requirements
+    var requirements = [
+      { regex: /[A-Z]/, message: "Must contain an uppercase letter" },
+      { regex: /[a-z]/, message: "Must contain a lowercase letter" },
+      { regex: /\d/, message: "Must contain a digit" },
+      { regex: /[!@#$%^&*]/, message: "Must contain a special character" },
+      { regex: /.{8,}/, message: "Must be at least 8 characters long" }
+    ];
+
+    var strength = 0;
+    var popupMessage = "Password Strength: ";
+
+    requirements.forEach(function (requirement) {
+      if (requirement.regex.test(password)) {
+        strength++;
+      } else {
+        popupMessage += requirement.message + "<br>";
+      }
+    });
+
+    strengthText.innerHTML = strength + " of " + requirements.length + " requirements met";
+
+    if (popupMessage !== "Password Strength: ") {
+      popup.innerHTML = popupMessage;
+      popup.classList.add("show");
+      submitButton.disabled = true;
+    } else {
+      popup.classList.remove("show");
+      submitButton.disabled = false;
+    }
+  }
+
+  function hidePopup() {
+    document.getElementById("popup").classList.remove("show");
+  }
+</script>
 </head>
 <h1 align="center" >Better. Eco-friendly. Efficiency</h1>
 <form action="/signup" method="POST">
   <div class="container">
     <h1 align="center">Sign Up</h1>
-    {% if error %}
-      <p class=error>{{ error }}</p>
+    {% if error is iterable and error|length >= 0 %}
+      {% for errors in error %}
+        <p class=error><b>{{ errors }}</b></p>
+      {% endfor %}
+    {% else %}
+      <p class=error><b>{{ error }}</b></p>
     {% endif %}
 
     <label for="username"><b>Username</b></label>
@@ -72,15 +146,20 @@ padding: 17px;
     <label for="email"><b>Email</b></label>
     <input type="text" placeholder="Email" name="email" id="email" required>
 
+    <div id="strength-text" class="password-strength"></div>
+
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Password" name="psw" id="psw" required>
+    <input type="password" placeholder="Password" name="psw" id="psw" oninput="validatePassword()" required>
+
+
+    <div id="popup" class="popup" onmouseover="hidePopup()"></div>
 
     <label for="psw-repeat"><b>Confirm Password</b></label>
     <input type="password" placeholder="Confirm Password" name="psw-repeat" id="psw-repeat" required>
 
     <p align="center">By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
 
-    <button type="submit" class="registerbtn">Sign Up</button>
+    <button type="submit" class="registerbtn" id="submit-button" disabled>Sign Up</button>
   </div>
 
   <div class="container signin">

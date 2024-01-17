@@ -5,16 +5,20 @@ import uuid
 import shortuuid
 import functools
 import stripe
+import re
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from Users import Users
 from flask_login import UserMixin, logout_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
-from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, TextAreaField
+from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, \
+    TextAreaField
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
+
 # from flask import Flask, render_template, request, jsonify
 # from chatbot import get_response
 
@@ -36,7 +40,6 @@ app.config[
 app.config[
     'STRIPE_SECRET_KEY'] = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
 endpoint_secret = 'whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac'
-
 
 UPLOAD_FOLDER = 'static/img/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -199,6 +202,7 @@ class VoucherForm(FlaskForm):
     condition = TextAreaField('Condition')
     submit = SubmitField("Submit")
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -249,17 +253,25 @@ def signup():
         email = request.form['email']
         password = request.form['psw']
         repeatpsw = request.form['psw-repeat']
-        db = get_db()
-
+        user = Users(username, email, password, repeatpsw)
         if not username:
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
         elif password != repeatpsw:
             error = 'Confirm Password has to be the same.'
+        elif user.is_valid_password(password) is False:
+            error = ["Password does not meet the requirements.",
+                     "Minimum 8 Characters:",
+                     "At least 1 capital letter",
+                     "At least 1 lower capital letter",
+                     "At least 1 special symbol e.g. %, @, etc.",
+                     "At least 1 number"]
         if error is None:
             try:
-                db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)", (username, email, generate_password_hash(password)))
+                db = get_db()
+                db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
+                           (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
                 db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered."
@@ -315,7 +327,8 @@ def addblog():
         saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
         with sqlite3.connect('database.db') as con:
             cur = con.cursor()
-            cur.execute("INSERT INTO blog (username, title, summary, blog_pic, description) VALUES (?,?,?,?,?)", (poster, title, summary, pic_name, description))
+            cur.execute("INSERT INTO blog (username, title, summary, blog_pic, description) VALUES (?,?,?,?,?)",
+                        (poster, title, summary, pic_name, description))
 
             con.commit()
 
@@ -357,8 +370,10 @@ def editblog(id):
                     path = os.path.join(location, pic)
                     os.remove(path)
 
-                 # Update blog details in the database
-                cur.execute("UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?", (poster, new_title, new_summary, pic_name, new_description, id))
+                # Update blog details in the database
+                cur.execute(
+                    "UPDATE blog SET username = ?, title = ?, summary = ?, blog_pic = ?, description = ?, datetime = CURRENT_TIMESTAMP WHERE rowid = ?",
+                    (poster, new_title, new_summary, pic_name, new_description, id))
                 con.commit()
 
             con.close()
@@ -533,7 +548,8 @@ def add_inventory():
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
                 for size in product_size:
-                    cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)', (product_name, size))
+                    cur.execute('INSERT INTO inventorysize (product_name, product_size) VALUES (?,?)',
+                                (product_name, size))
                     con.commit()
 
                 pic_filename = secure_filename(product_image.filename)
@@ -628,7 +644,7 @@ def edit_inventory(product_name):
                         "UPDATE inventory SET product_name = ?, product_price = ?, product_description = ?, product_quantity = ? WHERE product_name = ?",
                         (new_product_name, product_price, product_description, product_quantity, product_name))
             except:
-                msg='Error in updating inventory'
+                msg = 'Error in updating inventory'
                 flash(msg)
                 return redirect(url_for('admin_inventory'))
             finally:
@@ -641,7 +657,7 @@ def edit_inventory(product_name):
                         "UPDATE inventory SET product_name = ?, product_price = ?, product_quantity = ? WHERE product_name = ?",
                         (new_product_name, product_price, product_quantity, product_name))
             except:
-                msg='Error in updating inventory'
+                msg = 'Error in updating inventory'
                 flash(msg)
                 return redirect(url_for('admin_inventory'))
             finally:
@@ -650,13 +666,17 @@ def edit_inventory(product_name):
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute('SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name', (product_name,))
+            cur.execute(
+                'SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name',
+                (product_name,))
             rows = cur.fetchall()
             for row in rows:
                 product_price = row[0]
                 product_description = row[1]
                 product_quantity = row[2]
-    return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
+    return render_template('edit_inventory.html', form=form, product_price=product_price,
+                           product_description=product_description, product_quantity=product_quantity,
+                           product_name=product_name)
 
 
 """
@@ -678,6 +698,7 @@ def addvouchers():
     return render_template('add_vouchers.html', voucher1=voucher1, voucher2=voucher2, voucher3=voucher3, rows=rows)
 """
 
+
 @app.route('/add_vouchers')
 @login_required
 def addvouchers():
@@ -689,7 +710,7 @@ def addvouchers():
 
     rows = cur.fetchall()
     con.close()
-    return render_template('add_vouchers.html', rows = rows)
+    return render_template('add_vouchers.html', rows=rows)
 
 
 @app.route('/retrieve_vouchers/<username>')
@@ -712,7 +733,7 @@ def delete_vouchers(code):
     try:
         con = sqlite3.connect('database.db')
         cur = con.cursor()
-        cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,)) # addvouchers is a table
+        cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,))  # addvouchers is a table
         con.commit()
         con.close()
     except:
@@ -723,7 +744,6 @@ def delete_vouchers(code):
         msg = f'Voucher has been deleted!'
         flash(msg)
         return redirect(url_for('addvouchers'))
-
 
 
 @app.route('/create_vouchers', methods=['GET', 'POST'])
@@ -758,21 +778,21 @@ def create_vouchers():
     return render_template('create_vouchers.html', form=form, users=users)
 
 
-@app.route('/update_vouchers/<code_name>', methods=['GET', 'POST']) # <code_name> is to pass in parameter
+@app.route('/update_vouchers/<code_name>', methods=['GET', 'POST'])  # <code_name> is to pass in parameter
 @login_required
 def update_vouchers(code_name):
     form = VoucherForm()
-    if request.method == 'POST':#check if form is posted
-        title = request.form['voucher_name'] #Get information from form
+    if request.method == 'POST':  # check if form is posted
+        title = request.form['voucher_name']  # Get information from form
         value = request.form['discount']
-        if request.form['condition']:# If statement to check if data is passed in
+        if request.form['condition']:  # If statement to check if data is passed in
             condition = request.form['condition']
             try:
                 with sqlite3.connect('database.db') as con:
                     cur = con.cursor()
                     cur.execute(
                         "UPDATE addvouchers SET title = ?, value = ?, condition = ? WHERE code = ?",
-                        (title, value, condition, code_name)) #Use from 705-707
+                        (title, value, condition, code_name))  # Use from 705-707
             except:
                 msg = 'Failed to change code'
                 flash(msg)
@@ -797,12 +817,14 @@ def update_vouchers(code_name):
         cur = con.cursor()
         cur.execute(
             'SELECT title, value FROM addvouchers WHERE code = ?',
-            (code_name,)) #code_name is the passed in argument
+            (code_name,))  # code_name is the passed in argument
         rows = cur.fetchall()
         for row in rows:
             voucher_name = row[0]
             discount = row[1]
-    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount, code_name=code_name)# form=form passes in into updatevoucher.html
+    return render_template('update_vouchers.html', form=form, voucher_name=voucher_name, discount=discount,
+                           code_name=code_name)  # form=form passes in into updatevoucher.html
+
 
 """
 def edit_inventory(product_name):
@@ -850,6 +872,8 @@ def edit_inventory(product_name):
                 product_quantity = row[2]
     return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
 """
+
+
 # @app.route('/voucher/<username>/<int:voucher>')
 # @login_required
 # def voucher(username, voucher):
@@ -917,7 +941,6 @@ def user_retrieveform(tradein_id):
     return render_template('user_retrieveform.html', rows=rows)
 
 
-
 @app.route('/shop')
 def shop():
     return render_template('shop.html')
@@ -970,7 +993,9 @@ def tradein_form(id):
                 saver = tradein_pic[i]
                 saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
 
-                cur.execute("INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)", (username, id, pic_name, description, tradein_id))
+                cur.execute(
+                    "INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)",
+                    (username, id, pic_name, description, tradein_id))
                 con.commit()
 
         con.close()
