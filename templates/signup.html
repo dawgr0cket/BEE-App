@@ -13,9 +13,9 @@ body {
 
 .container {
   padding: 16px;
-  background-color: #add8e6; 
+  background-color: #add8e6;
   border-radius: 10px;
-  box-shadow: none; 
+  box-shadow: none;
 }
 
 input[type=text], input[type=password] {
@@ -36,9 +36,9 @@ input[type=text], input[type=password] {
   width: 100%;
   opacity: 0.9;
   border-radius: 25px; /* Increase border radius for rounder corners */
-  display: block; 
-  margin-left: auto; 
-  margin-right: auto; 
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
  }
 
 .registerbtn:disabled {
@@ -65,8 +65,8 @@ padding: 17px;
 .popup {
   visibility: hidden;
   position: fixed;
-  bottom: 10px;
-  left: 50%;
+  top: 50%;
+  right: 50%;
   transform: translateX(-50%);
   background-color: #555;
   color: #fff;
@@ -82,7 +82,26 @@ padding: 17px;
   opacity: 1;
 }
 
+#noticePopup {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 999;
+}
 
+.success {
+    color: green;
+}
+
+.show {
+    display: block;
+}
 </style>
 <script>
   function validatePassword() {
@@ -126,25 +145,58 @@ padding: 17px;
   function hidePopup() {
     document.getElementById("popup").classList.remove("show");
   }
+
+function validateEmail() {
+  const emailInput = document.getElementById('email');
+  const emailError = document.getElementById('emailError');
+  const noticePopup = document.getElementById('noticePopup');
+  const popupText = document.getElementById('popupText');
+
+  const email = emailInput.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (emailRegex.test(email)) {
+    emailError.textContent = '';
+    emailInput.classList.remove('error');
+    popupText.textContent = 'Email address is valid.';
+    noticePopup.classList.add('show');
+    noticePopup.classList.remove('error');
+    noticePopup.classList.add('success');
+  } else if (email === '') {
+    emailError.textContent = '';
+    emailInput.classList.remove('error');
+    popupText.textContent = '';
+    noticePopup.classList.remove('show');
+  } else {
+    emailError.textContent = 'Invalid email address';
+    emailInput.classList.add('error');
+    popupText.textContent = 'Email address is invalid.';
+    noticePopup.classList.add('show');
+    noticePopup.classList.remove('success');
+    noticePopup.classList.add('error');
+  }
+}
+
+const emailInput = document.getElementById('email');
+emailInput.addEventListener('input', validateEmail);
 </script>
 </head>
 <h1 align="center" >Better. Eco-friendly. Efficiency</h1>
 <form action="/signup" method="POST">
   <div class="container">
     <h1 align="center">Sign Up</h1>
-    {% if error is iterable and error|length >= 0 %}
-      {% for errors in error %}
-        <p class=error><b>{{ errors }}</b></p>
-      {% endfor %}
-    {% else %}
       <p class=error><b>{{ error }}</b></p>
-    {% endif %}
+
 
     <label for="username"><b>Username</b></label>
     <input type="text" placeholder="Username" name="username" id="username" required>
 
     <label for="email"><b>Email</b></label>
-    <input type="text" placeholder="Email" name="email" id="email" required>
+    <input type="text" placeholder="Email" name="email" id="email" oninput="validateEmail()" required>
+    <p id="emailError" class="error"></p>
+    <div id="noticePopup" class="popup">
+      <span id="popupText"></span>
+    </div>
 
     <div id="strength-text" class="password-strength"></div>
 

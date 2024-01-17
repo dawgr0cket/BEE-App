@@ -260,20 +260,14 @@ def signup():
             error = 'Password is required.'
         elif password != repeatpsw:
             error = 'Confirm Password has to be the same.'
-        elif user.is_valid_password(password) is False:
-            error = ["Password does not meet the requirements.",
-                     "Minimum 8 Characters:",
-                     "At least 1 capital letter",
-                     "At least 1 lower capital letter",
-                     "At least 1 special symbol e.g. %, @, etc.",
-                     "At least 1 number"]
         if error is None:
             try:
-                db = get_db()
-                db.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
-                           (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
-                db.commit()
-            except db.IntegrityError:
+                with sqlite3.connect('database.db') as con:
+                    con.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
+                               (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
+                    con.commit()
+                con.close()
+            except con.IntegrityError:
                 error = f"User {username} is already registered."
             else:
                 return redirect(url_for("login"))
