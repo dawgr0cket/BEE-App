@@ -6,6 +6,8 @@ import shortuuid
 import functools
 import stripe
 import re
+
+from chatbot import get_response
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -19,8 +21,8 @@ from wtforms import StringField, SubmitField, FileField, EmailField, IntegerFiel
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
 
-# from flask import Flask, render_template, request, jsonify
-# from chatbot import get_response
+from flask import Flask, render_template, request, jsonify
+from chatbot import get_response
 
 app = Flask(__name__)
 db = SQLAlchemy()
@@ -1201,17 +1203,17 @@ def delete_cart(product_name, username):
         return redirect(url_for('cart', username=username))
 
 
-# @app.get("/")
-# def index_get():
-#     return render_template("chatbot.html")
-#
-#
-# @app.post("/predict")
-# def predict():
-#     text = request.get_json().get("message")
-#     response = get_response(text)
-#     message = {"answer": response}
-#     return jsonify(message)
+@app.get("/chatbot")
+def index_get():
+    return render_template("chatbot.html")
+
+
+@app.post("/predict")
+def predict():
+    text = request.get_json().get("message")
+    response = get_response(text)
+    message = {"answer": response}
+    return jsonify(message)
 
 
 if __name__ == '__main__':
