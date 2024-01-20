@@ -50,7 +50,7 @@ db.init_app(app)
 
 def create_product_and_price(name, price, currency, image_url, quantity, sizes):
     # Create product
-    product = stripe.Product.create(name=name, images=['static/img/'+image_url], metadata={'sizes':sizes})
+    product = stripe.Product.create(name=name, images=['static/img/' + image_url], metadata={'sizes': sizes})
 
     # Create price
     price = stripe.Price.create(
@@ -71,7 +71,7 @@ def create_product_and_price(name, price, currency, image_url, quantity, sizes):
 
 
 # @app.route('/create-checkout-session/<rows>', methods=['POST'])
-def create_stripe_checkout_session(lists):
+def create_stripe_checkout_session(lists, username):
     stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
     decoded_url = urllib.parse.unquote(lists)  # Decode the URL
     start_index = decoded_url.find("[")  # Find the start index of the list
@@ -96,19 +96,23 @@ def create_stripe_checkout_session(lists):
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        success_url='http://localhost:5000/success',
-        cancel_url='http://localhost:5000/cancel',
+        client_reference_id=username,  # Store the username in the client_reference_id field
+        success_url='http://localhost:5000/success/' + username,
+        cancel_url='http://localhost:5000/cancel/' + username,
         billing_address_collection='required',
         shipping_address_collection={
             'allowed_countries': ['SG'],
+        },
+        metadata={
+            'username': username,
         }
     )
     return session
 
 
-@app.route('/checkout/<lists>')
-def checkout(lists):
-    session_id = create_stripe_checkout_session(lists)
+@app.route('/checkout/<lists>/<username>')
+def checkout(lists, username):
+    session_id = create_stripe_checkout_session(lists, username)
     return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
@@ -146,9 +150,70 @@ def webhook():
     return jsonify(success=True)
 
 
-@app.route('/success')
-def success():
-    return render_template('success.html')
+@app.route('/success/<username>')
+def success(username):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute('DELETE FROM cart WHERE username = ?', (username,))
+    except:
+        msg = 'An Error has Occurred'
+        flash(msg)
+    finally:
+        msg = 'Purchase Completed!'
+        flash(msg)
+        return redirect(url_for('successfultrans', username=username))
+
+
+@app.route('/successfultrans/<username>')
+def successfultrans(username):
+    charge_id = None
+    amount = None
+    currency = None
+    transaction_id = None
+    product_details = None
+
+    try:
+        # Retrieve the customer based on the username from metadata
+        customers = stripe.Customer.list(metadata={'username': username})
+        if len(customers.data) == 0:
+            return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
+
+        customer = customers.data[0]
+
+        # Retrieve the customer's charges and sort them by created date in descending order
+        charges = stripe.Charge.list(
+            customer=customer.id,
+            limit=1,
+            paid=True,
+            status='succeeded',
+            expand=['data.balance_transaction', 'data.payment_intent', 'data.payment_intent.lines.data.price.product']
+        )
+        if len(charges.data) == 0:
+            return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
+
+        charge = charges.data[0]
+
+        # Extract relevant information from the charge
+        charge_id = charge.id
+        amount = charge.amount
+        currency = charge.currency
+        transaction_id = charge.balance_transaction.id
+
+        # Retrieve product details for each line item
+        product_details = []
+        for line_item in charge.payment_intent.lines.data:
+            product = line_item.price.product
+            product_id = product.id
+            product_name = product.name
+            price = line_item.price.unit_amount / 100  # Convert the price to the desired currency format
+            product_details.append({'product_id': product_id, 'product_name': product_name, 'price': price})
+    except Exception as e:
+        msg = 'An Error has Occurred: ' + str(e)
+        flash(msg)
+        return render_template('home.html')
+    finally:
+        return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
 
 
 @app.route('/cancel')
@@ -288,7 +353,7 @@ def signup():
             try:
                 with sqlite3.connect('database.db') as con:
                     con.execute("INSERT INTO user (username, email, password) VALUES (?, ?, ?)",
-                               (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
+                                (user.get_username(), user.get_email(), generate_password_hash(user.get_psw())))
                     con.commit()
                 con.close()
             except con.IntegrityError as e:
@@ -579,10 +644,12 @@ def add_inventory():
                     pic_name = str(uuid.uuid1()) + "_" + pic_filename
                     saver = product_image
                     saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-                    product_id, price_id = create_product_and_price(product_name, product_price, 'sgd', pic_name, product_quantity, product_size)
+                    product_id, price_id = create_product_and_price(product_name, product_price, 'sgd', pic_name,
+                                                                    product_quantity, product_size)
                     cur.execute(
                         "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity, product_id, price_id) VALUES (?,?,?,?,?,?,?,?)",
-                        (shop, product_name, product_price, pic_name, product_description, product_quantity, product_id, price_id))
+                        (shop, product_name, product_price, pic_name, product_description, product_quantity, product_id,
+                         price_id))
                     con.commit()
 
                 # for colour in product_colour:

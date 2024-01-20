@@ -42,7 +42,7 @@ def create_checkout_session():
                 },
             ],
             mode='payment',
-            success_url=YOUR_DOMAIN + '/success.html',
+            success_url=YOUR_DOMAIN + '/successfultrans.html',
             cancel_url=YOUR_DOMAIN + '/cancel.html',
         )
     except Exception as e:

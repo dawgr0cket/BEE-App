@@ -55,5 +55,5 @@ function decrement() {
 <!--    {% endfor %}-->
 {% endfor %}
 </table>
-<button><a href="/checkout/{{ lists }}">Pay Now</a></button>
+<button><a href="/checkout/{{ lists }}/{{ session['username'] }}">Pay Now</a></button>
 {% endblock %}
