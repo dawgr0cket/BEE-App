@@ -1,8 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
 {% extends "base.html" %}
 {% block title %}B.E.E - Home{% endblock %}
 
 {% block content %}
-<h1 class="display-4">Home</h1>
-<p>Hello world!</p>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #FFFFEA;
+    text-align: center;
+    padding: 20px;
+}
+
+main {
+    padding: 40px;
+    background-color:#D9D9D9;
+}
+
+h1, h2 {
+    color: green;
+    margin: 10px;
+}
+
+hr{
+   display:none
+}
+.text1{
+   font-size:20px;
+   color:#509166;
+   padding: 10px;
+    }
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    width: 350px;
+    height: 350px;
+    background-color: #8BC34A;
+    margin: 50px;
+}
+a{
+  text-decoration: none;
+  }
+
+.registerbtn {
+  background-color:#ff6e40;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 150px;
+  opacity: 0.9;
+  border-radius: 25px; /* Increase border radius for rounder corners */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+ }
+
+
+</style>
+<body>
+    <header>
+        <h1>Better . Eco-friendly . Efficiency</h1>
+    </header>
+    <main>
+        <h2 align="left">One-Stop Shop for all your essential But Eco-Friendly</h2>
+        <p class="text1">Want to shop sustainably but don’t know how?</p>
+        <h2 align="center">Get Started</h2>
+        <div class="container">
+           <img class="box" src="">
+           <img class="box" src="">
+           <img class="box" src="">
+        </div>
+        <a href="/signup"><button type="submit" class="registerbtn">Sign Up Now!</button></a>
+    </main>
+
 {{session['username']}}
 {% endblock %}
+</body>
+</html>
+
