@@ -17,7 +17,7 @@ from flask_login import UserMixin, logout_user, LoginManager, login_required, lo
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename
 from wtforms import StringField, SubmitField, FileField, EmailField, IntegerField, DateField, RadioField, SelectField, \
-    TextAreaField
+    TextAreaField, validators
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
 
@@ -261,7 +261,7 @@ class BlogForm(FlaskForm):
 class UserForm(FlaskForm):
     username = StringField("Username")
     email = EmailField('Email')
-    phone_no = IntegerField("Phone Number", validators=[Length(min=8, max=8)])
+    phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
