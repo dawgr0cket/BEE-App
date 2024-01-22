@@ -106,18 +106,34 @@ def create_stripe_checkout_session(lists, username):
     return session
 
 
-@app.route('/checkout/<lists>/<username>')
+@app.route('/checkout/<lists>/<username>', methods=['GET','POST'])
 def checkout(lists, username):
-
     session_id = create_stripe_checkout_session(lists, username)
     return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
 
 
-@app.route('/applydisc/<code>/<username>')
-def applydisc(code, username):
-    return redirect(url_for('cart', username=username))
+@app.route('/applydisc/<username>', methods=['GET', 'POST'])
+def applydisc(username):
+    if request.method == 'POST':
+        discount = request.form['discount']
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT COUNT(*) FROM addvouchers WHERE code = ?', (discount,))
+        result = cur.fetchone()[0]
+        if result < 0:
+            msg = 'Invalid Code'
+            flash(msg)
+            return redirect(url_for('cart', username=username))
+        cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
+        deduct = cur.fetchall()[0]
+    return redirect(url_for('cart', username=username, deduct=deduct))
+
+
+@app.route('/cart/<username>/<deduct>')
+def cartdisc(username,deduct):
+    return render_template('cart.html', username=username, deduct=deduct)
 
 
 # def checkoutform(lists, username):

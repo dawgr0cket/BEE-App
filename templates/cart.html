@@ -28,35 +28,6 @@ function decrement() {
 
 }
 
-  document.getElementById('applyDiscountBtn').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Get the discount code value from the input field
-    var discountCode = document.getElementById('discount').value;
-
-    // Get the username from the session variable (assuming it's available on the server-side)
-    var username = "{{ session['username'] }}";
-
-    // Construct the URL with the discount code and username
-    var url = '/applydisc/' + username + '/' + encodeURIComponent(discountCode);
-
-    // Send an AJAX request to apply the discount code
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          // Discount applied successfully
-          alert('Discount applied successfully!');
-          // Update the total or perform other necessary actions
-        } else {
-          // Error applying the discount
-          alert('Error applying the discount. Please try again.');
-        }
-      }
-    };
-    xhr.send();
-  });
 </script>
 <style>
 .form-container {
@@ -186,11 +157,7 @@ td {
     <!-- Existing form fields -->
 
     <!-- Discount Code -->
-    <div class="form-group">
-      <label for="discount">Discount Code</label>
-      <input type="text" id="discount" name="discount">
-      <button type="submit" id="applyDiscountBtn">Apply Discount</button>
-    </div>
+
 
     <!-- Shipping Information -->
     <div class="form-group shipping-section">
@@ -209,11 +176,43 @@ td {
   <!-- Total Section -->
   <div class="total-section">
     <h3>Total</h3>
-    <p>Subtotal: ${{ total }}</p>
-    <p>Discount: -$10</p>
-    <p>Shipping: $5</p>
-    <p>Grand Total: $95</p>
-  </div>
-</div>
+    <p>Subtotal: $<span id="subtotal">{{ total }}</span></p>
+      <p>Discount: -$<span id="deduct"></span></p>
 
+    <p>Shipping: $<span id="shippingfee">10</span></p>
+    <p>Grand Total: <span id="grandtotal"></span></p>
+  </div>
+  <form action="/applydisc/{{ session['username'] }}" method="post">
+    <div class="form-group">
+      <label for="discount">Discount Code</label>
+      <input type="text" id="discount" name="discount">
+      <button type="submit">Apply Discount</button>
+    </div>
+  </form>
+</div>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const deductValue = urlParams.get('deduct');
+
+// Find the element with the ID "deduct"
+const deductElement = document.getElementById('deduct');
+
+// Set the value of the element based on the deductValue
+if (deductValue !== null) {
+    deductElement.textContent = deductValue;
+} else {
+    deductElement.textContent = '0';
+}
+
+// Retrieve the values from the spans and convert to integers
+const subtotal = parseInt(document.getElementById('subtotal').textContent);
+const deduct = parseInt(document.getElementById('deduct').textContent);
+const shippingFee = parseInt(document.getElementById('shippingfee').textContent);
+
+// Calculate the grand total
+const grandTotal = subtotal - deduct + shippingFee;
+
+// Update the content of the grandtotal span
+document.getElementById('grandtotal').textContent = grandTotal.toFixed(2);
+</script>
 {% endblock %}
