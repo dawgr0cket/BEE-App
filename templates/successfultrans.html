@@ -1,37 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Transaction Details</title>
+    <meta charset="UTF-8">
+{% extends "base.html" %}
+{% block title %}B.E.E - Transaction Details{% endblock %}
+
+{% block content %}
 </head>
 <body>
     <h1>Transaction Details</h1>
 
-    {% if charge_id %}
-        <p><strong>Charge ID:</strong> {{ charge_id }}</p>
-        <p><strong>Amount:</strong> {{ amount / 100 }} {{ currency }}</p>
-        <p><strong>Transaction ID:</strong> {{ transaction_id }}</p>
+    <div>
+        <h2>{{ username }}'s Order</h2>
+        <h5>{{ sessionid }}</h5>
+        {% for order in orders %}
+        <h2>Product: {{ order[0][0] }}</h2>
+        <p>Price: ${{ order[0][1] }}</p>
+        {% endfor %}
+        <!-- Add other relevant details here -->
+        <p>Total: {{ total }}</p>
+    </div>
 
-        <h2>Product Details:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product ID</th>
-                    <th>Product Name</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in product_details %}
-                    <tr>
-                        <td>{{ product.product_id }}</td>
-                        <td>{{ product.product_name }}</td>
-                        <td>{{ product.price }} {{ currency }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No transaction found for the username.</p>
-    {% endif %}
 </body>
+{% endblock %}
 </html>
