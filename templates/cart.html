@@ -55,5 +55,41 @@ function decrement() {
 <!--    {% endfor %}-->
 {% endfor %}
 </table>
+<div class="form-container">
+  <form action="/checkout" method="post">
+    <div class="form-group">
+      <label for="block">Block</label>
+      <input type="text" id="block" name="block" maxlength="10" pattern="[0-9#-]+" required>
+    </div>
+
+    <div class="form-group">
+      <label for="unitno">Unit No</label>
+      <input type="text" id="unitno" name="unitno" required>
+    </div>
+
+    <div class="form-group">
+      <label for="street">Street</label>
+      <input type="text" id="street" name="street" required>
+    </div>
+
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" required>
+    </div>
+
+    <div class="form-group">
+      <label for="zipcode">Zip Code</label>
+      <input type="text" id="zipcode" name="zipcode" required>
+    </div>
+
+    <div class="form-group discount-code">
+      <label for="discount">Discount Code</label>
+      <input type="text" id="discount" name="discount">
+      <button type="submit">Apply Discount</button>
+    </div>
+
+    <button type="submit">Proceed to Checkout</button>
+  </form>
+</div>
 <button><a href="/checkout/{{ lists }}/{{ session['username'] }}">Pay Now</a></button>
 {% endblock %}
