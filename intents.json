@@ -8,7 +8,7 @@
   "responses": ["Goodbye!", "See you soon!", "See you next time!"]
   },
   {"tag": "shop",
-  "patterns": ["what do you sell?", "recommended products", "what are your products?"],
+  "patterns": ["what do you sell?", "recommended products", "what are your products?", "what is bee?"],
   "responses": ["BEE is a clothing shop focusing on promoting sustainability. We sell a variety of products such as shirts, pants, dresses, shoes. We also take in well-loved clothes looking for a second home!"]
   },
   {"tag": "shipping",

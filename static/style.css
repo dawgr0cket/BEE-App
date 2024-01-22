@@ -8,7 +8,6 @@ body {
     font-family: 'Nunito', sans-serif;
     font-weight: 400;
     font-size: 100%;
-    background: #F1F1F1;
 }
 
 *, html {
@@ -22,7 +21,7 @@ body {
 /* CHATBOX
 =============== */
 .chatbox {
-    position: absolute;
+    position: fixed;
     bottom: 30px;
     right: 30px;
 }
@@ -124,12 +123,12 @@ body {
 
 .chatbox__heading--header {
     font-size: 1.2rem;
-    color: white;
+    color: black;
 }
 
 .chatbox__description--header {
     font-size: .9rem;
-    color: white;
+    color: black;
 }
 
 /* Messages */
@@ -156,7 +155,7 @@ body {
     border-top-right-radius: 20px;
     border-bottom-left-radius: 20px;
     background: var(--primary);
-    color: white;
+    color: black;
 }
 
 /* FOOTER */
@@ -182,7 +181,7 @@ body {
 }
 
 .chatbox__send--footer {
-    color: white;
+    color: black;
 }
 
 .chatbox__button button,
