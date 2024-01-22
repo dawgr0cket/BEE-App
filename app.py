@@ -96,16 +96,12 @@ def create_stripe_checkout_session(lists, username):
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
+        metadata={
+            'username': username
+        },
         client_reference_id=username,  # Store the username in the client_reference_id field
         success_url='http://localhost:5000/success/' + username,
         cancel_url='http://localhost:5000/cancel/' + username,
-        billing_address_collection='required',
-        shipping_address_collection={
-            'allowed_countries': ['SG'],
-        },
-        metadata={
-            'username': username,
-        }
     )
     return session
 
@@ -118,103 +114,112 @@ def checkout(lists, username):
     # return render_template('checkout.html')
 
 
+# @app.route('/checkoutform/<lists>/<username>', methods=["GET", "POST"])
+# def checkoutform(lists, username):
+#     form = AddressForm()
+#     if form.validate_on_submit():
+#         # Access the form data
+#         block = form.block.data
+#         unitno = form.unitno.data
+#         street = form.street.data
+#         city = form.city.data
+#         state = form.state.data
+#         postal_code = form.postal_code.data
+#
+#         con = get_db()
+#         con.execute('INSERT INTO addresses (block, unitno, street, city, state, postal_code, username) VALUE (?,?,?,?,?,?,?)', (block, unitno, street, city, state, postal_code, username))
+#         con.commit()
+#         # Redirect to a success page or display a success message
+#         return redirect(url_for('checkout', lists=lists, username=username))
+#     return render_template('checkout.html', form=form)
+
+
 @app.route('/payment')
 def payment():
     return render_template('payment.html')
 
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    event = None
-    payload = request.data
-    sig_header = request.headers['whsec_ce34836592ee6b8aae39f8c9a53faf9ae4280570777cc4a7d381ac33d50423ac']
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except ValueError as e:
-        # Invalid payload
-        raise e
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise e
-
-    # Handle the event
-    if event['type'] == 'payment_intent.succeeded':
-        payment_intent = event['data']['object']
-    # ... handle other event types
-    else:
-        print('Unhandled event type {}'.format(event['type']))
-
-    return jsonify(success=True)
-
-
 @app.route('/success/<username>')
 def success(username):
     try:
-        with sqlite3.connect('database.db') as con:
-            cur = con.cursor()
-            cur.execute('DELETE FROM cart WHERE username = ?', (username,))
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT * FROM cart WHERE username = ?', (username,))
+        products = cur.fetchall()
+        sessionid = str(shortuuid.uuid())
+        productnamelist = []
+        orders = []
+        total = 0
+        for product in products:
+            cur.execute('INSERT INTO sessions (session_id, username, product_name) VALUES (?,?,?)', (sessionid, username, product[1]))
+            con.commit()
+            productnamelist.append(product[1])
+        for productname in productnamelist:
+            cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
+            order = cur.fetchall()
+            for price in order:
+                total = total + price[1]
+            orders.append(order)
+        cur.execute('DELETE FROM cart WHERE username = ?', (username,))
     except:
         msg = 'An Error has Occurred'
         flash(msg)
     finally:
         msg = 'Purchase Completed!'
         flash(msg)
-        return redirect(url_for('successfultrans', username=username))
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username)
 
 
-@app.route('/successfultrans/<username>')
-def successfultrans(username):
-    charge_id = None
-    amount = None
-    currency = None
-    transaction_id = None
-    product_details = None
-
-    try:
-        # Retrieve the customer based on the username from metadata
-        customers = stripe.Customer.list(metadata={'username': username})
-        if len(customers.data) == 0:
-            return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
-
-        customer = customers.data[0]
-
-        # Retrieve the customer's charges and sort them by created date in descending order
-        charges = stripe.Charge.list(
-            customer=customer.id,
-            limit=1,
-            paid=True,
-            status='succeeded',
-            expand=['data.balance_transaction', 'data.payment_intent', 'data.payment_intent.lines.data.price.product']
-        )
-        if len(charges.data) == 0:
-            return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
-
-        charge = charges.data[0]
-
-        # Extract relevant information from the charge
-        charge_id = charge.id
-        amount = charge.amount
-        currency = charge.currency
-        transaction_id = charge.balance_transaction.id
-
-        # Retrieve product details for each line item
-        product_details = []
-        for line_item in charge.payment_intent.lines.data:
-            product = line_item.price.product
-            product_id = product.id
-            product_name = product.name
-            price = line_item.price.unit_amount / 100  # Convert the price to the desired currency format
-            product_details.append({'product_id': product_id, 'product_name': product_name, 'price': price})
-    except Exception as e:
-        msg = 'An Error has Occurred: ' + str(e)
-        flash(msg)
-        return render_template('home.html')
-    finally:
-        return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
-
+# @app.route('/successfultrans/<username>')
+# def successfultrans(username):
+#     charge_id = None
+#     amount = None
+#     currency = None
+#     transaction_id = None
+#     product_details = None
+#
+#     try:
+#         # Retrieve the customer based on the username from metadata
+#         customers = stripe.Customer.list(metadata={'username': username})
+#         if len(customers.data) == 0:
+#             return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
+#
+#         customer = customers.data[0]
+#
+#         # Retrieve the customer's charges and sort them by created date in descending order
+#         charges = stripe.Charge.list(
+#             customer=customer.id,
+#             limit=1,
+#             paid=True,
+#             status='succeeded',
+#             expand=['data.balance_transaction', 'data.payment_intent', 'data.payment_intent.lines.data.price.product']
+#         )
+#         if len(charges.data) == 0:
+#             return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
+#
+#         charge = charges.data[0]
+#
+#         # Extract relevant information from the charge
+#         charge_id = charge.id
+#         amount = charge.amount
+#         currency = charge.currency
+#         transaction_id = charge.balance_transaction.id
+#
+#         # Retrieve product details for each line item
+#         product_details = []
+#         for line_item in charge.payment_intent.lines.data:
+#             product = line_item.price.product
+#             product_id = product.id
+#             product_name = product.name
+#             price = line_item.price.unit_amount / 100  # Convert the price to the desired currency format
+#             product_details.append({'product_id': product_id, 'product_name': product_name, 'price': price})
+#     except Exception as e:
+#         msg = 'An Error has Occurred: ' + str(e)
+#         flash(msg)
+#         return render_template('home.html')
+#     finally:
+#         return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
+#
 
 @app.route('/cancel')
 def cancel():
@@ -256,6 +261,16 @@ class BlogForm(FlaskForm):
     blog_pic = FileField("Blog Photo")
     description = StringField('Blog away...', validators=[Length(min=50, max=800), DataRequired()])
     submit = SubmitField("Submit")
+
+
+class AddressForm(FlaskForm):
+    block = StringField('Block', validators=[DataRequired()])
+    unitno = StringField('Unit No.', validators=[DataRequired()])
+    street = StringField('Street', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    state = StringField('State', validators=[DataRequired()])
+    postal_code = StringField('Postal Code', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 
 class UserForm(FlaskForm):

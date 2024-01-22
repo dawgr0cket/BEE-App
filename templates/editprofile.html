@@ -7,8 +7,33 @@
 {% block title %}B.E.E - Profile{% endblock %}
 
 {% block content %}
+<style>
+.profilenav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 15%;
+    background-color: #948686;
+    position: sticky;
+    height: 100%;
+    overflow: auto;
+}
+
+.profilenav li a {
+    display: block;
+    color: #000;
+    padding: 40px 13px;
+    text-decoration: none;
+}
+</style>
 </head>
 <body>
+<ul class="profilenav" style="float: left;">
+    <li><a href="/orderhistory">Order History</a></li>
+    <li><a href="/view_tradeins/{{ session['username'] }}">Trade-In</a></li>
+    <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
+</ul>
+<div style="margin-left:15%;padding:30px 16px;height: 1000px;">
     <h1 class="display-4">Profile</h1>
     <p>{{session['username']}}'s Profile</p>
     <hr>
@@ -39,6 +64,7 @@
             {{ form.submit(class="btn btn-secondary") }}
     </form>
     <a href="/profile">Discard Changes</a>
+</div>
 {% endblock %}
 </body>
 </html>
