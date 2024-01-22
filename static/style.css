@@ -28,22 +28,18 @@ body {
 
 /* CONTENT IS CLOSE */
 .chatbox__support {
-    display: flex;
-    flex-direction: column;
-    background: #eee;
+    position: fixed;
+    bottom: 80px; /* Initial position */
+    right: -400px; /* Initial position */
     width: 300px;
-    height: 350px;
-    z-index: -123456;
-    opacity: 0;
-    transition: all .5s ease-in-out;
+    background-color: #f2f3f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease-in-out; /* Add transition effect */
 }
 
-/* CONTENT ISOPEN */
 .chatbox--active {
-    transform: translateY(-40px);
-    z-index: 123456;
-    opacity: 1;
-
+    right: 20px; /* Slide in the chatbox */
 }
 
 /* BUTTON */

@@ -108,13 +108,18 @@ def create_stripe_checkout_session(lists, username):
 
 @app.route('/checkout/<lists>/<username>')
 def checkout(lists, username):
+
     session_id = create_stripe_checkout_session(lists, username)
     return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
 
 
-# @app.route('/checkoutform/<lists>/<username>', methods=["GET", "POST"])
+@app.route('/applydisc/<code>/<username>')
+def applydisc(code, username):
+    return redirect(url_for('cart', username=username))
+
+
 # def checkoutform(lists, username):
 #     form = AddressForm()
 #     if form.validate_on_submit():
@@ -1239,6 +1244,7 @@ def cart(username):
         product_list = []
         rows = []
         lists = []
+        total = 0
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1258,14 +1264,14 @@ def cart(username):
                     'price': i[0][2],
                     'image': i[0][3],
                 }
-
+                total = total + i[0][2]
                 lists.append(list_1)
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', products=products, rows=rows, lists=lists)
+        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
