@@ -123,6 +123,7 @@ def applydisc(username):
         cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
         deduct = cur.fetchall()[0]
         cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
+        con.commit()
     return redirect(url_for('cart', username=username, deduct=deduct))
 
 
