@@ -9,7 +9,7 @@ import re
 
 from chatbot import get_response
 from tradeinform import Tradeinform
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from Users import Users
@@ -281,7 +281,9 @@ class AddressForm(FlaskForm):
 class UserForm(FlaskForm):
     username = StringField("Username")
     email = EmailField('Email')
-    phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
+    # phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
+    phone_no = IntegerField("Phone Number", validators=[
+        validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
@@ -1170,10 +1172,10 @@ def editprofile():
             session['gender'] = gender
         session['username'] = username
         session['email'] = email
-        if request.form['phone_no'] == '':
-            session['phone_no'] = None
-        else:
+        if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
+        else:
+            session['phone_no'] = None
         if request.form['dob'] == '':
             session['dob'] = None
         else:
