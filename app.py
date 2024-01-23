@@ -695,14 +695,11 @@ def add_inventory():
                     con.commit()
 
                 pic_filename = secure_filename(product_image.filename)
-                if pic_filename != '':
-                    pic_name = str(uuid.uuid1()) + "_" + pic_filename
-                    saver = product_image
-                    saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-                    cur.execute(
-                        "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity, product_id, price_id) VALUES (?,?,?,?,?,?,?,?)",
-                        (shop, product_name, product_price, pic_name, product_description, product_quantity))
-                    con.commit()
+                pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                saver = product_image
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+                cur.execute("INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)", (shop, product_name, product_price, pic_name, product_description, product_quantity))
+                con.commit()
 
                 # for colour in product_colour:
                 #     cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)',
@@ -1156,7 +1153,11 @@ def deletetradein(id):
     for picture in tradein_pic:
         location = "static/img/"
         path = os.path.join(location, picture['tradein_pic'])
-        os.remove(path)
+        try:
+            os.remove(path)
+        except OSError as e:
+            if e.errno and e.errno == 2:  # File not found error
+                return redirect(url_for('forms'))
     cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
     cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
     con.commit()
