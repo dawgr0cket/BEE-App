@@ -529,23 +529,24 @@ def deleteblog(id):
     # Connect to database
     con = sqlite3.connect('database.db')
     cur = con.cursor()
-
     # Retrieve the blog post's picture filename
     cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
     blog_pic = cur.fetchone()
-
-    # Delete the picture from the directory
+        # Delete the picture from the directory
     for pic in blog_pic:
         location = 'static/img/'
         path = os.path.join(location, pic)
-        os.remove(path)
-
-    # Delete the blog post from the database
-    cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
-    con.commit()
-    con.close()
-
-    return redirect(url_for('blog'))
+        try:
+            os.remove(path)
+        except OSError as e:
+            if e.errno and e.errno == 2: # File not found error
+                cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
+                con.commit()
+                return redirect(url_for('blog'))
+            else:
+                cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
+                con.commit()    # Delete the blog post from the database
+                return redirect(url_for('blog'))
 
 
 @app.route('/admindashboard')
