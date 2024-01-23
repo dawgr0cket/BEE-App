@@ -149,6 +149,7 @@ def checkout(lists, username):
 #     return render_template('checkout.html', form=form)
 
 
+
 @app.route('/applydisc/<username>', methods=['GET', 'POST'])
 def applydisc(username):
     if request.method == 'POST':
@@ -167,6 +168,19 @@ def cartdisc(username, deduct):
     return render_template('cart.html', username=username, deduct=deduct)
 
 
+# @app.route('/update_product', methods=['PUT'])
+# def update_product():
+#     data = request.get_json()
+#     product_id = data.get('id')
+#     quantity = data.get('quantity')
+#
+#     product = Product.query.get_or_404(product_id)
+#     product.quantity = quantity
+#     product.total_price = quantity * product.price
+#
+#     db.session.commit()
+#
+#     return jsonify({'message': 'Product updated successfully'})
 
 
 @app.route('/payment')
@@ -1343,6 +1357,75 @@ def predict():
     response = get_response(text)
     message = {"answer": response}
     return jsonify(message)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    # You might want to query a database or search through a list of items
+    items = ['shirt', 'pants', 'hoodie', 'top']
+    # Implement your search logic here
+    search_results = []
+    for item in items:
+        if query.lower() in item.lower():
+            search_results.append(item)
+    # For simplicity, let's just return the query for now
+    result = f'Searching for: {query}'
+    if search_results:
+        result += f'\n\nSearch Results: {", ".join(search_results)}'
+    else:
+        result += '\n\nNo results found.'
+    return render_template('search_results.html', result=result)
+
+
+@app.errorhandler(401)
+def error401(error):
+    return render_template('error/error401.html'), 401
+
+
+@app.errorhandler(403)
+def error403(error):
+    return render_template('error/error403.html'), 403
+
+
+@app.errorhandler(404)
+def error404(error):
+    return render_template('error/error404.html'), 404
+
+
+@app.errorhandler(413)
+def error413(error):
+    return render_template('error/error413.html'), 413
+
+
+@app.errorhandler(429)
+def error429(error):
+    return render_template('error/error429.html'), 429
+
+
+@app.errorhandler(500)
+def error500(error):
+    return render_template('error/error500.html'), 500
+
+
+@app.errorhandler(501)
+def error501(error):
+    return render_template('error/error501.html'), 501
+
+
+@app.errorhandler(502)
+def error502(error):
+    return render_template('error/error502.html'), 502
+
+
+@app.errorhandler(503)
+def error503(error):
+    return render_template('error/error503.html'), 503
 
 
 if __name__ == '__main__':
