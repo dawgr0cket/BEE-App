@@ -120,14 +120,9 @@ def applydisc(username):
         discount = request.form['discount']
         con = get_db()
         cur = con.cursor()
-        cur.execute('SELECT COUNT(*) FROM addvouchers WHERE code = ?', (discount,))
-        result = cur.fetchone()[0]
-        if result < 0:
-            msg = 'Invalid Code'
-            flash(msg)
-            return redirect(url_for('cart', username=username))
         cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
         deduct = cur.fetchall()[0]
+        cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
     return redirect(url_for('cart', username=username, deduct=deduct))
 
 
@@ -297,9 +292,9 @@ class AddressForm(FlaskForm):
 class UserForm(FlaskForm):
     username = StringField("Username")
     email = EmailField('Email')
-    # phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
-    phone_no = IntegerField("Phone Number", validators=[
-        validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
+    phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
+    # phone_no = IntegerField("Phone Number", validators=[
+    #     validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
@@ -1176,6 +1171,7 @@ def profile():
 @app.route('/editprofile', methods=['GET', 'POST'])
 @login_required
 def editprofile():
+    error = None
     form = UserForm()
     if request.method == 'POST':
         username = request.form['username']
@@ -1191,20 +1187,21 @@ def editprofile():
         if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
         else:
-            session['phone_no'] = None
+            error = "Invalid phone number"
         if request.form['dob'] == '':
             session['dob'] = None
         else:
             session['dob'] = dob
-        with sqlite3.connect('database.db') as con:
-            cur = con.cursor()
-            cur.execute(
-                "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
-                (username, email, phone_no, dob, gender, session['username']))
+        if error is None:
+            with sqlite3.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute(
+                    "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
+                    (username, email, phone_no, dob, gender, session['username']))
 
-            con.commit()
+                con.commit()
 
-        con.close()
+            con.close()
         return redirect(url_for('profile'))
     else:
         with sqlite3.connect('database.db') as con:
@@ -1284,12 +1281,15 @@ def cart(username):
                 }
                 total = total + i[0][2]
                 lists.append(list_1)
+
+            cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
+            vouchers = cur.fetchall()
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total)
+        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers)
 
 
 @app.route('/delete_cart/<product_name>/<username>')

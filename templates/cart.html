@@ -184,8 +184,12 @@ td {
   </div>
   <form action="/applydisc/{{ session['username'] }}" method="post">
     <div class="form-group">
-      <label for="discount">Discount Code</label>
-      <input type="text" id="discount" name="discount">
+        <label for="discount">Select a Voucher:</label>
+        <select name="discount" id="discount">
+            {% for voucher in vouchers %}
+            <option value="{{ voucher['code'] }}">{{ voucher['code'] }}</option>
+            {% endfor %}
+        </select>
       <button type="submit">Apply Discount</button>
     </div>
   </form>
