@@ -6,7 +6,7 @@ import shortuuid
 import functools
 import stripe
 import re
-
+from checkoutform import Checkoutform
 from chatbot import get_response
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session, abort
@@ -108,10 +108,44 @@ def create_stripe_checkout_session(lists, username):
 
 @app.route('/checkout/<lists>/<username>', methods=['GET','POST'])
 def checkout(lists, username):
-    session_id = create_stripe_checkout_session(lists, username)
-    return redirect(session_id.url, code=303)
+    try:
+        if request.method == 'POST':
+            block = request.form['block']
+            unitno = request.form['unitno']
+            street = request.form['street']
+            city = request.form['city']
+            postalcode = request.form['postalcode']
+            form = Checkoutform(block, unitno, street, city, postalcode)
+            con = get_db()
+            con.execute(
+                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUE (?,?,?,?,?,?)',
+                (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            con.commit()
+    except:
+        msg = 'An Error has occurred!'
+        flash(msg)
+    finally:
+        session_id = create_stripe_checkout_session(lists, username)
+        return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
+
+
+# def checkoutform(lists, username):
+#     if form.validate_on_submit():
+#         # Access the form data
+#         block = form.block.data
+#         unitno = form.unitno.data
+#         street = form.street.data
+#         city = form.city.data
+#         postal_code = form.postal_code.data
+#
+#         con = get_db()
+#         con.execute('INSERT INTO addresses (block, unitno, street, city, state, postal_code, username) VALUE (?,?,?,?,?,?,?)', (block, unitno, street, city, state, postal_code, username))
+#         con.commit()
+#         # Redirect to a success page or display a success message
+#         return redirect(url_for('checkout', lists=lists, username=username))
+#     return render_template('checkout.html', form=form)
 
 
 @app.route('/applydisc/<username>', methods=['GET', 'POST'])
@@ -128,27 +162,10 @@ def applydisc(username):
 
 
 @app.route('/cart/<username>/<deduct>')
-def cartdisc(username,deduct):
+def cartdisc(username, deduct):
     return render_template('cart.html', username=username, deduct=deduct)
 
 
-# def checkoutform(lists, username):
-#     form = AddressForm()
-#     if form.validate_on_submit():
-#         # Access the form data
-#         block = form.block.data
-#         unitno = form.unitno.data
-#         street = form.street.data
-#         city = form.city.data
-#         state = form.state.data
-#         postal_code = form.postal_code.data
-#
-#         con = get_db()
-#         con.execute('INSERT INTO addresses (block, unitno, street, city, state, postal_code, username) VALUE (?,?,?,?,?,?,?)', (block, unitno, street, city, state, postal_code, username))
-#         con.commit()
-#         # Redirect to a success page or display a success message
-#         return redirect(url_for('checkout', lists=lists, username=username))
-#     return render_template('checkout.html', form=form)
 
 
 @app.route('/payment')
@@ -1262,6 +1279,7 @@ def cart(username):
         rows = []
         lists = []
         total = 0
+        vouchers = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1271,21 +1289,23 @@ def cart(username):
                 product_list.append(product['product_name'])
 
             for l in product_list:
-                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ? GROUP BY product_name", (l,))
-                row = cur.fetchall()
+                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ?", (l,))
+                row = cur.fetchone()
                 rows.append(row)
 
             for i in rows:
                 list_1 = {
-                    'name': i[0][1],
-                    'price': i[0][2],
-                    'image': i[0][3],
+                    'name': i['product_name'],
+                    'price': i['product_price'],
+                    'image': i['product_image'],
                 }
-                total = total + i[0][2]
+                total = total + i['product_price']
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
             vouchers = cur.fetchall()
+
+
     except:
         msg = 'An Error has occurred'
         flash(msg)

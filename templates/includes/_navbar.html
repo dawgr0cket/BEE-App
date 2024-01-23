@@ -138,9 +138,15 @@
         <a href="/wishlist">
           <img src="static/img/img_2.png" alt="" width="30px">
         </a>
+        {% if 'username' in session %}
         <a href="/cart/{{ session['username'] }}">
           <img src="static/img/img_3.png" alt="" width="30px">
         </a>
+        {% else %}
+        <a href="/login">
+          <img src="static/img/img_3.png" alt="" width="30px">
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>

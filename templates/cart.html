@@ -124,57 +124,66 @@ td {
   .shipping-section {
     margin-top: 20px;
   }
+
+  .checkout-button {
+  /* Default button styles */
+  background-color: #f2f2f2;
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.checkout-button:disabled {
+  /* Disabled button styles */
+  opacity: 0.6;
+}
 </style>
 <table>
 {% for row in rows %}
     <thead>
         <th>Product</th>
         <th>Price</th>
+        <th>Stock Left</th>
         <th>Quantity</th>
     </thead>
-    {% for l in row %}
     <tr>
         <td>
-            <p>{{ row[loop.index - 1]['product_name'] }}</p>
-            <object><img src="/static/img/{{ row[loop.index - 1]['product_image'] }}" width="100px"></object>
+            <p>{{ row['product_name'] }}</p>
+            <object><img src="/static/img/{{ row['product_image'] }}" width="100px"></object>
         </td>
         <td>
-            <p>{{ row[loop.index - 1]['product_price'] }}</p>
+            <p>{{ row['product_price'] }}</p>
+        </td>
+        <td>
+            <p>{{ row['product_quantity'] }}</p>
         </td>
         <td>
             <button onclick="increment()">+</button><h2 id="counting">1</h2><button onclick="decrement()">-</button>
         </td>
         <td>
-            <a href="/delete_cart/{{ l['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
+            <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
         </td>
     </tr>
-    {% endfor %}
 {% endfor %}
 </table>
 <div class="form-container">
-  <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post">
+<form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
+  <!-- Shipping Information -->
+  <div class="form-group shipping-section">
+    <h3>Shipping Information</h3>
+    <label for="block">Block</label>
+    <input type="text" id="block" name="block" required>
+    <label for="unitno">Unit No.</label>
+    <input type="text" id="unitno" name="unitno" required>
+    <label for="street">Street</label>
+    <input type="text" id="street" name="street" required>
+    <label for="city">City</label>
+    <input type="text" id="city" name="city" required>
+    <label for="postalcode">Postal Code</label>
+    <input type="text" id="postalcode" name="postalcode" required>
+  </div>
 
-    <!-- Existing form fields -->
-
-    <!-- Discount Code -->
-
-
-    <!-- Shipping Information -->
-    <div class="form-group shipping-section">
-      <h3>Shipping Information</h3>
-      <label for="address">Address</label>
-      <input type="text" id="address" name="address" required>
-      <label for="address">Address</label>
-      <input type="text" id="address" name="address" required>      <label for="address">Address</label>
-      <input type="text" id="address" name="address" required>
-      <label for="city">City</label>
-      <input type="text" id="city" name="city" required>
-      <label for="zipcode">Zip Code</label>
-      <input type="text" id="zipcode" name="zipcode" required>
-    </div>
-
-    <button type="submit" class="checkout-button">Proceed to Checkout</button>
-  </form>
+  <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
+</form>
 
   <!-- Total Section -->
   <div class="total-section">
@@ -221,5 +230,41 @@ const grandTotal = subtotal - deduct + shippingFee;
 
 // Update the content of the grandtotal span
 document.getElementById('grandtotal').textContent = grandTotal.toFixed(2);
+
+
+function validateForm() {
+  var unitNoInput = document.getElementById("unitno");
+  var unitNoValue = unitNoInput.value.trim();
+
+  // Check if unit no. length is less than 8 characters
+  if (unitNoValue.length >= 8) {
+    alert("Unit No. must be less than 8 characters.");
+    return false; // Prevent form submission
+  }
+
+  // Check if unit no. contains only "#" and "-"
+  var validCharacters = /^[-#]+$/;
+  if (!validCharacters.test(unitNoValue)) {
+    alert("Unit No. can only contain '#' and '-'.");
+    return false; // Prevent form submission
+  }
+
+  return true; // Allow form submission
+}
+
+// Add event listeners to form inputs
+var formInputs = document.querySelectorAll('form input[required]');
+formInputs.forEach(function(input) {
+  input.addEventListener('input', handleInput);
+  input.addEventListener('change', handleInput);
+  input.addEventListener('blur', handleInput); // Add 'blur' event listener
+});
+
+function handleInput() {
+  var isFormValid = Array.from(formInputs).every(function(input) {
+    return input.checkValidity();
+  });
+  document.getElementById('checkout-btn').disabled = !isFormValid;
+}
 </script>
 {% endblock %}

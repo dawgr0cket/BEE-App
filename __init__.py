@@ -26,7 +26,7 @@ print("Connected to database successfully")
 # conn.execute('ALTER TABLE inventory ADD COLUMN price_id STRING') # not ran yet
 # conn.execute('DROP TABLE addvouchers')
 # conn.execute('CREATE TABLE sessions (session_id STRING, username VARCHAR(255) NOT NULL, product_name STRING, payment_timestamp INT NOT NULL DEFAULT CURRENT_TIMESTAMP)')
-# conn.execute('CREATE TABLE addresses (id INTEGER PRIMARY KEY AUTOINCREMENT, block TEXT NOT NULL, unitno TEXT NOT NULL, street TEXT NOT NULL, city TEXT NOT NULL, state TEXT NOT NULL, postal_code TEXT NOT NULL, username VARCHAR(255) NOT NULL)')
+# conn.execute('CREATE TABLE addresses (id INTEGER PRIMARY KEY AUTOINCREMENT, block TEXT NOT NULL, unitno TEXT NOT NULL, street TEXT NOT NULL, city TEXT NOT NULL, postal_code TEXT NOT NULL, username VARCHAR(255) NOT NULL)')
 print("Created table successfully!")
 
 conn.close()
