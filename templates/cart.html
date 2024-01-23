@@ -125,7 +125,7 @@ td {
     margin-top: 20px;
   }
 
-  .checkout-button {
+.checkout-button {
   /* Default button styles */
   background-color: #f2f2f2;
   color: #999999;
@@ -135,6 +135,13 @@ td {
 .checkout-button:disabled {
   /* Disabled button styles */
   opacity: 0.6;
+}
+
+.checkout-button:not(:disabled) {
+  /* Enabled button styles */
+  background-color: #4CAF50;
+  color: #ffffff;
+  cursor: pointer;
 }
 </style>
 <table>
@@ -236,35 +243,29 @@ function validateForm() {
   var unitNoInput = document.getElementById("unitno");
   var unitNoValue = unitNoInput.value.trim();
 
-  // Check if unit no. length is less than 8 characters
-  if (unitNoValue.length >= 8) {
-    alert("Unit No. must be less than 8 characters.");
+  // Check if unit no. length is less than 4 characters
+  if (unitNoValue.length < 4) {
+    alert("Unit No. must be at least 4 characters.");
     return false; // Prevent form submission
   }
 
-  // Check if unit no. contains only "#" and "-"
-  var validCharacters = /^[-#]+$/;
+  // Check if unit no. contains only numbers, "#" and "-"
+  var validCharacters = /^[\d#-]+$/;
   if (!validCharacters.test(unitNoValue)) {
-    alert("Unit No. can only contain '#' and '-'.");
+    alert("Unit No. can only contain numbers, '#' and '-'.");
     return false; // Prevent form submission
   }
 
   return true; // Allow form submission
 }
 
-// Add event listeners to form inputs
-var formInputs = document.querySelectorAll('form input[required]');
-formInputs.forEach(function(input) {
-  input.addEventListener('input', handleInput);
-  input.addEventListener('change', handleInput);
-  input.addEventListener('blur', handleInput); // Add 'blur' event listener
-});
+// Add event listener to unitno input
+var unitNoInput = document.getElementById("unitno");
+unitNoInput.addEventListener("input", handleInput);
 
 function handleInput() {
-  var isFormValid = Array.from(formInputs).every(function(input) {
-    return input.checkValidity();
-  });
-  document.getElementById('checkout-btn').disabled = !isFormValid;
+  var isButtonEnabled = unitNoInput.value.trim().length >= 4;
+  document.getElementById("checkout-btn").disabled = !isButtonEnabled;
 }
 </script>
 {% endblock %}

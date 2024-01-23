@@ -106,10 +106,10 @@ def create_stripe_checkout_session(lists, username):
     return session
 
 
-@app.route('/checkout/<lists>/<username>', methods=['GET','POST'])
+@app.route('/checkout/<lists>/<username>', methods=['GET', 'POST'])
 def checkout(lists, username):
-    try:
-        if request.method == 'POST':
+    if request.method == 'POST':
+        try:
             block = request.form['block']
             unitno = request.form['unitno']
             street = request.form['street']
@@ -117,16 +117,17 @@ def checkout(lists, username):
             postalcode = request.form['postalcode']
             form = Checkoutform(block, unitno, street, city, postalcode)
             con = get_db()
-            con.execute(
-                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUE (?,?,?,?,?,?)',
+            cur = con.cursor()
+            cur.execute(
+                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
                 (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
-    except:
-        msg = 'An Error has occurred!'
-        flash(msg)
-    finally:
-        session_id = create_stripe_checkout_session(lists, username)
-        return redirect(session_id.url, code=303)
+        except:
+            msg = 'An Error has occurred!'
+            flash(msg)
+        finally:
+            session_id = create_stripe_checkout_session(lists, username)
+            return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
 
@@ -255,9 +256,11 @@ def success(username):
 #         return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
 #
 
-@app.route('/cancel')
-def cancel():
-    return 'Payment canceled.'
+@app.route('/cancel/<username>')
+def cancel(username):
+    msg = 'Payment canceled.'
+    flash(msg)
+    return redirect(url_for('home'))
 
 
 def get_db():
