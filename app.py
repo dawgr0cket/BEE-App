@@ -699,12 +699,9 @@ def add_inventory():
                     pic_name = str(uuid.uuid1()) + "_" + pic_filename
                     saver = product_image
                     saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-                    product_id, price_id = create_product_and_price(product_name, product_price, 'sgd', pic_name,
-                                                                    product_quantity, product_size)
                     cur.execute(
                         "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity, product_id, price_id) VALUES (?,?,?,?,?,?,?,?)",
-                        (shop, product_name, product_price, pic_name, product_description, product_quantity, product_id,
-                         price_id))
+                        (shop, product_name, product_price, pic_name, product_description, product_quantity))
                     con.commit()
 
                 # for colour in product_colour:
