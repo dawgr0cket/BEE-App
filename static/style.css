@@ -87,7 +87,7 @@ body {
 
 /* FOOTER */
 .chatbox__footer {
-    position: sticky;
+    position: fixed;
     bottom: 0;
 }
 
