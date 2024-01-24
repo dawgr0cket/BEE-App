@@ -55,6 +55,26 @@ ul.admin {
   text-align: center;
 }
 
+.card-body {
+  position: relative;
+}
+
+.card-body .btn {
+  position: absolute;
+  bottom: 10px;
+}
+
+.card-body .btn-primary {
+  right: 5px;
+}
+
+.card-body .btn-danger {
+  right: 60px;
+}
+
+.card-body .btn-primary:first-of-type {
+  right: 134px;
+}
 </style>
 </head>
 <body>
@@ -76,17 +96,26 @@ ul.admin {
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Inventory</h2>
-  {% for row in rows %}
-    <a href="/admin_product/{{ row['product_name'] }}" class="individualproduct" style="float: left;text-decoration: none;color: black;margin-left: 50px;">
-      <p style="text-align: center;">Product for {{ row['shop'] }}</p>
-      <div class="productimage"><img src="static/img/{{ row['product_image'] }}"><br></div>
-      {{ row['product_name'] }}<br>
-      ${{ row['product_price'] }}
-      <object><a href="/delete_inventory/{{ row['product_name'] }}"><img src="static/img/img_4.png" width="20px"></a></object>
-      <object><a href="/edit_inventory/{{ row['product_name'] }}"><img src="static/img/img_5.png" width="20px"></a></object>
-    </a><br>
-
-  {% endfor %}
+  <div class="container">
+    <div class="row">
+      {% for row in rows %}
+        <div class="col-md-3">
+          <div class="card" style="height: 100%;">
+            <div style="height: 300px; overflow: hidden;">
+              <img src="static/img/{{ row['product_image'] }}" class="card-img-top" alt="Product Image" style="width: 100%; height: auto;">
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ row['product_name'] }}</h5>
+              <p class="card-text">${{ row['product_price'] }}</p>
+              <a href="/admin_product/{{ row['product_name'] }}" class="btn btn-primary">View</a>
+              <a href="/delete_inventory/{{ row['product_name'] }}" class="btn btn-danger">Delete</a>
+              <a href="/edit_inventory/{{ row['product_name'] }}" class="btn btn-primary">Edit</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
   <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a>
 </div>
 

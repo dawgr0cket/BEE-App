@@ -195,28 +195,33 @@ def success(username):
         cur = con.cursor()
         cur.execute('SELECT * FROM cart WHERE username = ?', (username,))
         products = cur.fetchall()
-        sessionid = str(shortuuid.uuid())
+        sessionid = str(shortuuid.uuid())[0:10]
         productnamelist = []
         orders = []
         total = 0
+        cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+        address = cur.fetchall()
         for product in products:
-            cur.execute('INSERT INTO sessions (session_id, username, product_name) VALUES (?,?,?)', (sessionid, username, product[1]))
+            cur.execute('INSERT INTO sessions (session_id, username, product_name, status) VALUES (?,?,?,?)',
+                        (sessionid, username, product[1], 0))
             con.commit()
             productnamelist.append(product[1])
         for productname in productnamelist:
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
-                total = total + price[1]
+                total += price[1]
             orders.append(order)
+        cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
+        con.commit()
     except:
         msg = 'An Error has Occurred'
         flash(msg)
     finally:
         msg = 'Purchase Completed!'
         flash(msg)
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username)
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address)
 
 
 # @app.route('/successfultrans/<username>')
@@ -589,6 +594,12 @@ def deleteblog(id):
 @login_required
 def dashbboard():
     return render_template('admindashboard.html')
+
+
+@app.route('/orders')
+@login_required
+def orders():
+    pass
 
 
 @app.route('/users')
@@ -1051,6 +1062,37 @@ def edit_inventory(product_name):
 #     return redirect(url_for('addvouchers'))
 
 
+@app.route('/order_history/<username>')
+@login_required
+def order_history(username):
+    orders = []
+    item_list = []
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id', (username,))
+        orders = cur.fetchall()
+        cur.execute('SELECT session_id FROM sessions WHERE username = ?', (username,))
+        ids = cur.fetchall()
+        for row in ids:  # Iterate over the rows
+            session_id = row[0]  # Access the value of the session_id column in the row
+            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
+            row_count = cur.fetchone()[0]
+            item_list.append(row_count)
+    except:
+        msg = 'Failed to get orders'
+        flash(msg)
+        return redirect(url_for('profile'))
+
+    return render_template('order_history.html', orders=orders, item_list=item_list)
+
+
+@app.route('/retrieve_order/<orderid>')
+@login_required
+def retrieve_order(orderid):
+        pass
+
+
 @app.route('/view_vouchers/<username>')
 @login_required
 def view_vouchers(username):
@@ -1295,6 +1337,7 @@ def cart(username):
         lists = []
         total = 0
         vouchers = []
+        address = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1330,13 +1373,16 @@ def cart(username):
             flash("Voucher applied successfully")
             return redirect(url_for('cart'))
 
+            cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+            address = cur.fetchall()
+
 
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
-    finally:
-        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers)
+
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1368,12 +1414,6 @@ def predict():
     message = {"answer": response}
     return jsonify(message)
 
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query')
@@ -1395,17 +1435,17 @@ def search():
 
 @app.errorhandler(401)
 def error401(error):
-    return render_template('error/error401.html'), 401
+    return render_template('error401.html'), 401
 
 
 @app.errorhandler(403)
 def error403(error):
-    return render_template('error/error403.html'), 403
+    return render_template('error403.html'), 403
 
 
 @app.errorhandler(404)
 def error404(error):
-    return render_template('error/error404.html'), 404
+    return render_template('error404.html'), 404
 
 
 @app.errorhandler(413)
@@ -1420,7 +1460,7 @@ def error429(error):
 
 @app.errorhandler(500)
 def error500(error):
-    return render_template('error/error500.html'), 500
+    return render_template('error500.html'), 500
 
 
 @app.errorhandler(501)
