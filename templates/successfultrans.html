@@ -19,6 +19,7 @@
           <li class="text-black">{{ username }}</li>
           <li class="text-muted mt-1"><span class="text-black">Invoice</span> #{{ sessionid }}</li>
           <li class="text-black mt-1">January 23 2024</li>
+          <li class="text-black mt-1">Address: {{ address[1] }} {{ address[3] }}, {{ address[2] }}, {{ address[5] }}, {{ address[4] }}</li>
         </ul>
           {% for order in orders %}
             <hr>

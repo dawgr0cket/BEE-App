@@ -199,8 +199,10 @@ def success(username):
         productnamelist = []
         orders = []
         total = 0
+        cur.execute('SELECT * FROM address WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+        address = cur.fetchall()
         for product in products:
-            cur.execute('INSERT INTO sessions (session_id, username, product_name) VALUES (?,?,?)', (sessionid, username, product[1]))
+            cur.execute('INSERT INTO sessions (session_id, username, product_name, status) VALUES (?,?,?,?)', (sessionid, username, product[1], 0))
             con.commit()
             productnamelist.append(product[1])
         for productname in productnamelist:
@@ -216,7 +218,7 @@ def success(username):
     finally:
         msg = 'Purchase Completed!'
         flash(msg)
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username)
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address)
 
 
 # @app.route('/successfultrans/<username>')
@@ -587,6 +589,12 @@ def deleteblog(id):
 @login_required
 def dashbboard():
     return render_template('admindashboard.html')
+
+
+@app.route('/orders')
+@login_required
+def orders():
+    pass
 
 
 @app.route('/users')
@@ -1292,6 +1300,7 @@ def cart(username):
         lists = []
         total = 0
         vouchers = []
+        address = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1317,13 +1326,16 @@ def cart(username):
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
             vouchers = cur.fetchall()
 
+            cur.execute('SELECT * FROM address WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+            address = cur.fetchall()
+
 
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
     finally:
-        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers)
+        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1382,17 +1394,17 @@ def search():
 
 @app.errorhandler(401)
 def error401(error):
-    return render_template('error/error401.html'), 401
+    return render_template('error401.html'), 401
 
 
 @app.errorhandler(403)
 def error403(error):
-    return render_template('error/error403.html'), 403
+    return render_template('error403.html'), 403
 
 
 @app.errorhandler(404)
 def error404(error):
-    return render_template('error/error404.html'), 404
+    return render_template('error404.html'), 404
 
 
 @app.errorhandler(413)
@@ -1407,7 +1419,7 @@ def error429(error):
 
 @app.errorhandler(500)
 def error500(error):
-    return render_template('error/error500.html'), 500
+    return render_template('error500.html'), 500
 
 
 @app.errorhandler(501)

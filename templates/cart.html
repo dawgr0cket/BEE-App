@@ -173,25 +173,39 @@ td {
 {% endfor %}
 </table>
 <div class="form-container">
-<form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
-  <!-- Shipping Information -->
-  <div class="form-group shipping-section">
-    <h3>Shipping Information</h3>
-    <label for="block">Block</label>
-    <input type="text" id="block" name="block" required>
-    <label for="unitno">Unit No.</label>
-    <input type="text" id="unitno" name="unitno" required>
-    <label for="street">Street</label>
-    <input type="text" id="street" name="street" required>
-    <label for="city">City</label>
-    <input type="text" id="city" name="city" required>
-    <label for="postalcode">Postal Code</label>
-    <input type="text" id="postalcode" name="postalcode" required>
-  </div>
+{% if address|length > 0 %}
+    <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
+      <!-- Shipping Information -->
+      <div class="form-group shipping-section">
+        <h3>Shipping Information</h3>
+            <p class="text-muted">Address: {{ address[1] }} {{ address[3] }}, {{ address[2] }}, {{ address[5] }}, {{ address[4] }}</p>
+            <input type="hidden" id="block" name="block" value="{{ address[1] }}">
+            <input type="hidden" id="unitno" name="unitno" value="{{ address[2] }}">
+            <input type="hidden" id="street" name="street" value="{{ address[3] }}">
+            <input type="hidden" id="city" name="city" value="{{ address[4] }}">
+            <input type="hidden" id="postalcode" name="postalcode" value="{{ address[5] }}">
+      </div>
 
-  <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
-</form>
-
+      <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
+    </form>{% else %}
+    <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
+      <!-- Shipping Information -->
+      <div class="form-group shipping-section">
+        <h3>Shipping Information</h3>
+            <label for="block">Block</label>
+            <input type="text" id="block" name="block" required>
+            <label for="unitno">Unit No.</label>
+            <input type="text" id="unitno" name="unitno" required>
+            <label for="street">Street</label>
+            <input type="text" id="street" name="street" required>
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" required>
+            <label for="postalcode">Postal Code</label>
+            <input type="text" id="postalcode" name="postalcode" required>
+      </div>
+      <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
+    </form>
+{% endif %}
   <!-- Total Section -->
   <div class="total-section">
     <h3>Total</h3>

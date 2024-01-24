@@ -73,18 +73,18 @@ ul.admin {
   <li><a href="#about">About</a></li>
 </ul>
 
-<!--FRONTEND PPL for below, a carousel would probably be good to show different colour of clothes-->
-
-<div style="float: left;">
-  {{ rows[0]['product_name'] }}
-{% for row in rows %}
-<!--    <div class="numbertext">{{ loop.index }}</div>-->
-    <img src="/static/img/{{ row[3] }}" style="width:300px;">
-{% endfor %}
-</div>
-<div>
-  <p>Quantity left: {{ rows[0]['product_quantity'] }} </p><br>
-  <p>Sizes available: {% for size in sizes %} {{ size[2] }} {% endfor %}</p><br>
+<div style="margin-left:25%;padding:30px 16px;height:868px;">
+  <div style="float: left;">
+  {% for row in rows %}
+    <h4>{{ rows[0]['product_name'] }}</h4>
+  <!--    <div class="numbertext">{{ loop.index }}</div>-->
+      <img src="/static/img/{{ row[3] }}" style="width:300px;">
+  {% endfor %}
+  </div>
+  <div>
+    <p>Quantity left: {{ rows[0]['product_quantity'] }} </p><br>
+    <p>Sizes available: {% for size in sizes %} {{ size[2] }} {% endfor %}</p><br>
+  </div>
 </div>
 </body>
 </html>
