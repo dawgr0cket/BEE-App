@@ -71,7 +71,7 @@ table {
 </ul>
     <h1 class="display-4">Vouchers</h1>
     <p>{{ username }}'s Vouchers</p>
-    {% if rows is defined and texts|length == 0 %}
+    {% if rows|length == 0 %}
         <h4> No vouchers yet!</h4>
     {% else %}
         {% for row in rows %}

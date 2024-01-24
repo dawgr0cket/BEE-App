@@ -914,17 +914,14 @@ def create_vouchers():
             voucher_name = request.form['voucher_name']
             discount = request.form['discount']
             condition = request.form['condition']
-            with sqlite3.connect('database.db') as con:
-                # def secure_rand(len=8):
-                #     token = os.urandom(len)
-                #     return base64.b64encode(token)
-                voucher_code = str(shortuuid.uuid())
-                cur = con.cursor()
-                cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
-                            (username, voucher_name, discount, condition, voucher_code))
-                con.commit()
-
-            con.close()
+            # def secure_rand(len=8):
+            #     token = os.urandom(len)
+            #     return base64.b64encode(token)
+            voucher_code = str(shortuuid.uuid())
+            cur = con.cursor()
+            cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
+                        (username, voucher_name, discount, condition, voucher_code))
+            con.commit()
             msg = f"Voucher of {voucher_name} has been added to {username}'s account"
             flash(msg)
             return redirect(url_for('addvouchers'))
