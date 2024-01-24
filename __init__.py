@@ -13,7 +13,7 @@ print("Connected to database successfully")
 # conn.execute('CREATE TABLE tradeinentries (tradein_id STRING, username VARCHAR(255), no_of_clothes INT, status BOOLEAN)')
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN tradein_id INT')
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN status BOOLEAN')
-#conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code STRING, expiry_date TEXT NOT NULL, status TEXT NOT NULL DEFAULT "active")')
+#conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code TEXT NOT NULL UNIQUE, expiry_date DATETIME NOT NULL, status TEXT NOT NULL DEFAULT "active")')
 # conn.execute('CREATE TABLE validvouchers (row_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING)')
 # conn.execute('CREATE TABLE cart (username VARCHAR(255) NOT NULL, product_name STRING)')
 
@@ -27,7 +27,7 @@ print("Connected to database successfully")
 # conn.execute('CREATE TABLE inventorycolour (product_name STRING, product_colour STRING)')
 # conn.execute('ALTER TABLE inventory ADD COLUMN price_id STRING') # not ran yet
 # conn.execute('DROP TABLE addvouchers')
-# conn.execute('CREATE TABLE sessions (session_id STRING, username VARCHAR(255) NOT NULL, product_name STRING, payment_timestamp INT NOT NULL DEFAULT CURRENT_TIMESTAMP)')
+# conn.execute('CREATE TABLE sessions (session_id STRING, username VARCHAR(255) NOT NULL, product_name STRING,total INT, payment_timestamp INT NOT NULL DEFAULT CURRENT_TIMESTAMP, status BOOLEAN)')
 # conn.execute('CREATE TABLE addresses (id INTEGER PRIMARY KEY AUTOINCREMENT, block TEXT NOT NULL, unitno TEXT NOT NULL, street TEXT NOT NULL, city TEXT NOT NULL, postal_code TEXT NOT NULL, username VARCHAR(255) NOT NULL)')
 print("Created table successfully!")
 

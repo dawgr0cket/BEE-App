@@ -75,6 +75,10 @@ ul.admin {
             {{ form.condition(class="form-control") }}
             <br>
 
+            {{ form.expiry_date.label }}
+            {{ form.expiry_date }} <!--Edited form html-->
+            <br>
+
             <hr>
             {{ form.submit(class="btn btn-secondary") }}
     <a href="/admin_inventory">Discard Changes</a>
