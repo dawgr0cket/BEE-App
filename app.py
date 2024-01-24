@@ -1087,7 +1087,6 @@ def order_history(username):
 @app.route('/retrieve_order/<orderid>')
 @login_required
 def retrieve_order(orderid):
-    try:
         pass
 
 
