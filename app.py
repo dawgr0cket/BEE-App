@@ -20,7 +20,7 @@ from wtforms import StringField, SubmitField, FileField, EmailField, IntegerFiel
     TextAreaField, validators
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-
+import datetime
 from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
 
@@ -358,6 +358,8 @@ class VoucherForm(FlaskForm):
     discount = IntegerField('Discount')
     condition = TextAreaField('Condition')
     submit = SubmitField("Submit")
+    voucher_code = StringField('Voucher Code', validators=[DataRequired()])
+    expiry_date = DateField('Expiry Date', format='%Y-%m-%d', validators=[DataRequired()])
 
 
 @app.route('/')
@@ -914,13 +916,14 @@ def create_vouchers():
             voucher_name = request.form['voucher_name']
             discount = request.form['discount']
             condition = request.form['condition']
+            expiry_date = request.form['expiry_date']  # get the expiry date from the form
             # def secure_rand(len=8):
             #     token = os.urandom(len)
             #     return base64.b64encode(token)
             voucher_code = str(shortuuid.uuid())
             cur = con.cursor()
-            cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
-                        (username, voucher_name, discount, condition, voucher_code))
+            cur.execute("INSERT INTO addvouchers (username, title, value, condition, code, expiry_date) VALUES (?,?,?,?,?,?)",
+                        (username, voucher_name, discount, condition, voucher_code,expiry_date))# insert the expiry date into the table
             con.commit()
             msg = f"Voucher of {voucher_name} has been added to {username}'s account"
             flash(msg)
@@ -1315,7 +1318,17 @@ def cart(username):
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
-            vouchers = cur.fetchall()
+            vouchers = cur.fetchall() #/fetchall()
+            if vouchers is None:
+                flash("Invalid voucher code")
+                return redirect(url_for('cart'))
+            expiry_date = vouchers['expiry_date']
+            if datetime.now() > expiry_date:
+                flash("This voucher has expired")
+                return redirect(url_for('cart'))
+            # apply the voucher here
+            flash("Voucher applied successfully")
+            return redirect(url_for('cart'))
 
 
     except:
