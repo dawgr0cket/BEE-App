@@ -6,7 +6,7 @@ import shortuuid
 import functools
 import stripe
 import re
-
+from checkoutform import Checkoutform
 from chatbot import get_response
 from tradeinform import Tradeinform
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session, abort
@@ -106,12 +106,48 @@ def create_stripe_checkout_session(lists, username):
     return session
 
 
-@app.route('/checkout/<lists>/<username>', methods=['GET','POST'])
+@app.route('/checkout/<lists>/<username>', methods=['GET', 'POST'])
 def checkout(lists, username):
-    session_id = create_stripe_checkout_session(lists, username)
-    return redirect(session_id.url, code=303)
+    if request.method == 'POST':
+        try:
+            block = request.form['block']
+            unitno = request.form['unitno']
+            street = request.form['street']
+            city = request.form['city']
+            postalcode = request.form['postalcode']
+            form = Checkoutform(block, unitno, street, city, postalcode)
+            con = get_db()
+            cur = con.cursor()
+            cur.execute(
+                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
+                (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            con.commit()
+        except:
+            msg = 'An Error has occurred!'
+            flash(msg)
+        finally:
+            session_id = create_stripe_checkout_session(lists, username)
+            return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
+
+
+# def checkoutform(lists, username):
+#     if form.validate_on_submit():
+#         # Access the form data
+#         block = form.block.data
+#         unitno = form.unitno.data
+#         street = form.street.data
+#         city = form.city.data
+#         postal_code = form.postal_code.data
+#
+#         con = get_db()
+#         con.execute('INSERT INTO addresses (block, unitno, street, city, state, postal_code, username) VALUE (?,?,?,?,?,?,?)', (block, unitno, street, city, state, postal_code, username))
+#         con.commit()
+#         # Redirect to a success page or display a success message
+#         return redirect(url_for('checkout', lists=lists, username=username))
+#     return render_template('checkout.html', form=form)
+
 
 
 @app.route('/applydisc/<username>', methods=['GET', 'POST'])
@@ -128,27 +164,23 @@ def applydisc(username):
 
 
 @app.route('/cart/<username>/<deduct>')
-def cartdisc(username,deduct):
+def cartdisc(username, deduct):
     return render_template('cart.html', username=username, deduct=deduct)
 
 
-# def checkoutform(lists, username):
-#     form = AddressForm()
-#     if form.validate_on_submit():
-#         # Access the form data
-#         block = form.block.data
-#         unitno = form.unitno.data
-#         street = form.street.data
-#         city = form.city.data
-#         state = form.state.data
-#         postal_code = form.postal_code.data
+# @app.route('/update_product', methods=['PUT'])
+# def update_product():
+#     data = request.get_json()
+#     product_id = data.get('id')
+#     quantity = data.get('quantity')
 #
-#         con = get_db()
-#         con.execute('INSERT INTO addresses (block, unitno, street, city, state, postal_code, username) VALUE (?,?,?,?,?,?,?)', (block, unitno, street, city, state, postal_code, username))
-#         con.commit()
-#         # Redirect to a success page or display a success message
-#         return redirect(url_for('checkout', lists=lists, username=username))
-#     return render_template('checkout.html', form=form)
+#     product = Product.query.get_or_404(product_id)
+#     product.quantity = quantity
+#     product.total_price = quantity * product.price
+#
+#     db.session.commit()
+#
+#     return jsonify({'message': 'Product updated successfully'})
 
 
 @app.route('/payment')
@@ -238,9 +270,11 @@ def success(username):
 #         return render_template('successfultrans.html', charge_id=charge_id, amount=amount, currency=currency, transaction_id=transaction_id, product_details=product_details)
 #
 
-@app.route('/cancel')
-def cancel():
-    return 'Payment canceled.'
+@app.route('/cancel/<username>')
+def cancel(username):
+    msg = 'Payment canceled.'
+    flash(msg)
+    return redirect(url_for('home'))
 
 
 def get_db():
@@ -675,17 +709,11 @@ def add_inventory():
                     con.commit()
 
                 pic_filename = secure_filename(product_image.filename)
-                if pic_filename != '':
-                    pic_name = str(uuid.uuid1()) + "_" + pic_filename
-                    saver = product_image
-                    saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-                    product_id, price_id = create_product_and_price(product_name, product_price, 'sgd', pic_name,
-                                                                    product_quantity, product_size)
-                    cur.execute(
-                        "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity, product_id, price_id) VALUES (?,?,?,?,?,?,?,?)",
-                        (shop, product_name, product_price, pic_name, product_description, product_quantity, product_id,
-                         price_id))
-                    con.commit()
+                pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                saver = product_image
+                saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+                cur.execute("INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)", (shop, product_name, product_price, pic_name, product_description, product_quantity))
+                con.commit()
 
                 # for colour in product_colour:
                 #     cur.execute('INSERT INTO inventorycolour (product_name, product_colour) VALUES (?,?)',
@@ -1139,7 +1167,11 @@ def deletetradein(id):
     for picture in tradein_pic:
         location = "static/img/"
         path = os.path.join(location, picture['tradein_pic'])
-        os.remove(path)
+        try:
+            os.remove(path)
+        except OSError as e:
+            if e.errno and e.errno == 2:  # File not found error
+                return redirect(url_for('forms'))
     cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
     cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
     con.commit()
@@ -1262,6 +1294,7 @@ def cart(username):
         rows = []
         lists = []
         total = 0
+        vouchers = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
@@ -1271,21 +1304,23 @@ def cart(username):
                 product_list.append(product['product_name'])
 
             for l in product_list:
-                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ? GROUP BY product_name", (l,))
-                row = cur.fetchall()
+                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ?", (l,))
+                row = cur.fetchone()
                 rows.append(row)
 
             for i in rows:
                 list_1 = {
-                    'name': i[0][1],
-                    'price': i[0][2],
-                    'image': i[0][3],
+                    'name': i['product_name'],
+                    'price': i['product_price'],
+                    'image': i['product_image'],
                 }
-                total = total + i[0][2]
+                total = total + i['product_price']
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
             vouchers = cur.fetchall()
+
+
     except:
         msg = 'An Error has occurred'
         flash(msg)
@@ -1322,6 +1357,75 @@ def predict():
     response = get_response(text)
     message = {"answer": response}
     return jsonify(message)
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    # You might want to query a database or search through a list of items
+    items = ['shirt', 'pants', 'hoodie', 'top']
+    # Implement your search logic here
+    search_results = []
+    for item in items:
+        if query.lower() in item.lower():
+            search_results.append(item)
+    # For simplicity, let's just return the query for now
+    result = f'Searching for: {query}'
+    if search_results:
+        result += f'\n\nSearch Results: {", ".join(search_results)}'
+    else:
+        result += '\n\nNo results found.'
+    return render_template('search_results.html', result=result)
+
+
+@app.errorhandler(401)
+def error401(error):
+    return render_template('error/error401.html'), 401
+
+
+@app.errorhandler(403)
+def error403(error):
+    return render_template('error/error403.html'), 403
+
+
+@app.errorhandler(404)
+def error404(error):
+    return render_template('error/error404.html'), 404
+
+
+@app.errorhandler(413)
+def error413(error):
+    return render_template('error/error413.html'), 413
+
+
+@app.errorhandler(429)
+def error429(error):
+    return render_template('error/error429.html'), 429
+
+
+@app.errorhandler(500)
+def error500(error):
+    return render_template('error/error500.html'), 500
+
+
+@app.errorhandler(501)
+def error501(error):
+    return render_template('error/error501.html'), 501
+
+
+@app.errorhandler(502)
+def error502(error):
+    return render_template('error/error502.html'), 502
+
+
+@app.errorhandler(503)
+def error503(error):
+    return render_template('error/error503.html'), 503
 
 
 if __name__ == '__main__':
