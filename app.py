@@ -293,9 +293,9 @@ class AddressForm(FlaskForm):
 class UserForm(FlaskForm):
     username = StringField("Username")
     email = EmailField('Email')
-    phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
-    # phone_no = IntegerField("Phone Number", validators=[
-    #     validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
+    # phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
+    phone_no = IntegerField("Phone Number", validators=[
+       validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
@@ -1189,7 +1189,7 @@ def editprofile():
         if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
         else:
-            error = "Invalid phone number"
+           error = "Invalid phone number"
         if request.form['dob'] == '':
             session['dob'] = None
         else:
