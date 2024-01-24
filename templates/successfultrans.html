@@ -19,7 +19,7 @@
           <li class="text-black">{{ username }}</li>
           <li class="text-muted mt-1"><span class="text-black">Invoice</span> #{{ sessionid }}</li>
           <li class="text-black mt-1">January 23 2024</li>
-          <li class="text-black mt-1">Address: {{ address[1] }} {{ address[3] }}, {{ address[2] }}, {{ address[5] }}, {{ address[4] }}</li>
+          <li class="text-black mt-1">{% for details in address %}Address: {{ details[1] }} {{ details[3] }}, {{ details[2] }}, {{ details[5] }}, {{ details[4] }}{% endfor %}</li>
         </ul>
           {% for order in orders %}
             <hr>
@@ -44,7 +44,7 @@
         <hr style="border: 2px solid black;">
       </div>
       <div class="text-center" style="margin-top: 90px;">
-        <a href="/home"><u class="text-info">Back To Home</u></a>
+        <a href="/"><u class="text-info">Back To Home</u></a>
         <p></p>
       </div>
 

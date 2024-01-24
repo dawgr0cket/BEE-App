@@ -195,23 +195,26 @@ def success(username):
         cur = con.cursor()
         cur.execute('SELECT * FROM cart WHERE username = ?', (username,))
         products = cur.fetchall()
-        sessionid = str(shortuuid.uuid())
+        sessionid = str(shortuuid.uuid())[0:10]
         productnamelist = []
         orders = []
         total = 0
-        cur.execute('SELECT * FROM address WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+        cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
         address = cur.fetchall()
         for product in products:
-            cur.execute('INSERT INTO sessions (session_id, username, product_name, status) VALUES (?,?,?,?)', (sessionid, username, product[1], 0))
+            cur.execute('INSERT INTO sessions (session_id, username, product_name, status) VALUES (?,?,?,?)',
+                        (sessionid, username, product[1], 0))
             con.commit()
             productnamelist.append(product[1])
         for productname in productnamelist:
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
-                total = total + price[1]
+                total += price[1]
             orders.append(order)
+        cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
+        con.commit()
     except:
         msg = 'An Error has Occurred'
         flash(msg)
@@ -1056,6 +1059,38 @@ def edit_inventory(product_name):
 #     return redirect(url_for('addvouchers'))
 
 
+@app.route('/order_history/<username>')
+@login_required
+def order_history(username):
+    orders = []
+    item_list = []
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id', (username,))
+        orders = cur.fetchall()
+        cur.execute('SELECT session_id FROM sessions WHERE username = ?', (username,))
+        ids = cur.fetchall()
+        for row in ids:  # Iterate over the rows
+            session_id = row[0]  # Access the value of the session_id column in the row
+            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
+            row_count = cur.fetchone()[0]
+            item_list.append(row_count)
+    except:
+        msg = 'Failed to get orders'
+        flash(msg)
+        return redirect(url_for('profile'))
+
+    return render_template('order_history.html', orders=orders, item_list=item_list)
+
+
+@app.route('/retrieve_order/<orderid>')
+@login_required
+def retrieve_order(orderid):
+    try:
+        pass
+
+
 @app.route('/view_vouchers/<username>')
 @login_required
 def view_vouchers(username):
@@ -1326,7 +1361,7 @@ def cart(username):
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
             vouchers = cur.fetchall()
 
-            cur.execute('SELECT * FROM address WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+            cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
             address = cur.fetchall()
 
 
@@ -1334,8 +1369,8 @@ def cart(username):
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
-    finally:
-        return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
+
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1366,12 +1401,6 @@ def predict():
     response = get_response(text)
     message = {"answer": response}
     return jsonify(message)
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 
 @app.route('/search', methods=['GET'])
 def search():
