@@ -13,7 +13,7 @@ print("Connected to database successfully")
 # conn.execute('CREATE TABLE tradeinentries (tradein_id STRING, username VARCHAR(255), no_of_clothes INT, status BOOLEAN)')
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN tradein_id INT')
 # conn.execute('ALTER TABLE tradeinform ADD COLUMN status BOOLEAN')
-#conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code STRING, expiry_date TEXT NOT NULL, status TEXT NOT NULL DEFAULT "active")')
+#conn.execute('CREATE TABLE addvouchers (username VARCHAR(255) NOT NULL, title TEXT, value INT, condition TEXT, code TEXT NOT NULL UNIQUE, expiry_date DATETIME NOT NULL, status TEXT NOT NULL DEFAULT "active")')
 # conn.execute('CREATE TABLE validvouchers (row_id INTEGER PRIMARY KEY AUTOINCREMENT, code STRING)')
 # conn.execute('CREATE TABLE cart (username VARCHAR(255) NOT NULL, product_name STRING)')
 
