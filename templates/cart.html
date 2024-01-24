@@ -206,7 +206,7 @@ td {
         <label for="discount">Select a Voucher:</label>
         <select name="discount" id="discount">
             {% for voucher in vouchers %}
-            <option value="{{ voucher['code'] }}">{{ voucher['code'] }}</option>
+            <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
             {% endfor %}
         </select>
       <button type="submit">Apply Discount</button>
