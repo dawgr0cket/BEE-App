@@ -79,23 +79,24 @@ table {
       <th>Number Of Items</th>
       <th>Total</th>
       <th>Status</th>
+      <th>Change Status</th>
       <th>View</th>
       <th>Delete</th>
       </thead>
       {% for row in orders %}
         <tr>
-          <td>{{ row[0] }}</td>
+          <td>#{{ row[0] }}</td>
           <td>{{ row[1] }}</td>
           <td>{{ item_list[loop.index - 1] }}</td>
-          <td>{{ row[3] }}</td>
-          {% if row['status'] == 0 %}
+          <td>${{ row[3] }}</td>
+          {% if row[5] == 0 %}
           <td><b>Packing...</b></td>
-          {% elif row['status'] == 1 %}
+          {% elif row[5] == 1 %}
             <td><b>To Be Shipped</b></td>
-          {% else %}
+          {% endif %}
             <td><a href="/approveorder/{{ row[0] }}"><img src="static/img/Green-Tick-Transparent.png" width="20px"></a><a href="/rejectorder/{{ row[0] }}"><img src="static/img/Red-Cross-PNG-Pic.png" width="20px"></a>
             </td>
-          {% endif %}
+          <td><a href="">View</td>
           <td><a href=""><img src="static/img/img_4.png" width="20px"></a></td>
         </tr>
       {% endfor %}
