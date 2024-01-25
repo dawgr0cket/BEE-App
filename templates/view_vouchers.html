@@ -50,7 +50,7 @@ body {
 }
 </style>
 <ul class="profilenav" style="float: left;">
-    <li><a href="/orderhistory">Order History</a></li>
+    <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
     <li><a href="/view_tradeins/{{ session['username'] }}">Trade-In</a></li>
     <li><a href="/view_vouchers/{{ session['username'] }}" class="active">Vouchers</a></li>
 </ul>

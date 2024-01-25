@@ -76,11 +76,13 @@ table {
     {% else %}
         {% for row in rows %}
         <div>
-            <h4>{{ row[2] }}</h4>
+            <h4>{{ row[1] }}</h4>
             <h5>Code:</h5>
-            <b>{{ row[5] }}</b>
-            <p>Condition:</p>
-            {{ row[4] }}
+            <b>{{ row[4] }}</b>
+            <p>Condition:
+            {{ row[3] }}
+            </p>
+            <p><b>Expiry Date:</b>{{ row[5] }}</p>
             <a href="/delete_vouchers/{{ row[5] }}">delete voucher</a>
             <a href="/update_vouchers/{{ row[5] }}">update voucher</a>
         </div>

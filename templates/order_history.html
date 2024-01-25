@@ -66,6 +66,7 @@ body {
               <th>Date</th>
               <th>Items</th>
               <th>Total</th>
+              <th>Status</th>
               <th></th>
             </tr>
           </thead>
@@ -76,6 +77,11 @@ body {
               <td>{{ order[4][0:10] }}</td>
               <td>{{ item_list[loop.index - 1] }}</td>
               <td>${{ order[3] }}</td>
+              {% if order[5] == 0 %}
+              <td><b>Packing...</b></td>
+              {% elif order[5] == 1 %}
+              <td><b>To Be Shipped</b></td>
+              {% endif %}
               <td><a href="/retrieve_order/{{ order[0] }}" class="btn btn-primary mb-3">Retrieve Order</a></td>
             </tr>
             {% endfor %}
