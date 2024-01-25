@@ -20,7 +20,7 @@ from wtforms import StringField, SubmitField, FileField, EmailField, IntegerFiel
     TextAreaField, validators
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-import datetime
+from datetime import datetime, date
 from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
 
@@ -153,14 +153,37 @@ def checkout(lists, username):
 @app.route('/applydisc/<username>', methods=['GET', 'POST'])
 def applydisc(username):
     if request.method == 'POST':
-        discount = request.form['discount']
-        con = get_db()
-        cur = con.cursor()
-        cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
-        deduct = cur.fetchall()[0]
-        cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
-        con.commit()
-    return redirect(url_for('cart', username=username, deduct=deduct))
+        deduct = 0
+        try:
+            con = get_db()
+            cur = con.cursor()
+            discount = request.form.get('discount')  # Use get() to get the form value without raising an error
+            if discount is None or discount == '':
+                msg = "Invalid voucher code"
+            else:
+                cur.execute('SELECT expiry_date FROM addvouchers WHERE code = ?', (discount,))
+                expiry_date = cur.fetchall()
+                if len(expiry_date) == 0:
+                    msg = "Invalid voucher code"
+                else:
+                    for row in expiry_date:
+                        expiry_date_str = row[0]
+                        expiry_date_only = datetime.strptime(expiry_date_str, '%Y-%m-%d').date()
+                        current_date = date.today()
+                        if current_date > expiry_date_only:
+                            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
+                            msg = "This voucher has expired"
+                        else:
+                            cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
+                            deduct = cur.fetchall()[0]
+                            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
+                            msg = "Voucher applied successfully"
+            con.commit()
+        except Exception as e:
+            msg = 'An error has occurred: {}'.format(str(e))
+            print(msg)  # Print the exception message for debugging
+        flash(msg)
+        return redirect(url_for('cart', username=username, deduct=deduct))
 
 
 @app.route('/cart/<username>/<deduct>')
@@ -1362,20 +1385,9 @@ def cart(username):
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
             vouchers = cur.fetchall() #/fetchall()
-            if vouchers is None:
-                flash("Invalid voucher code")
-                return redirect(url_for('cart'))
-            expiry_date = vouchers['expiry_date']
-            if datetime.now() > expiry_date:
-                flash("This voucher has expired")
-                return redirect(url_for('cart'))
-            # apply the voucher here
-            flash("Voucher applied successfully")
-            return redirect(url_for('cart'))
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
             address = cur.fetchall()
-
 
     except:
         msg = 'An Error has occurred'
