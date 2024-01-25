@@ -622,7 +622,26 @@ def dashbboard():
 @app.route('/orders')
 @login_required
 def orders():
-    pass
+    orders = []
+    item_list = []
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT * FROM sessions GROUP BY session_id')
+        orders = cur.fetchall()
+        cur.execute('SELECT session_id FROM sessions GROUP BY session_id')
+        ids = cur.fetchall()
+        for row in ids:  # Iterate over the rows
+            session_id = row[0]  # Access the value of the session_id column in the row
+            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
+            row_count = cur.fetchone()[0]
+            item_list.append(row_count)
+    except:
+        msg = 'Failed to get orders'
+        flash(msg)
+    finally:
+        return render_template('admin_orders.html', orders=orders, item_list=item_list)
+
 
 
 @app.route('/users')
@@ -908,7 +927,7 @@ def retrieve_vouchers(username):
     with sqlite3.connect('database.db') as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
+        cur.execute("SELECT * FROM addvouchers WHERE username = ?", (username,))
 
         rows = cur.fetchall()
         con.commit()
