@@ -14,9 +14,8 @@
             background-image: url('static/img/bee.jpg');
             background-size: cover;
             height: 300px;
-            color: white;
+            color: black;
             text-align: center;
-            padding-top: 100px;
         }
 
         .h1{
@@ -33,11 +32,24 @@
             flex-basis: 30%;
             text-align: center;
         }
+
+        .space {
+        margin-top: 30px;
+        }
+
+        .tagline {
+        position: absolute;
+        top: 300px;
+        right: 29.5%;
+        color: white;
+        font-weight: bold;
+        }
+
 </style>
 <body>
-<div class="header">
-        <h1>Better. Eco-friendly. Efficiency.</h1>
-    </div>
+<h1 class="tagline">Better . Eco-friendly . Efficiency</h1>
+<img src="static/img/Rectangle 99.png" width="1519px">
+<div class="space">
     <h1 align="center">Our Goals</h1>
     <div class="Goals">
         <div class="goal">
@@ -53,6 +65,7 @@
             <p>We hope to reducing the amount of waste by spreading the information people will be able to make more environmentally friendly decisions.</p>
         </div>
     </div>
+</div>
 </body>
     {% endblock %}
 </html>
