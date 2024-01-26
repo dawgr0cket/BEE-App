@@ -2,9 +2,49 @@
 {% block title %}B.E.E - Trade-In Form{% endblock %}
 
 {% block content %}
+<style>
+body{
+    background-color:#FFFFEA;
+    }
+.display-4 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
 
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #333;
+}
+</style>
 <h1 class="display-4">Trade-In Form</h1>
-<p>Hello {{session['username']}}! What do you want to trade in?</p>
+<p align="center">Hello {{session['username']}}! What do you want to trade in?</p>
 <hr>
 <form action="/tradeinno" method="POST">
     {{ form.hidden_tag() }}
