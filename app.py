@@ -1406,14 +1406,14 @@ def cart(username):
             vouchers = cur.fetchall() #/fetchall()
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
-            address = cur.fetchall()
+            addresses = cur.fetchall()
 
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
 
-    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses)
 
 
 @app.route('/delete_cart/<product_name>/<username>')
