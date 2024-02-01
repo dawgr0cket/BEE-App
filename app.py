@@ -1,10 +1,15 @@
 import ast
+import base64
+import io
 import os
 import urllib.parse
 import uuid
 import shortuuid
 import functools
 import stripe
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.io as pio
 import re
 from checkoutform import Checkoutform
 from chatbot import get_response
@@ -92,6 +97,18 @@ def create_stripe_checkout_session(lists, username):
             'quantity': 1
         }
         line_items.append(item)
+
+    shipping_item = {
+        'price_data': {
+            'currency': 'sgd',
+            'unit_amount': 10 * 100,
+            'product_data': {
+                'name': 'Shipping Fee'
+            }
+        },
+        'quantity': 1
+    }
+    line_items.append(shipping_item)
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=line_items,
@@ -221,7 +238,7 @@ def success(username):
         sessionid = str(shortuuid.uuid())[0:10]
         productnamelist = []
         orders = []
-        total = 0
+        total = 10
         cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
         address = cur.fetchall()
         for product in products:
@@ -614,9 +631,73 @@ def deleteblog(id):
 
 
 @app.route('/admindashboard')
-@login_required
-def dashbboard():
-    return render_template('admindashboard.html')
+def generate_charts():
+    # Step 1: Retrieve revenue data from SQLite
+    con = get_db()
+    cursor = con.cursor()
+    cursor.execute("SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY session_id")
+    data = cursor.fetchall()
+    cursor.execute("SELECT product_name, COUNT(*) as count FROM sessions GROUP BY product_name")
+    product_count_data = cursor.fetchall()
+
+    month_revenues = {}  # Dictionary to store cumulative sum for each month
+
+    for item in data:
+        month = item[0]
+        revenue = item[1]
+
+        if month in month_revenues:
+            month_revenues[month] += revenue
+        else:
+            month_revenues[month] = revenue
+
+    # Extract month and revenue data from the dictionary
+    month_year = list(month_revenues.keys())
+    revenues = list(month_revenues.values())
+
+    # Step 3: Render the bar chart
+    product_names = [item[0] for item in product_count_data]
+    product_counts = [item[1] for item in product_count_data]
+
+    # Step 3: Render the bar char
+    # Set the complementary colors
+    bar_color = 'rgb(31, 119, 180)'  # Complementary color for the background
+    pie_colors = ['rgb(255, 127, 14)', 'rgb(44, 160, 44)']  # Complementary colors for the background
+
+    # Step 3: Render the bar chart
+    fig1 = go.Figure(data=go.Bar(x=month_year, y=revenues, marker=dict(color=bar_color)))
+
+    # Set the width of the bars
+    fig1.update_traces(width=0.1)
+
+    # Add title and axis labels for the bar chart
+    fig1.update_layout(
+        title="Monthly Revenues",
+        xaxis_title="Month",
+        yaxis_title="Revenue ($)",
+    )
+
+    # Convert the bar chart to HTML
+    bar_chart_html = pio.to_html(fig1, full_html=False)
+
+    # Step 4: Render the pie chart
+    fig2 = go.Figure(data=go.Pie(labels=product_names, values=product_counts, marker=dict(colors=pie_colors)))
+
+    # Add title for the pie chart
+    fig2.update_layout(
+        title="Product Purchase Distribution",
+    )
+
+    # Convert the pie chart to HTML
+    pie_chart_html = pio.to_html(fig2, full_html=False)
+
+    return render_template('admindashboard.html', chart_html=bar_chart_html, pie_chart_html=pie_chart_html)
+
+#
+# @app.route('/admindashboard')
+# @login_required
+# def dashbboard():
+#     return render_template('admindashboard.html')
 
 
 @app.route('/orders')
@@ -1114,12 +1195,11 @@ def order_history(username):
         cur = con.cursor()
         cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id', (username,))
         orders = cur.fetchall()
-        cur.execute('SELECT session_id FROM sessions WHERE username = ?', (username,))
+        cur.execute('SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id', (username,))
         ids = cur.fetchall()
-        for row in ids:  # Iterate over the rows
-            session_id = row[0]  # Access the value of the session_id column in the row
-            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
-            row_count = cur.fetchone()[0]
+        for row in ids:
+            # session_id = row[0]
+            row_count = row[1]
             item_list.append(row_count)
     except:
         msg = 'Failed to get orders'
@@ -1127,6 +1207,16 @@ def order_history(username):
         return redirect(url_for('profile'))
 
     return render_template('order_history.html', orders=orders, item_list=item_list)
+
+
+@app.route('/view_order/<orderid>')
+@login_required
+def view_order(orderid):
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT * FROM sessions WHERE session_id = ?', (orderid,))
+    order_details = cur.fetchall()
+    return render_template('view_order.html', order_details=order_details, orderid=orderid)
 
 
 @app.route('/retrieve_order/<orderid>')
@@ -1255,10 +1345,15 @@ def deletetradein(id):
             os.remove(path)
         except OSError as e:
             if e.errno and e.errno == 2:  # File not found error
+                cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+                cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
+                con.commit()
                 return redirect(url_for('forms'))
-    cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
-    cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
-    con.commit()
+            else:
+                cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+                cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
+                con.commit()  # Delete the blog post from the database
+                return redirect(url_for('forms'))
     con.close()
     return redirect(url_for('forms'))
 
