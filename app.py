@@ -7,6 +7,7 @@ import uuid
 import shortuuid
 import functools
 import stripe
+from collections import defaultdict
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -635,40 +636,28 @@ def generate_charts():
     # Step 1: Retrieve revenue data from SQLite
     con = get_db()
     cursor = con.cursor()
-    cursor.execute("SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY session_id")
+    cursor.execute(
+        "SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY strftime('%Y-%m', payment_timestamp)")
     data = cursor.fetchall()
     cursor.execute("SELECT product_name, COUNT(*) as count FROM sessions GROUP BY product_name")
     product_count_data = cursor.fetchall()
 
-    month_revenues = {}  # Dictionary to store cumulative sum for each month
+    month_revenues = defaultdict(int)  # Dictionary to store cumulative sum for each month
 
     for item in data:
-        month = item[0]
+        month = datetime.strptime(item[0], '%Y-%m').strftime('%b %Y')  # Convert to datetime and format back to string
         revenue = item[1]
-
-        if month in month_revenues:
-            month_revenues[month] += revenue
-        else:
-            month_revenues[month] = revenue
+        month_revenues[month] += revenue
 
     # Extract month and revenue data from the dictionary
     month_year = list(month_revenues.keys())
     revenues = list(month_revenues.values())
 
     # Step 3: Render the bar chart
-    product_names = [item[0] for item in product_count_data]
-    product_counts = [item[1] for item in product_count_data]
-
-    # Step 3: Render the bar char
-    # Set the complementary colors
-    bar_color = 'rgb(31, 119, 180)'  # Complementary color for the background
-    pie_colors = ['rgb(255, 127, 14)', 'rgb(44, 160, 44)']  # Complementary colors for the background
-
-    # Step 3: Render the bar chart
-    fig1 = go.Figure(data=go.Bar(x=month_year, y=revenues, marker=dict(color=bar_color)))
+    fig1 = go.Figure(data=go.Bar(x=month_year, y=revenues))
 
     # Set the width of the bars
-    fig1.update_traces(width=0.1)
+    fig1.update_traces(width=0.3)
 
     # Add title and axis labels for the bar chart
     fig1.update_layout(
@@ -677,8 +666,44 @@ def generate_charts():
         yaxis_title="Revenue ($)",
     )
 
+    # Add dropdown filter for month
+    dropdown_options = [
+        {'label': month, 'method': 'update', 'args': [{'visible': [month == m for m in month_year]}]}
+        for month in month_year
+    ]
+
+    fig1.update_layout(
+        updatemenus=[
+            {
+                'buttons': [
+                    {'label': 'All', 'method': 'update', 'args': [{'visible': [True] * len(month_year)}]}
+                ] + dropdown_options,
+                'direction': 'down',
+                'showactive': True,
+                'x': 0.05,
+                'xanchor': 'left',
+                'y': 1.15,
+                'yanchor': 'top',
+                'bgcolor': 'rgba(255, 255, 255, 0.6)',  # Adjust the background color
+                'bordercolor': 'rgba(0, 0, 0, 0.6)',  # Adjust the border color
+            }
+        ],
+    )
+
+    # Process filter selection
+    selected_month = request.args.get('month')
+    if selected_month:
+        fig1.update_traces(visible=[month == selected_month for month in month_year])
+
     # Convert the bar chart to HTML
-    bar_chart_html = pio.to_html(fig1, full_html=False)
+    bar_chart_html = fig1.to_html(full_html=False)
+
+    # Step 4: Render the pie chart
+    product_names = [item[0] for item in product_count_data]
+    product_counts = [item[1] for item in product_count_data]
+
+    # Set the complementary colors
+    pie_colors = ['rgb(255, 127, 14)', 'rgb(44, 160, 44)']  # Complementary colors for the background
 
     # Step 4: Render the pie chart
     fig2 = go.Figure(data=go.Pie(labels=product_names, values=product_counts, marker=dict(colors=pie_colors)))
@@ -689,7 +714,7 @@ def generate_charts():
     )
 
     # Convert the pie chart to HTML
-    pie_chart_html = pio.to_html(fig2, full_html=False)
+    pie_chart_html = fig2.to_html(full_html=False)
 
     return render_template('admindashboard.html', chart_html=bar_chart_html, pie_chart_html=pie_chart_html)
 
