@@ -2,6 +2,7 @@ import ast
 import base64
 import io
 import os
+import decimal
 import urllib.parse
 import uuid
 import shortuuid
@@ -77,7 +78,7 @@ def create_product_and_price(name, price, currency, image_url, quantity, sizes):
 
 
 # @app.route('/create-checkout-session/<rows>', methods=['POST'])
-def create_stripe_checkout_session(lists, username):
+def create_stripe_checkout_session(lists, username, session=None):
     stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
     decoded_url = urllib.parse.unquote(lists)  # Decode the URL
     start_index = decoded_url.find("[")  # Find the start index of the list
@@ -85,6 +86,8 @@ def create_stripe_checkout_session(lists, username):
     list_str = decoded_url[start_index:end_index]  # Extract the list string
     lists = ast.literal_eval(list_str)
     line_items = []
+    discounts = []# Retrieve discounts from Flask session
+
     for row in lists:
         item = {
             'price_data': {
@@ -99,6 +102,25 @@ def create_stripe_checkout_session(lists, username):
         }
         line_items.append(item)
 
+    if session['discount'] is not None:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT value, title FROM addvouchers WHERE code = ?', (session['discount'],))
+        deduct = cur.fetchall()
+
+        for disc in deduct:
+            coupon = stripe.Coupon.create(
+                amount_off=disc[0]*100,
+                currency='sgd',
+                duration='once',
+                id=discounts,
+                name=disc[1],
+            )
+
+            discounts = [{
+                'coupon': coupon.id
+            }]
+
     shipping_item = {
         'price_data': {
             'currency': 'sgd',
@@ -110,6 +132,7 @@ def create_stripe_checkout_session(lists, username):
         'quantity': 1
     }
     line_items.append(shipping_item)
+
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=line_items,
@@ -120,6 +143,7 @@ def create_stripe_checkout_session(lists, username):
         client_reference_id=username,  # Store the username in the client_reference_id field
         success_url='http://localhost:5000/success/' + username,
         cancel_url='http://localhost:5000/cancel/' + username,
+        discounts=discounts
     )
     return session
 
@@ -144,7 +168,7 @@ def checkout(lists, username):
             msg = 'An Error has occurred!'
             flash(msg)
         finally:
-            session_id = create_stripe_checkout_session(lists, username)
+            session_id = create_stripe_checkout_session(lists, username, session)
             return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
@@ -194,7 +218,7 @@ def applydisc(username):
                         else:
                             cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
                             deduct = cur.fetchall()[0]
-                            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
+                            session['discount'] = discount
                             msg = "Voucher applied successfully"
             con.commit()
         except Exception as e:
@@ -255,6 +279,8 @@ def success(username):
             orders.append(order)
         cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
+        discount_code = session.get('discounts')
+        cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount_code,))
         con.commit()
     except:
         msg = 'An Error has Occurred'
@@ -262,6 +288,7 @@ def success(username):
     finally:
         msg = 'Purchase Completed!'
         flash(msg)
+        session['discounts'] = []
         return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address)
 
 
