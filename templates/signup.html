@@ -12,10 +12,14 @@ body {
   background-color: #FFFFEA;
 }
 
-.container {
+.form {
   background-color: #add8e6;
   border-radius: 10px;
   box-shadow: none;
+  padding: 40px;
+  background-color: #add8e6; /* Change to light blue color */
+  width: 550px; /* Reduced width for a narrower form */
+  margin: auto;
 }
 
 input[type=text], input[type=password] {
@@ -183,7 +187,7 @@ emailInput.addEventListener('input', validateEmail);
 </head>
 <h1 align="center" >Better. Eco-friendly. Efficiency</h1>
 <form action="/signup" method="POST">
-  <div class="container">
+  <div class="form">
     <h1 align="center">Sign Up</h1>
     {% if error %}
       <p class=error><b>{{ error }}</b></p>

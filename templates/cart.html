@@ -30,6 +30,9 @@ function decrement() {
 
 </script>
 <style>
+body {
+    background-color: #FFFFEA;
+}
 .form-container {
     max-width: 400px;
     margin: 20px auto;
@@ -144,100 +147,104 @@ td {
   cursor: pointer;
 }
 </style>
-<table>
-{% for row in rows %}
-    <thead>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Stock Left</th>
-        <th>Quantity</th>
-    </thead>
-    <tr>
-        <td>
-            <p>{{ row['product_name'] }}</p>
-            <object><img src="/static/img/{{ row['product_image'] }}" width="100px"></object>
-        </td>
-        <td>
-            <p>{{ row['product_price'] }}</p>
-        </td>
-        <td>
-            <p>{{ row['product_quantity'] }}</p>
-        </td>
-        <td>
-            <button onclick="increment()">+</button><h2 id="counting">1</h2><button onclick="decrement()">-</button>
-        </td>
-        <td>
-            <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
-        </td>
-    </tr>
-{% endfor %}
-</table>
-<div class="form-container">
-{% if addresses|length > 0 %}
-    {% if addresses %}
-    <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
-      <!-- Shipping Information -->
-        <div class="form-group shipping-section">
-          <h3>Shipping Information</h3>
-          <p class="text-muted">Address: {{ addresses[0][1] }} {{ addresses[0][3] }}, {{ addresses[0][2] }}, {{ addresses[0][5] }}, {{ addresses[0][4] }}</p>
-          <button type="button" onclick="editAddress()" id="edit-address-btn">Edit Address</button>
-          <div id="address-inputs" style="display: none;">
-            <label for="block">Block</label>
-            <input type="text" id="block" name="block" value="{{ addresses[0][1] }}">
-            <label for="unitno">Unit No.</label>
-            <input type="text" id="unitno" name="unitno" value="{{ addresses[0][2] }}">
-            <label for="street">Street</label>
-            <input type="text" id="street" name="street" value="{{ addresses[0][3] }}">
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" value="{{ addresses[0][4] }}">
-            <label for="postalcode">Postal Code</label>
-            <input type="text" id="postalcode" name="postalcode" value="{{ addresses[0][5] }}">
+{% if rows %}
+    <table>
+    {% for row in rows %}
+        <thead>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Stock Left</th>
+            <th>Quantity</th>
+        </thead>
+        <tr>
+            <td>
+                <p>{{ row['product_name'] }}</p>
+                <object><img src="/static/img/{{ row['product_image'] }}" width="100px"></object>
+            </td>
+            <td>
+                <p>{{ row['product_price'] }}</p>
+            </td>
+            <td>
+                <p>{{ row['product_quantity'] }}</p>
+            </td>
+            <td>
+                <button onclick="increment()">+</button><h2 id="counting">1</h2><button onclick="decrement()">-</button>
+            </td>
+            <td>
+                <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <div class="form-container">
+    {% if addresses|length > 0 %}
+        {% if addresses %}
+        <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
+          <!-- Shipping Information -->
+            <div class="form-group shipping-section">
+              <h3>Shipping Information</h3>
+              <p class="text-muted">Address: {{ addresses[0][1] }} {{ addresses[0][3] }}, {{ addresses[0][2] }}, {{ addresses[0][5] }}, {{ addresses[0][4] }}</p>
+              <button type="button" onclick="editAddress()" id="edit-address-btn">Edit Address</button>
+              <div id="address-inputs" style="display: none;">
+                <label for="block">Block</label>
+                <input type="text" id="block" name="block" value="{{ addresses[0][1] }}">
+                <label for="unitno">Unit No.</label>
+                <input type="text" id="unitno" name="unitno" value="{{ addresses[0][2] }}">
+                <label for="street">Street</label>
+                <input type="text" id="street" name="street" value="{{ addresses[0][3] }}">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" value="{{ addresses[0][4] }}">
+                <label for="postalcode">Postal Code</label>
+                <input type="text" id="postalcode" name="postalcode" value="{{ addresses[0][5] }}">
+              </div>
+            </div>
+
+          <button type="submit" class="checkout-button" id="checkout-btn">Proceed to Checkout</button>
+        </form>
+        {% endif %}
+    {% else %}
+        <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
+          <!-- Shipping Information -->
+          <div class="form-group shipping-section">
+            <h3>Shipping Information</h3>
+                <label for="block">Block</label>
+                <input type="text" id="block" name="block" required>
+                <label for="unitno">Unit No.</label>
+                <input type="text" id="unitno" name="unitno" required>
+                <label for="street">Street</label>
+                <input type="text" id="street" name="street" required>
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required>
+                <label for="postalcode">Postal Code</label>
+                <input type="text" id="postalcode" name="postalcode" required>
           </div>
-        </div>
-
-      <button type="submit" class="checkout-button" id="checkout-btn">Proceed to Checkout</button>
-    </form>
+          <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
+        </form>
     {% endif %}
-{% else %}
-    <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
-      <!-- Shipping Information -->
-      <div class="form-group shipping-section">
-        <h3>Shipping Information</h3>
-            <label for="block">Block</label>
-            <input type="text" id="block" name="block" required>
-            <label for="unitno">Unit No.</label>
-            <input type="text" id="unitno" name="unitno" required>
-            <label for="street">Street</label>
-            <input type="text" id="street" name="street" required>
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" required>
-            <label for="postalcode">Postal Code</label>
-            <input type="text" id="postalcode" name="postalcode" required>
-      </div>
-      <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
-    </form>
-{% endif %}
-  <!-- Total Section -->
-  <div class="total-section">
-    <h3>Total</h3>
-    <p>Subtotal: $<span id="subtotal">{{ total }}</span></p>
-      <p>Discount: -$<span id="deduct"></span></p>
+      <!-- Total Section -->
+      <div class="total-section">
+        <h3>Total</h3>
+        <p>Subtotal: $<span id="subtotal">{{ total }}</span></p>
+          <p>Discount: -$<span id="deduct"></span></p>
 
-    <p>Shipping: $<span id="shippingfee">10</span></p>
-    <p>Grand Total: <span id="grandtotal"></span></p>
-  </div>
-  <form action="/applydisc/{{ session['username'] }}" method="post">
-    <div class="form-group">
-        <label for="discount">Select a Voucher:</label>
-        <select name="discount" id="discount">
-            {% for voucher in vouchers %}
-            <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
-            {% endfor %}
-        </select>
-      <button type="submit">Apply Discount</button>
+        <p>Shipping: $<span id="shippingfee">10</span></p>
+        <p>Grand Total: <span id="grandtotal"></span></p>
+      </div>
+      <form action="/applydisc/{{ session['username'] }}" method="post">
+        <div class="form-group">
+            <label for="discount">Select a Voucher:</label>
+            <select name="discount" id="discount">
+                {% for voucher in vouchers %}
+                <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
+                {% endfor %}
+            </select>
+          <button type="submit">Apply Discount</button>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
+{% else %}
+<h1>No Items in cart!</h1>
+{% endif %}
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const deductValue = urlParams.get('deduct');

@@ -160,9 +160,16 @@ def checkout(lists, username):
             form = Checkoutform(block, unitno, street, city, postalcode)
             con = get_db()
             cur = con.cursor()
-            cur.execute(
-                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
-                (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            cur.execute('SELECT * FROM addresses WHERE username = ?', (username,))
+            existing_user = cur.fetchone()
+            if existing_user:
+                # User exists, perform the update
+                cur.execute('UPDATE addresses SET block=?, unitno=?, street=?, city=?, postal_code=? WHERE username=?',
+                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            else:
+                # User doesn't exist, perform the insert
+                cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
+                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
         except:
             msg = 'An Error has occurred!'
@@ -275,12 +282,20 @@ def success(username):
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
-                total += price[1]
+                total += int(price[1])
             orders.append(order)
+
+        if session['discount'] is not None:
+            discount_code = session.get('discounts')
+            cur.execute('SELECT * FROM addvouchers WHERE code = ?', (discount_code,))
+            voucher = cur.fetchall()
+            for v in voucher:
+                total = total - int(v[2])
+            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount_code,))
+
         cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
+        con.commit()
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
-        discount_code = session.get('discounts')
-        cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount_code,))
         con.commit()
     except:
         msg = 'An Error has Occurred'
@@ -469,6 +484,7 @@ def login():
             session['phone_no'] = user[4]
             session['dob'] = user[5]
             session['gender'] = user[6]
+            session['discount'] = None
             if user[7] is None:
                 session['profile_pic'] = 'img_6.png'
             else:
@@ -664,7 +680,7 @@ def generate_charts():
     con = get_db()
     cursor = con.cursor()
     cursor.execute(
-        "SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY strftime('%Y-%m', payment_timestamp)")
+        "SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY session_id")
     data = cursor.fetchall()
     cursor.execute("SELECT product_name, COUNT(*) as count FROM sessions GROUP BY product_name")
     product_count_data = cursor.fetchall()
@@ -775,6 +791,14 @@ def orders():
     finally:
         return render_template('admin_orders.html', orders=orders, item_list=item_list)
 
+
+@app.route('/deleteorder/<orderid>')
+def deleteorder(orderid):
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('DELETE FROM sessions WHERE session_id = ?', (orderid,))
+    con.commit()
+    return redirect(url_for('orders'))
 
 
 @app.route('/users')
