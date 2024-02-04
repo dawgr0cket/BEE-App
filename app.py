@@ -4,6 +4,7 @@ import io
 import os
 import decimal
 import urllib.parse
+from urllib.parse import unquote
 import uuid
 import shortuuid
 import functools
@@ -16,7 +17,7 @@ import re
 from checkoutform import Checkoutform
 from chatbot import get_response
 from tradeinform import Tradeinform
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session, abort
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from Users import Users
@@ -1585,6 +1586,28 @@ def cart(username):
         return redirect(url_for('shop'))
 
     return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses)
+
+
+@app.route('/increase/<item>', methods=['GET'])
+def increase(item):
+    # Decode the item parameter
+    decoded_item = unquote(item)
+    # Extract the value parameter
+    value = int(request.args.get('value'))
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (decoded_item,))
+    quantities = cur.fetchall()
+    for quantity in quantities:
+        if value == quantity[0]:
+            return redirect(url_for('cart', username=session['username'], counting=value))
+        elif value < quantity[0]:
+            value = value + 1
+            return redirect(url_for('cart', username=session['username'], counting=value))
+        elif value == 0:
+            value = value + 1
+            return redirect(url_for('cart', username=session['username'], counting=value))
+
 
 
 @app.route('/delete_cart/<product_name>/<username>')
