@@ -10,9 +10,7 @@ import shortuuid
 import functools
 import stripe
 from collections import defaultdict
-# import matplotlib.pyplot as plt
-# import plotly.graph_objects as go
-# import plotly.io as pio
+import plotly.graph_objects as go
 import re
 from checkoutform import Checkoutform
 from chatbot import get_response
@@ -1469,10 +1467,10 @@ def editprofile():
         email = request.form['email']
         phone_no = request.form['phone_no']
         dob = request.form['dob']
-        gender = request.values.get('gender')  # Use get() method to retrieve the value
+        gender = form.gender.data  # Use get() method to retrieve the value
 
-        session['username'] = username
-        session['email'] = email
+        # session['username'] = username
+        # session['email'] = email
 
         if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
@@ -1489,35 +1487,49 @@ def editprofile():
                 cur = con.cursor()
 
                 # Prepare the SQL update statement dynamically based on the form inputs provided
-                update_statement = "UPDATE user SET"
-                update_values = []
+                try:
+                    if username:
+                        cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                        tables = cur.fetchall()
 
-                if username:
-                    update_statement += " username = ?,"
-                    update_values.append(username)
+                        for table in tables:
+                            table_name = table[0]
 
-                if email:
-                    update_statement += " email = ?,"
-                    update_values.append(email)
+                            # Retrieve column names for the current table
+                            cur.execute(f"PRAGMA table_info({table_name})")
+                            columns = cur.fetchall()
 
-                if phone_no:
-                    update_statement += " phone_no = ?,"
-                    update_values.append(phone_no)
+                            # Check if the "username" column exists in the current table
+                            if any(column[1] == 'username' for column in columns):
+                                # Generate and execute UPDATE statement
+                                update_statement = f"UPDATE {table_name} SET username = ? WHERE username = ?"
+                                cur.execute(update_statement, (username, session['username']))
+                                con.commit()
 
-                if dob != '':
-                    update_statement += " dob = ?,"
-                    update_values.append(dob)
+                    if email:
+                        update_statement += " email = '{}',".format(email)
 
-                if request.values.get('gender'):
-                    update_statement += " gender = ?,"
-                    update_values.append(form.gender.data)
+                    if phone_no:
+                        update_statement += " phone_no = '{}',".format(phone_no)
 
-                # Remove the trailing comma and add the WHERE clause
-                update_statement = update_statement.rstrip(",") + " WHERE username = ?"
-                update_values.append(session['username'])
+                    if dob:
+                        update_statement += " dob = '{}',".format(dob)
 
-                cur.execute(update_statement, tuple(update_values))
-                con.commit()
+                    if gender:
+                        update_statement += " gender = '{}',".format(gender)
+
+                    # Remove the trailing comma if any
+                    update_statement = update_statement.rstrip(',')
+
+                    # Add the WHERE clause
+                    update_statement += " WHERE username = '{}'".format(session['username'])
+
+                    cur.execute(update_statement)
+                    con.commit()
+
+                    print("Update successful!")
+                except Exception as e:
+                    print("Error occurred during update:", str(e))
 
         return redirect(url_for('profile'))
 
@@ -1705,17 +1717,17 @@ def search():
 
 @app.errorhandler(401)
 def error401(error):
-    return render_template('error401.html'), 401
+    return render_template('error/error401.html'), 401
 
 
 @app.errorhandler(403)
 def error403(error):
-    return render_template('error403.html'), 403
+    return render_template('error/error403.html'), 403
 
 
 @app.errorhandler(404)
 def error404(error):
-    return render_template('error404.html'), 404
+    return render_template('error/error404.html'), 404
 
 
 @app.errorhandler(413)
@@ -1730,7 +1742,7 @@ def error429(error):
 
 @app.errorhandler(500)
 def error500(error):
-    return render_template('error500.html'), 500
+    return render_template('error/error500.html'), 500
 
 
 @app.errorhandler(501)
