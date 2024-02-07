@@ -420,7 +420,7 @@ class UserForm(FlaskForm):
     phone_no = IntegerField("Phone Number", validators=[
        validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
-    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
+    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -1463,41 +1463,70 @@ def profile():
 def editprofile():
     error = None
     form = UserForm()
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         phone_no = request.form['phone_no']
         dob = request.form['dob']
-        gender = None
-        if request.form['gender']:
-            gender = request.form['gender']
-            session['gender'] = gender
+        gender = request.values.get('gender')  # Use get() method to retrieve the value
+
         session['username'] = username
         session['email'] = email
+
         if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
         else:
-           error = "Invalid phone number"
+            error = "Invalid phone number"
+
         if request.form['dob'] == '':
             session['dob'] = None
         else:
             session['dob'] = dob
+
         if error is None:
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute(
-                    "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
-                    (username, email, phone_no, dob, gender, session['username']))
 
+                # Prepare the SQL update statement dynamically based on the form inputs provided
+                update_statement = "UPDATE user SET"
+                update_values = []
+
+                if username:
+                    update_statement += " username = ?,"
+                    update_values.append(username)
+
+                if email:
+                    update_statement += " email = ?,"
+                    update_values.append(email)
+
+                if phone_no:
+                    update_statement += " phone_no = ?,"
+                    update_values.append(phone_no)
+
+                if dob != '':
+                    update_statement += " dob = ?,"
+                    update_values.append(dob)
+
+                if request.values.get('gender'):
+                    update_statement += " gender = ?,"
+                    update_values.append(form.gender.data)
+
+                # Remove the trailing comma and add the WHERE clause
+                update_statement = update_statement.rstrip(",") + " WHERE username = ?"
+                update_values.append(session['username'])
+
+                cur.execute(update_statement, tuple(update_values))
                 con.commit()
 
-            con.close()
         return redirect(url_for('profile'))
+
     else:
         with sqlite3.connect('database.db') as con:
             cur = con.cursor()
             cur.execute('SELECT * FROM user WHERE username = ?', (session['username'],))
             details = cur.fetchone()
+
     return render_template('editprofile.html', form=form, details=details)
 
 
@@ -1540,6 +1569,22 @@ def add_to_cart(product_name, username):
         msg = 'Added to cart'
         flash(msg)
         return redirect(url_for('eco'))
+
+
+@app.route('/add_to_cart1/<product_name>/<username>')
+def add_to_cart1(product_name, username):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute("INSERT INTO cart (username, product_name) VALUES (?, ?)", (username, product_name))
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('shop'))
+    finally:
+        msg = 'Added to cart'
+        flash(msg)
+        return redirect(url_for('tradein'))
 
 
 @app.route('/cart/<username>')

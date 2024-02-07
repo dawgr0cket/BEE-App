@@ -156,7 +156,7 @@
                 <h5>{{ row['product_name'] }}</h5>
                 <p class="price">${{ row['product_price'] }}0</p>
                 {% if 'username' in session %}
-                    <button><a href="/add_to_cart/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
+                    <button><a href="/add_to_cart1/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
                 {% else %}
                     <button><a href="/login">Add To Cart</a></button>
                 {% endif %}

@@ -82,6 +82,9 @@ a{
 
 </style>
 <body>
+{% if 'username' in session %}
+<header>Welcome To B.E.E, {{ session['username'] }}!</header>
+{% else %}
     <header>
         <h1>Better . Eco-friendly . Efficiency</h1>
     </header>
@@ -97,8 +100,7 @@ a{
         </div>
         <a href="/signup"><button type="submit" class="registerbtn">Sign Up Now!</button></a>
     </main>
-
-{{session['username']}}
+{% endif %}
 {% endblock %}
 </body>
 </html>
