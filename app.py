@@ -10,9 +10,9 @@ import shortuuid
 import functools
 import stripe
 from collections import defaultdict
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
-import plotly.io as pio
+# import matplotlib.pyplot as plt
+# import plotly.graph_objects as go
+# import plotly.io as pio
 import re
 from checkoutform import Checkoutform
 from chatbot import get_response
