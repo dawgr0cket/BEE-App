@@ -1881,7 +1881,9 @@ def search():
     cursor = conn.cursor()
 
     # Execute the search query
-    cursor.execute("SELECT * FROM pages WHERE content LIKE ?", ('%' + query + '%',))
+    cursor.execute(
+        "SELECT title, content, COUNT(*) AS count FROM pages WHERE content LIKE ? GROUP BY title, content ORDER BY count DESC",
+        ('%' + query + '%',))
     results = cursor.fetchall()
 
     conn.close()
