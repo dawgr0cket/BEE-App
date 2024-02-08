@@ -1122,11 +1122,10 @@ def retrieve_vouchers(username):
 @login_required
 def delete_vouchers(code):
     try:
-        con = sqlite3.connect('database.db')
+        con = get_db()
         cur = con.cursor()
         cur.execute("DELETE FROM addvouchers WHERE code = ?", (code,))  # addvouchers is a table
         con.commit()
-        con.close()
     except:
         msg = 'An Error has occurred!'
         flash(msg)
