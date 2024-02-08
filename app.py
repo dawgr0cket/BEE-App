@@ -1380,7 +1380,7 @@ def tradein():
     with sqlite3.connect('database.db') as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute('SELECT rowid, * FROM inventory WHERE shop = ? GROUP BY product_name', ('Trade-In',))
+        cur.execute('SELECT rowid, * FROM inventory WHERE shop = ?', ('Trade-In',))
         rows = cur.fetchall()
     con.close()
     return render_template('tradein.html', rows=rows)
@@ -1611,7 +1611,33 @@ def add_to_cart(product_name, username):
         return redirect(url_for('eco'))
     except:
         flash("An error occurred while adding the product to the cart")
-        return redirect(url_for('eco'))
+        return redirect(url_for('eco'))\
+
+
+
+@app.route('/add_to_cart3/<product_name>/<username>')
+def add_to_cart3(product_name, username):
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ?", (username, product_name))
+        result = cur.fetchone()
+        product_exists = result[0] > 0
+
+        if not product_exists:
+            # Product does not exist in the cart, so insert it
+            cur.execute("INSERT INTO cart (username, product_name, product_quantity) VALUES (?, ?, ?)",
+                        (username, product_name, 1))
+            con.commit()
+
+            flash("Product added to cart successfully")
+        else:
+            flash("Product already exists in the cart")
+
+        return redirect(url_for('wishlist', username=username))
+    except:
+        flash("An error occurred while adding the product to the cart")
+        return redirect(url_for('wishlist', username=username))
 
 
 @app.route('/add_to_cart1/<product_name>/<username>')
@@ -1671,6 +1697,21 @@ def add_to_wishlist1(product_name, username):
         msg = 'Added to wishlist'
         flash(msg)
         return redirect(url_for('tradein'))
+
+
+@app.route('/removewishlist/<product>/<username>')
+def removewishlist(product, username):
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('DELETE FROM wishlist WHERE username = ? and product_name = ?', (username, product))
+        con.commit()
+        msg = f'Successfully removed {product} from Wishlist'
+    except:
+        msg = 'An error has occurred!'
+    finally:
+        flash(msg)
+        return redirect(url_for('wishlist', username=username))
 
 
 @app.route('/cart/<username>')

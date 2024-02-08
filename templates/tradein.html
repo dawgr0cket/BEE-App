@@ -159,21 +159,39 @@
         </div>
         <div class="product-grid">
         {% for row in rows %}
-        <div class="product-card">
-            <img src="{{ url_for('static', filename='img/' + row['product_image']) }}" alt="{{ row['product_name'] }}">
-            <div class="content">
-                <h5>{{ row['product_name'] }}</h5>
-                <p class="price">${{ row['product_price'] }}0</p>
+            {% if row['product_quantity'] == 0 %}
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='img/' + row['product_image']) }}" alt="{{ row['product_name'] }}">
+                    <div class="content">
+                        <h5>{{ row['product_name'] }}</h5>
+                        <p class="price">${{ row['product_price'] }}0</p>
 
-            </div>
-            {% if 'username' in session %}
-                <button><a href="/add_to_cart1/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
-                <a href="/add_to_wishlist1/{{ row['product_name'] }}/{{ session['username'] }}" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    </div>
+                    {% if 'username' in session %}
+                        <button style="color: black;background: grey;">Out Of Stock</button>
+                        <a href="/add_to_wishlist1/{{ row['product_name'] }}/{{ session['username'] }}" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    {% else %}
+                        <button><a href="/login">Add To Cart</a></button>
+                        <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    {% endif %}
+                </div>
             {% else %}
-                <button><a href="/login">Add To Cart</a></button>
-                <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='img/' + row['product_image']) }}" alt="{{ row['product_name'] }}">
+                    <div class="content">
+                        <h5>{{ row['product_name'] }}</h5>
+                        <p class="price">${{ row['product_price'] }}0</p>
+
+                    </div>
+                    {% if 'username' in session %}
+                        <button><a href="/add_to_cart1/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
+                        <a href="/add_to_wishlist1/{{ row['product_name'] }}/{{ session['username'] }}" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    {% else %}
+                        <button><a href="/login">Add To Cart</a></button>
+                        <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    {% endif %}
+                </div>
             {% endif %}
-        </div>
         {% endfor %}
 </div>
     </section>
