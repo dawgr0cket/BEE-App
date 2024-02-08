@@ -59,11 +59,32 @@
   color: #856404;
   border-color: #ffeeba;
 }
+.searchhidden {
+  visibility: hidden;
+  position: absolute;
+  top: 125px;
+  right: 8%;
+}
+
+.searchvisible {
+  visibility: visible;
+}
 </style>
 <script>
 function removeFlashMessage(element) {
   element.remove();
 }
+
+function toggleForm() {
+  var form = document.getElementById('search-form');
+  form.classList.toggle('searchvisible');
+}
+
+document.getElementById('search-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const query = document.getElementById('search-query').value;
+  window.location.href = '/search?query=' + encodeURIComponent(query);
+});
 </script>
 </head>
 <body>
@@ -82,9 +103,14 @@ function removeFlashMessage(element) {
             </ul>
           {% endif %}
         {% endwith %}
+
     <div class="content">
         {% block content %}
         {% endblock %}
+        <form id="search-form" class="searchhidden" action="/search" method="GET">
+          <input type="text" name="query" placeholder="Search...">
+          <button type="submit">Search</button>
+        </form>
         <div class="container">
             <div class="chatbox">
                 <div class="chatbox__support">

@@ -1871,23 +1871,22 @@ def predict():
     message = {"answer": response}
     return jsonify(message)
 
+
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query')
-    # You might want to query a database or search through a list of items
-    items = ['shirt', 'pants', 'hoodie', 'top']
-    # Implement your search logic here
-    search_results = []
-    for item in items:
-        if query.lower() in item.lower():
-            search_results.append(item)
-    # For simplicity, let's just return the query for now
-    result = f'Searching for: {query}'
-    if search_results:
-        result += f'\n\nSearch Results: {", ".join(search_results)}'
-    else:
-        result += '\n\nNo results found.'
-    return render_template('search_results.html', result=result)
+
+    # Connect to the SQLite database
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # Execute the search query
+    cursor.execute("SELECT * FROM pages WHERE content LIKE ?", ('%' + query + '%',))
+    results = cursor.fetchall()
+
+    conn.close()
+
+    return render_template('search_results.html', query=query, results=results)
 
 
 @app.errorhandler(401)
