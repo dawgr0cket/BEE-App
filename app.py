@@ -270,6 +270,8 @@ def success(username):
         productnamelist = []
         orders = []
         total = 10
+        cur.execute('UPDATE addresses SET session_id = ? WHERE username = ?', (sessionid, username))
+        con.commit()
         cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
         address = cur.fetchall()
         for product in products:

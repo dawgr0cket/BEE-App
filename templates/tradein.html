@@ -3,7 +3,7 @@
 
 {% block content %}
 <head>
-    <title>B.E.E Eco</title>
+    <title>B.E.E Trade-In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
@@ -59,7 +59,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         padding:10px;
-        gap: 20px;
+        padding-left: 80px;
+        padding-right: 80px;
+        gap: 80px;
         justify-items: center;
     }
     .product-card {
@@ -72,7 +74,7 @@
     }
 
     .product-card img {
-        width: 100%;
+        width: 175px;
         height: 200px;
         object-fit: cover;
         transition: 0.3s all;
@@ -101,12 +103,19 @@
         font-weight: bold;
     }
     .product-card button {
-        background: green;
+        background: #ff9999;
         color: white;
         border: none;
         padding: 10px 20px;
         margin-top: 10px;
+        margin-bottom: 0;
         cursor: pointer;
+    }
+    .heart.mywishlist{
+        object-fit: initial;
+        height: initial;
+        width: 30px;
+        margin-top: 5px;
     }
     footer {
             display: flex;
@@ -155,12 +164,15 @@
             <div class="content">
                 <h5>{{ row['product_name'] }}</h5>
                 <p class="price">${{ row['product_price'] }}0</p>
-                {% if 'username' in session %}
-                    <button><a href="/add_to_cart1/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
-                {% else %}
-                    <button><a href="/login">Add To Cart</a></button>
-                {% endif %}
+
             </div>
+            {% if 'username' in session %}
+                <button><a href="/add_to_cart1/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
+                <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+            {% else %}
+                <button><a href="/login">Add To Cart</a></button>
+                <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+            {% endif %}
         </div>
         {% endfor %}
 </div>

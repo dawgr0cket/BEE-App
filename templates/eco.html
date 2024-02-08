@@ -16,94 +16,161 @@
         padding:0;
         box-sizing: border-box;
     }
-
     body{
     background-color: #FFFFEA;
     }
 
-    .product{
-    cursor:pointer;
-    margin-bottom: 2rem;
-    }
-
-    .product img{
-    transition: 0.3s all;
-    }
-
-    .product:hover img{
-    opacity:0.7;
-    }
-
-    .buy-btn{
-    font-size:13px;
-    font-weight:700;
-    outline:none;
-    border:none;
-    background-color: black;
-    color:white;
-    padding: 11px 25px;
-    cursor:pointer;
-    text-transform: uppercase;
-    transition: 0.3 ease;
-    }
-
-    hr {
+    hr{
     width:30px;
     height:2px;
     background-color:green;
     }
+.top {
+  background-image: url('static/img/top.jpg');
+  background-repeat: no-repeat;
+  background-attachment: flex;
+  background-size: 100% 100%;
+  background-position:center;
+  height:250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
 
-    footer {
+.top p, h1 {
+  color: white;
+  margin: 0;
+}
+
+.button {
+  background-color: green;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+ .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        padding:10px;
+        padding-left: 80px;
+        padding-right: 80px;
+        gap: 80px;
+        justify-items: center;
+    }
+    .product-card {
+        background: white;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
         display: flex;
+        flex-direction: column;
+    }
+
+    .product-card img {
+        width: 175px;
+        height: 200px;
+        object-fit: cover;
+        transition: 0.3s all;
+    }
+    .product-card:hover img {
+    opacity:0.7;
+    }
+
+    .product-card .content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        align-items: center;
-        background-color: #FFFEA;
-        padding: 20px;
+        background:white;
     }
-    footer div {
-        flex: 1;
-        margin: 10px;
+
+    .product-card h5 {
+        margin: 10px 0;
     }
-    footer img {
-        width: 100px;
-        height: auto;
+    .product-card a{
+    text-decoration:none;
+    color: white;
     }
-    footer p {
-        margin: 5px 0;
+    .product-card .price {
+        color: red;
+        font-weight: bold;
     }
-    footer form {
-        display: flex;
-        align-items: center;
+    .product-card button {
+        background: #ff9999;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
     }
-    footer input[type="email"] {
-        flex: 1;
-        margin-right: 10px;
+    .heart.mywishlist{
+        object-fit: initial;
+        height: initial;
+        width: 30px;
+        margin-top: 5px;
     }
-    .fixed-image-size {
-        width: 275px; /* Adjust the width to your desired size */
-        height: 400px; /* Adjust the height to your desired size */
-    }
+    footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFEA;
+            padding: 20px;
+        }
+        footer div {
+            flex: 1;
+            margin: 10px;
+        }
+        footer img {
+            width: 100px;
+            height: auto;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer form {
+            display: flex;
+            align-items: center;
+        }
+        footer input[type="email"] {
+            flex: 1;
+            margin-right: 10px;
+        }
 
 </style>
 <body>
 
     <section id="title" class="my-5 ">
-        <div class="container text-center mt-5 py-5">
+        <div class="container text-center mt-5 py-2">
             <h3>Eco</h3>
             <hr class="mx-auto">
         </div>
-        <div class="row mx-auto container-fluid">
+        <div class="product-grid">
             {% for row in rows %}
-            <div class="product text-center col-lg-3 col-md-4 col-12">
+            <div class="product-card">
                 <!-- This is where the product list will go. -->
-                <img class="img-fluid mb-1 fixed-image-size" src="static/img/{{ row['product_image'] }}">
-                <h5 class="p-name">{{ row['product_name'] }}</h5>
-                <h4 class="p-price">${{ row['product_price'] }}0</h4>
+                <img src="static/img/{{ row['product_image'] }}">
+                <div class="content">
+                <h5>{{ row['product_name'] }}</h5>
+                <p class="price">${{ row['product_price'] }}0</p>
                 {% if 'username' in session %}
-                    <button class="buy-btn" ><a href="/add_to_cart/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
+                    <button><a href="/add_to_cart/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
+                    <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                 {% else %}
-                    <button class="buy-btn"><a href="/login">Add To Cart</a></button>
+                    <button><a href="/login">Add To Cart</a></button>
+                    <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                 {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
