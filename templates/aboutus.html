@@ -45,6 +45,65 @@
         font-weight: bold;
         }
 
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFEA;
+            padding: 20px;
+        }
+        footer div {
+            flex: 1;
+            margin: 10px;
+        }
+        footer img {
+            width: 100px;
+            height: auto;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer form {
+            display: flex;
+            align-items: center;
+        }
+        footer input[type="email"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .BEE {
+        padding: 40px;
+        text-align: center;
+        }
+        .BEE h5 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        }
+        .BEE p {
+        font-size: 16px;
+        margin-bottom: 20px;
+        }
+        .BEE input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        }
+        .BEE button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 0px;
+        }
+        .BEE button:hover {
+        background-color: #45a049;
+        }
+
 </style>
 <body>
 <h1 class="tagline">Better . Eco-friendly . Efficiency</h1>
@@ -66,6 +125,28 @@
         </div>
     </div>
 </div>
+<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+        <p style="font-size: 30px;">B.E.E</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>Follow Us</p>
+        <p>Instagram: @b.e.e_different</p>
+        <p>Facebook: @b.e.e_different</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <section class="BEE">
+            <p>NEWSLETTER</p>
+            <h5>Join Our BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" id="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </section>
+    </div>
+</footer>
 </body>
     {% endblock %}
 </html>

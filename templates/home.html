@@ -22,7 +22,7 @@ main {
     background-color:#D9D9D9;
 }
 
-h1{
+h1 {
     margin: 10px;
     font-weight: bold;
 }
@@ -39,14 +39,16 @@ h3 {
     text-align: center;
 }
 
-hr{
+hr {
    display:none
 }
-.text1{
+
+.text1 {
    font-size:20px;
    color:#509166;
    padding: 10px;
-    }
+}
+
 .container {
     display: flex;
     flex-direction: row;
@@ -60,89 +62,130 @@ hr{
     background-color: #8BC34A;
     margin: 50px;
 }
-a{
+
+a {
   text-decoration: none;
   }
 
 .registerbtn {
-  background-color:#F6BDBD;
-  color: black;
-  padding: 10px 20px;
-  margin: 8px;
-  border: none;
-  cursor: pointer;
-  width: 180px;
-  opacity: 0.9;
-  border-radius: 25px; /* Increase border radius for rounder corners */
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
- }
+    background-color:#F6BDBD;
+    color: black;
+    padding: 10px 20px;
+    margin: 8px;
+    border: none;
+    cursor: pointer;
+    width: 180px;
+    opacity: 0.9;
+    border-radius: 25px; /* Increase border radius for rounder corners */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    }
 
 .sustainability-features {
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  justify-content: center;
-
-  margin: 20px 0;
-
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
 }
-
 
 .feature-item {
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  width: 200px;
-
-  margin: 10px;
-
-  text-align: center;
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    margin: 10px;
+    text-align: center;
 }
-
 
 .feature-item img {
-
-  width: 88px;
-
-  height: 88px;
-
-  object-fit: contain;
-
-  margin-bottom: 10px;
-
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    margin-bottom: 10px;
 }
-
 
 .feature-item p:first-child {
-
-  font-size: 24px;
-
-  font-weight: bold;
-
-  margin-bottom: 5px;
-
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
-
 .feature-item p:last-child {
+    font-size: 16px;
+    color: #666;
+    margin-top: 5px;
+}
 
-  font-size: 16px;
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #FFFEA;
+    padding: 20px;
+}
 
-  color: #666;
+footer div {
+    flex: 1;
+    margin: 10px;
+}
 
-  margin-top: 5px;
+footer img {
+    width: 100px;
+    height: auto;
+}
 
+footer p {
+    margin: 5px 0;
+}
+
+footer form {
+    display: flex;
+    align-items: center;
+}
+
+footer input[type="email"] {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.BEE {
+    padding: 40px;
+    text-align: center;
+}
+
+.BEE h5 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.BEE p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.BEE input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.BEE button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 0px;
+}
+
+.BEE button:hover {
+    background-color: #45a049;
 }
 
 </style>
@@ -150,63 +193,107 @@ a{
 {% if 'username' in session %}
 <header>Welcome To B.E.E, {{ session['username'] }}!</header>
 <header>
-        <h1>Better . Eco-friendly . Efficiency</h1>
-    </header>
-    <main>
-        <h2>One-Stop Shop for all your essential</h2>
-        <h2>But Eco-Friendly</h2>
-        <p class="text1">Want to shop sustainably but don’t know how?</p>
-        <h3>Get Started With Us!</h3>
-        <div class="container">
-           <img class="box" src="static/img/Frame 4.png">
-           <img class="box" src="static/img/Frame 5.png">
-           <img class="box" src="static/img/Frame 6.png">
+    <h1>Better . Eco-friendly . Efficiency</h1>
+</header>
+<main>
+    <h2>One-Stop Shop for all your essential</h2>
+    <h2>But Eco-Friendly</h2>
+    <p class="text1">Want to shop sustainably but don’t know how?</p>
+    <h3>Get Started With Us!</h3>
+    <div class="container">
+        <img class="box" src="static/img/Frame 4.png">
+        <img class="box" src="static/img/Frame 5.png">
+        <img class="box" src="static/img/Frame 6.png">
+    </div>
+    <div class="sustainability-features">
+        <div class="feature-item">
+            <img src="static/img/Ellipse 36(1).png">
+            <p>1 FOR THE PLANET</p>
+            <p>A tree planted for every purchase!</p>
         </div>
-        <div class="sustainability-features">
-            <div class="feature-item">
-                <img src="static/img/Ellipse 36(1).png">
-                <p>1 FOR THE PLANET</p>
-                <p>A tree planted for every purchase!</p>
-            </div>
-            <div class="feature-item">
-                <img src="static/img/Ellipse 36(1).png">
-                <p>VETTED PRODUCTS</p>
-                <p>Bringing you the best quality.</p>
-            </div>
-            <div class="feature-item">
-                <img src="static/img/Ellipse 36(1).png">
-                <p>PLASTIC-FREE PACKAGING</p>
-                <p>Packaged and shipped with recycled cardboard and tape!</p>
-            </div>
-            <div class="feature-item">
-                <img src="static/img/Ellipse 36(1).png">
-                <p>POINTS AND REWARDS</p>
-                <p>Occasional discounts you won't want to miss!</p>
-            </div>
-            <div class="feature-item">
-                <img src="static/img/Ellipse 36(1).png">
-                <p>FRIENDLY SPACE</p>
-                <p>Blog page to interact with the community!</p>
-            </div>
-            <!-- Repeat for each feature -->
+        <div class="feature-item">
+            <img src="static/img/Ellipse 36(1).png">
+            <p>VETTED PRODUCTS</p>
+            <p>Bringing you the best quality.</p>
         </div>
-    </main>
+        <div class="feature-item">
+            <img src="static/img/Ellipse 36(1).png">
+            <p>PLASTIC-FREE PACKAGING</p>
+            <p>Packaged and shipped with recycled cardboard and tape!</p>
+        </div>
+        <div class="feature-item">
+            <img src="static/img/Ellipse 36(1).png">
+            <p>POINTS AND REWARDS</p>
+            <p>Occasional discounts you won't want to miss!</p>
+        </div>
+        <div class="feature-item">
+            <img src="static/img/Ellipse 36(1).png">
+            <p>FRIENDLY SPACE</p>
+            <p>Blog page to interact with the community!</p>
+        </div>
+        <!-- Repeat for each feature -->
+    </div>
+</main>
+<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+        <p style="font-size: 30px;">B.E.E</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>Follow Us</p>
+        <p>Instagram: @b.e.e_different</p>
+        <p>Facebook: @b.e.e_different</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <section class="BEE">
+            <p>NEWSLETTER</p>
+            <h5>Join Our BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" id="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </section>
+    </div>
+</footer>
 {% else %}
-    <header>
-        <h1>Better . Eco-friendly . Efficiency</h1>
-    </header>
-    <main>
-        <h2>One-Stop Shop for all your essential</h2>
-        <h2>But Eco-Friendly</h2>
-        <p class="text1">Want to shop sustainably but don’t know how?</p>
-        <h3>Get Started</h3>
-        <div class="container">
-           <img class="box" src="static/img/Frame 4.png">
-           <img class="box" src="static/img/Frame 5.png">
-           <img class="box" src="static/img/Frame 6.png">
-        </div>
-        <a href="/signup"><button type="submit" class="registerbtn">Sign Up Now!</button></a>
-    </main>
+<header>
+    <h1>Better . Eco-friendly . Efficiency</h1>
+</header>
+<main>
+    <h2>One-Stop Shop for all your essential</h2>
+    <h2>But Eco-Friendly</h2>
+    <p class="text1">Want to shop sustainably but don’t know how?</p>
+    <h3>Get Started</h3>
+    <div class="container">
+        <img class="box" src="static/img/Frame 4.png">
+        <img class="box" src="static/img/Frame 5.png">
+        <img class="box" src="static/img/Frame 6.png">
+    </div>
+    <a href="/signup"><button type="submit" class="registerbtn">Sign Up Now!</button></a>
+</main>
+<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+        <p style="font-size: 30px;">B.E.E</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>Follow Us</p>
+        <p>Instagram: @b.e.e_different</p>
+        <p>Facebook: @b.e.e_different</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <section class="BEE">
+            <p>NEWSLETTER</p>
+            <h5>Join Our BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" id="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </section>
+    </div>
+</footer>
 {% endif %}
 {% endblock %}
 </body>
