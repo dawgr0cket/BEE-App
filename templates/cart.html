@@ -18,6 +18,12 @@
     // Redirect to the specific route
     window.location.href = "/decrement/" + encodeURIComponent(productName);
   }
+
+  function removedisc(username) {
+    // Redirect to the specific route
+    window.location.href = "/removedisc/" + encodeURIComponent(username);
+  }
+
 </script>
 <style>
 body {
@@ -231,8 +237,10 @@ td {
                 {% endfor %}
             </select>
           <button type="submit">Apply Discount</button>
+
         </div>
       </form>
+        <button onclick="removedisc('{{ session['username'] }}')">Remove Discount</button>
     </div>
 {% else %}
 <h1>No Items in cart!</h1>

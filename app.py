@@ -3,6 +3,7 @@ import base64
 import io
 import os
 import decimal
+import traceback
 import urllib.parse
 from urllib.parse import unquote
 import uuid
@@ -191,6 +192,11 @@ def checkout(lists, username):
 #     return render_template('checkout.html', form=form)
 
 
+@app.route('/removedisc/<username>')
+def removedisc(username):
+    session['discount'] = None
+    return redirect(url_for('cart', username=username))
+
 
 @app.route('/applydisc/<username>', methods=['GET', 'POST'])
 def applydisc(username):
@@ -265,37 +271,48 @@ def success(username):
         orders = []
         quantity = []
         new_quantity = []
+        itemprice = []
         total = 10
-        cur.execute('UPDATE addresses SET session_id = ? WHERE username = ? ORDER BY entry_id DESC LIMIT 1',
-                    (sessionid, username))
+        cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
-        cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
-        address = cur.fetchall()
+        q = 0
         for product in products:
-            cur.execute('INSERT INTO sessions (session_id, username, product_name, status) VALUES (?,?,?,?)',
-                        (sessionid, username, product[1], 0))
+            cur.execute('INSERT INTO sessions (session_id, username, product_name, status, quantity) VALUES (?,?,?,?,?)',
+                        (sessionid, username, product[1], 0, product[2]))
             con.commit()
+            q += 1
             productnamelist.append(product[1])
+
+        print(productnamelist)
+        y = 0
         for productname in productnamelist:
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
                 quantity.append(price[4])
-                total += int(price[1])
+                item1 = int(price[1])*products[y][2]
+                total += (int(price[1])*products[y][2])
+                itemprice.append(price[1])
+                y += 1
             orders.append(order)
         i = 0
         print(quantity)
         for item in products:
-            newq = quantity[i] - item[4]
+            newq = quantity[i] - item[2]
             new_quantity.append(newq)
             i += 1
         p = 0
+        print(itemprice)
         for product_name in productnamelist:
             cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?', (new_quantity[p], product_name))
             con.commit()
+            cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?', (itemprice[p], product_name, sessionid))
             p += 1
-        if session['discount'] is not None:
-            discount_code = session.get('discounts')
+
+        cur.execute('SELECT * FROM addresses WHERE session_id = ? ORDER BY id DESC LIMIT 1', (sessionid,))
+        address = cur.fetchone()
+        if session.get('discount') is not None:
+            discount_code = session.get('discount')
             cur.execute('SELECT * FROM addvouchers WHERE code = ?', (discount_code,))
             voucher = cur.fetchall()
             for v in voucher:
@@ -306,15 +323,15 @@ def success(username):
         con.commit()
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
         con.commit()
-    except:
-        msg = 'An Error has Occurred'
-        flash(msg)
-    finally:
         msg = 'Purchase Completed!'
         flash(msg)
-        session['discounts'] = []
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address)
-
+        session['discount'] = None
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products)
+    except Exception as e:
+        msg = 'An Error has Occurred'
+        flash(msg)
+        traceback.print_exc()  # Print the error traceback
+        return redirect(url_for('cart', username=username))
 
 # @app.route('/successfultrans/<username>')
 # def successfultrans(username):
@@ -1687,7 +1704,7 @@ def cart(username):
                     'image': row['product_image'],
                     'quantity': quantity[i]  # Access the corresponding quantity from the quantity list
                 }
-                total = total + row['product_price']
+                total = total + (row['product_price']*quantity[i])
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
