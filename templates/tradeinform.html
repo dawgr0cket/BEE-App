@@ -2,22 +2,80 @@
 {% block title %}B.E.E - Trade-In Form{% endblock %}
 
 {% block content %}
+<style>
+body {
+    background-color:#FFFFEA;
+}
 
+.display-4 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #333;
+}
+
+</style>
 <h1 class="display-4">Trade-In Form</h1>
-<p>Hello {{session['username']}}! What do you want to trade in?</p>
+<p align="center">Hello {{session['username']}}! Send us the image of the item and describe the condition of the item</p>
 <hr>
-<form action="/tradeinform/{{ no_of_clothes }}" method="POST" enctype="multipart/form-data" >
+<form action="/tradeinform/{{ no_of_clothes }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()" >
     {{ form.hidden_tag() }}
     <p>Please Upload details for {{ no_of_clothes }} clothing items</p>
     <br>
     {% for i in range(1, no_of_clothes+1) %}
-        {{ form.tradein_pic.label(class="form-label") }} {{ i }}
-        {{ form.tradein_pic(class="form-control") }}
-        {{ form.description.label(class="form-label") }} {{ i }}
-        {{ form.description(class="form-control") }}
+        <div class="form-group">
+            <label class="form-label">{{ form.tradein_pic.label.text }} {{ i }}</label>
+            {{ form.tradein_pic(class="form-control", accept=".jpg,.jpeg,.png") }}
+        </div>
+        <div class="form-group">
+            <label class="form-label">{{ form.description.label.text }} {{ i }}</label>
+            {{ form.description(class="form-control") }}
+        </div>
     {% endfor %}
     <br>
     <hr>
     {{ form.submit(class="btn btn-secondary") }}
 </form>
+<script>
+    function validateForm() {
+    var fileInput = document.querySelector('input[type="file"]');
+    var filePath = fileInput.value;
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+    if (!allowedExtensions.exec(filePath)) {
+        alert('Invalid file type. Only .jpg, .jpeg and .png types are allowed.');
+        fileInput.value = '';
+        return false;
+    }
+}
+</script>
 {% endblock %}

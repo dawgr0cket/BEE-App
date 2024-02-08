@@ -50,7 +50,7 @@ body {
 }
 </style>
 <ul class="profilenav" style="float: left;">
-    <li><a href="/orderhistory/{{ session['username'] }}" class="active">Order History</a></li>
+    <li><a href="/order_history/{{ session['username'] }}" class="active">Order History</a></li>
     <li><a href="/view_tradeins/{{ session['username'] }}" >Trade-In</a></li>
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
@@ -82,7 +82,7 @@ body {
               {% elif order[5] == 1 %}
               <td><b>To Be Shipped</b></td>
               {% endif %}
-              <td><a href="/retrieve_order/{{ order[0] }}" class="btn btn-primary mb-3">Retrieve Order</a></td>
+              <td><a href="/view_order/{{ order[0] }}" class="btn btn-primary mb-3">Retrieve Order</a></td>
             </tr>
             {% endfor %}
           </tbody>

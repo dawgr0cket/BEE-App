@@ -35,7 +35,6 @@ ul.admin {
   color: white;
 }
 
-
 </style>
 </head>
 <body>
@@ -55,8 +54,17 @@ ul.admin {
   <li><a href="#about">About</a></li>
 </ul>
 
-<div style="margin-left:25%;padding:30px 16px;height:868px;">
+<div style="margin-left:25%;padding:30px 16px;">
   <h2>Dashboard</h2>
+    <div class="chart">
+        <h2>Revenue Bar Chart</h2>
+        {{ chart_html | safe }}
+    </div>
+    <div class="chart">
+        <h2>Product Pie Chart</h2>
+        {{ pie_chart_html | safe }}
+    </div>
+
   <img src="/static/img/Frame 7.png">
 </div>
 

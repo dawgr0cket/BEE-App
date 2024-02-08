@@ -1,15 +1,21 @@
 import ast
+import base64
+import io
 import os
+import decimal
 import urllib.parse
+from urllib.parse import unquote
 import uuid
 import shortuuid
 import functools
 import stripe
+from collections import defaultdict
+import plotly.graph_objects as go
 import re
 from checkoutform import Checkoutform
 from chatbot import get_response
 from tradeinform import Tradeinform
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session, abort
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, g, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from Users import Users
@@ -71,7 +77,7 @@ def create_product_and_price(name, price, currency, image_url, quantity, sizes):
 
 
 # @app.route('/create-checkout-session/<rows>', methods=['POST'])
-def create_stripe_checkout_session(lists, username):
+def create_stripe_checkout_session(lists, username, session=None):
     stripe.api_key = 'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX'
     decoded_url = urllib.parse.unquote(lists)  # Decode the URL
     start_index = decoded_url.find("[")  # Find the start index of the list
@@ -79,6 +85,8 @@ def create_stripe_checkout_session(lists, username):
     list_str = decoded_url[start_index:end_index]  # Extract the list string
     lists = ast.literal_eval(list_str)
     line_items = []
+    discounts = []# Retrieve discounts from Flask session
+
     for row in lists:
         item = {
             'price_data': {
@@ -92,6 +100,38 @@ def create_stripe_checkout_session(lists, username):
             'quantity': 1
         }
         line_items.append(item)
+
+    if session['discount'] is not None:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('SELECT value, title FROM addvouchers WHERE code = ?', (session['discount'],))
+        deduct = cur.fetchall()
+
+        for disc in deduct:
+            coupon = stripe.Coupon.create(
+                amount_off=disc[0]*100,
+                currency='sgd',
+                duration='once',
+                id=discounts,
+                name=disc[1],
+            )
+
+            discounts = [{
+                'coupon': coupon.id
+            }]
+
+    shipping_item = {
+        'price_data': {
+            'currency': 'sgd',
+            'unit_amount': 10 * 100,
+            'product_data': {
+                'name': 'Shipping Fee'
+            }
+        },
+        'quantity': 1
+    }
+    line_items.append(shipping_item)
+
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=line_items,
@@ -102,6 +142,7 @@ def create_stripe_checkout_session(lists, username):
         client_reference_id=username,  # Store the username in the client_reference_id field
         success_url='http://localhost:5000/success/' + username,
         cancel_url='http://localhost:5000/cancel/' + username,
+        discounts=discounts
     )
     return session
 
@@ -118,15 +159,22 @@ def checkout(lists, username):
             form = Checkoutform(block, unitno, street, city, postalcode)
             con = get_db()
             cur = con.cursor()
-            cur.execute(
-                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
-                (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            cur.execute('SELECT * FROM addresses WHERE username = ?', (username,))
+            existing_user = cur.fetchone()
+            if existing_user:
+                # User exists, perform the update
+                cur.execute('UPDATE addresses SET block=?, unitno=?, street=?, city=?, postal_code=? WHERE username=?',
+                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            else:
+                # User doesn't exist, perform the insert
+                cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
+                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
         except:
             msg = 'An Error has occurred!'
             flash(msg)
         finally:
-            session_id = create_stripe_checkout_session(lists, username)
+            session_id = create_stripe_checkout_session(lists, username, session)
             return redirect(session_id.url, code=303)
     # return redirect(f"https://checkout.stripe.com/pay/{session_id}")
     # return render_template('checkout.html')
@@ -176,7 +224,7 @@ def applydisc(username):
                         else:
                             cur.execute('SELECT value FROM addvouchers WHERE code = ?', (discount,))
                             deduct = cur.fetchall()[0]
-                            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount,))
+                            session['discount'] = discount
                             msg = "Voucher applied successfully"
             con.commit()
         except Exception as e:
@@ -221,7 +269,7 @@ def success(username):
         sessionid = str(shortuuid.uuid())[0:10]
         productnamelist = []
         orders = []
-        total = 0
+        total = 10
         cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
         address = cur.fetchall()
         for product in products:
@@ -233,9 +281,19 @@ def success(username):
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
-                total += price[1]
+                total += int(price[1])
             orders.append(order)
+
+        if session['discount'] is not None:
+            discount_code = session.get('discounts')
+            cur.execute('SELECT * FROM addvouchers WHERE code = ?', (discount_code,))
+            voucher = cur.fetchall()
+            for v in voucher:
+                total = total - int(v[2])
+            cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount_code,))
+
         cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
+        con.commit()
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
         con.commit()
     except:
@@ -244,6 +302,7 @@ def success(username):
     finally:
         msg = 'Purchase Completed!'
         flash(msg)
+        session['discounts'] = []
         return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address)
 
 
@@ -359,7 +418,7 @@ class UserForm(FlaskForm):
     phone_no = IntegerField("Phone Number", validators=[
        validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
-    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')], validators=[DataRequired()])
+    gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
@@ -424,6 +483,7 @@ def login():
             session['phone_no'] = user[4]
             session['dob'] = user[5]
             session['gender'] = user[6]
+            session['discount'] = None
             if user[7] is None:
                 session['profile_pic'] = 'img_6.png'
             else:
@@ -614,9 +674,97 @@ def deleteblog(id):
 
 
 @app.route('/admindashboard')
-@login_required
-def dashbboard():
-    return render_template('admindashboard.html')
+def generate_charts():
+    # Step 1: Retrieve revenue data from SQLite
+    con = get_db()
+    cursor = con.cursor()
+    cursor.execute(
+        "SELECT strftime('%Y-%m', payment_timestamp), total FROM sessions GROUP BY session_id")
+    data = cursor.fetchall()
+    cursor.execute("SELECT product_name, COUNT(*) as count FROM sessions GROUP BY product_name")
+    product_count_data = cursor.fetchall()
+
+    month_revenues = defaultdict(int)  # Dictionary to store cumulative sum for each month
+
+    for item in data:
+        month = datetime.strptime(item[0], '%Y-%m').strftime('%b %Y')  # Convert to datetime and format back to string
+        revenue = item[1]
+        month_revenues[month] += revenue
+
+    # Extract month and revenue data from the dictionary
+    month_year = list(month_revenues.keys())
+    revenues = list(month_revenues.values())
+
+    # Step 3: Render the bar chart
+    fig1 = go.Figure(data=go.Bar(x=month_year, y=revenues))
+
+    # Set the width of the bars
+    fig1.update_traces(width=0.3)
+
+    # Add title and axis labels for the bar chart
+    fig1.update_layout(
+        title="Monthly Revenues",
+        xaxis_title="Month",
+        yaxis_title="Revenue ($)",
+    )
+
+    # Add dropdown filter for month
+    dropdown_options = [
+        {'label': month, 'method': 'update', 'args': [{'visible': [month == m for m in month_year]}]}
+        for month in month_year
+    ]
+
+    fig1.update_layout(
+        updatemenus=[
+            {
+                'buttons': [
+                    {'label': 'All', 'method': 'update', 'args': [{'visible': [True] * len(month_year)}]}
+                ] + dropdown_options,
+                'direction': 'down',
+                'showactive': True,
+                'x': 0.05,
+                'xanchor': 'left',
+                'y': 1.15,
+                'yanchor': 'top',
+                'bgcolor': 'rgba(255, 255, 255, 0.6)',  # Adjust the background color
+                'bordercolor': 'rgba(0, 0, 0, 0.6)',  # Adjust the border color
+            }
+        ],
+    )
+
+    # Process filter selection
+    selected_month = request.args.get('month')
+    if selected_month:
+        fig1.update_traces(visible=[month == selected_month for month in month_year])
+
+    # Convert the bar chart to HTML
+    bar_chart_html = fig1.to_html(full_html=False)
+
+    # Step 4: Render the pie chart
+    product_names = [item[0] for item in product_count_data]
+    product_counts = [item[1] for item in product_count_data]
+
+    # Set the complementary colors
+    pie_colors = ['rgb(255, 127, 14)', 'rgb(44, 160, 44)']  # Complementary colors for the background
+
+    # Step 4: Render the pie chart
+    fig2 = go.Figure(data=go.Pie(labels=product_names, values=product_counts, marker=dict(colors=pie_colors)))
+
+    # Add title for the pie chart
+    fig2.update_layout(
+        title="Product Purchase Distribution",
+    )
+
+    # Convert the pie chart to HTML
+    pie_chart_html = fig2.to_html(full_html=False)
+
+    return render_template('admindashboard.html', chart_html=bar_chart_html, pie_chart_html=pie_chart_html)
+
+#
+# @app.route('/admindashboard')
+# @login_required
+# def dashbboard():
+#     return render_template('admindashboard.html')
 
 
 @app.route('/orders')
@@ -642,6 +790,14 @@ def orders():
     finally:
         return render_template('admin_orders.html', orders=orders, item_list=item_list)
 
+
+@app.route('/deleteorder/<orderid>')
+def deleteorder(orderid):
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('DELETE FROM sessions WHERE session_id = ?', (orderid,))
+    con.commit()
+    return redirect(url_for('orders'))
 
 
 @app.route('/users')
@@ -1114,12 +1270,11 @@ def order_history(username):
         cur = con.cursor()
         cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id', (username,))
         orders = cur.fetchall()
-        cur.execute('SELECT session_id FROM sessions WHERE username = ?', (username,))
+        cur.execute('SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id', (username,))
         ids = cur.fetchall()
-        for row in ids:  # Iterate over the rows
-            session_id = row[0]  # Access the value of the session_id column in the row
-            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
-            row_count = cur.fetchone()[0]
+        for row in ids:
+            # session_id = row[0]
+            row_count = row[1]
             item_list.append(row_count)
     except:
         msg = 'Failed to get orders'
@@ -1127,6 +1282,16 @@ def order_history(username):
         return redirect(url_for('profile'))
 
     return render_template('order_history.html', orders=orders, item_list=item_list)
+
+
+@app.route('/view_order/<orderid>')
+@login_required
+def view_order(orderid):
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT * FROM sessions WHERE session_id = ?', (orderid,))
+    order_details = cur.fetchall()
+    return render_template('view_order.html', order_details=order_details, orderid=orderid)
 
 
 @app.route('/retrieve_order/<orderid>')
@@ -1255,10 +1420,15 @@ def deletetradein(id):
             os.remove(path)
         except OSError as e:
             if e.errno and e.errno == 2:  # File not found error
+                cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+                cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
+                con.commit()
                 return redirect(url_for('forms'))
-    cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
-    cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
-    con.commit()
+            else:
+                cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+                cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
+                con.commit()  # Delete the blog post from the database
+                return redirect(url_for('forms'))
     con.close()
     return redirect(url_for('forms'))
 
@@ -1291,41 +1461,84 @@ def profile():
 def editprofile():
     error = None
     form = UserForm()
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         phone_no = request.form['phone_no']
         dob = request.form['dob']
-        gender = None
-        if request.form['gender']:
-            gender = request.form['gender']
-            session['gender'] = gender
-        session['username'] = username
-        session['email'] = email
+        gender = form.gender.data  # Use get() method to retrieve the value
+
+        # session['username'] = username
+        # session['email'] = email
+
         if len(phone_no) == 8 and phone_no.isdigit():
             session['phone_no'] = phone_no
         else:
-           error = "Invalid phone number"
+            error = "Invalid phone number"
+
         if request.form['dob'] == '':
             session['dob'] = None
         else:
             session['dob'] = dob
+
         if error is None:
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute(
-                    "UPDATE user SET username = ?, email = ?, phone_no = ?, dob = ?, gender = ? WHERE username = ?",
-                    (username, email, phone_no, dob, gender, session['username']))
 
-                con.commit()
+                # Prepare the SQL update statement dynamically based on the form inputs provided
+                try:
+                    if username:
+                        cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                        tables = cur.fetchall()
 
-            con.close()
+                        for table in tables:
+                            table_name = table[0]
+
+                            # Retrieve column names for the current table
+                            cur.execute(f"PRAGMA table_info({table_name})")
+                            columns = cur.fetchall()
+
+                            # Check if the "username" column exists in the current table
+                            if any(column[1] == 'username' for column in columns):
+                                # Generate and execute UPDATE statement
+                                update_statement = f"UPDATE {table_name} SET username = ? WHERE username = ?"
+                                cur.execute(update_statement, (username, session['username']))
+                                con.commit()
+
+                    if email:
+                        update_statement += " email = '{}',".format(email)
+
+                    if phone_no:
+                        update_statement += " phone_no = '{}',".format(phone_no)
+
+                    if dob:
+                        update_statement += " dob = '{}',".format(dob)
+
+                    if gender:
+                        update_statement += " gender = '{}',".format(gender)
+
+                    # Remove the trailing comma if any
+                    update_statement = update_statement.rstrip(',')
+
+                    # Add the WHERE clause
+                    update_statement += " WHERE username = '{}'".format(session['username'])
+
+                    cur.execute(update_statement)
+                    con.commit()
+
+                    print("Update successful!")
+                except Exception as e:
+                    print("Error occurred during update:", str(e))
+
         return redirect(url_for('profile'))
+
     else:
         with sqlite3.connect('database.db') as con:
             cur = con.cursor()
             cur.execute('SELECT * FROM user WHERE username = ?', (session['username'],))
             details = cur.fetchone()
+
     return render_template('editprofile.html', form=form, details=details)
 
 
@@ -1370,6 +1583,22 @@ def add_to_cart(product_name, username):
         return redirect(url_for('eco'))
 
 
+@app.route('/add_to_cart1/<product_name>/<username>')
+def add_to_cart1(product_name, username):
+    try:
+        with sqlite3.connect('database.db') as con:
+            cur = con.cursor()
+            cur.execute("INSERT INTO cart (username, product_name) VALUES (?, ?)", (username, product_name))
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('shop'))
+    finally:
+        msg = 'Added to cart'
+        flash(msg)
+        return redirect(url_for('tradein'))
+
+
 @app.route('/cart/<username>')
 @login_required
 def cart(username):
@@ -1406,14 +1635,36 @@ def cart(username):
             vouchers = cur.fetchall() #/fetchall()
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
-            address = cur.fetchall()
+            addresses = cur.fetchall()
 
     except:
         msg = 'An Error has occurred'
         flash(msg)
         return redirect(url_for('shop'))
 
-    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, address=address)
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses)
+
+
+@app.route('/increase/<item>', methods=['GET'])
+def increase(item):
+    # Decode the item parameter
+    decoded_item = unquote(item)
+    # Extract the value parameter
+    value = int(request.args.get('value'))
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (decoded_item,))
+    quantities = cur.fetchall()
+    for quantity in quantities:
+        if value == quantity[0]:
+            return redirect(url_for('cart', username=session['username'], counting=value))
+        elif value < quantity[0]:
+            value = value + 1
+            return redirect(url_for('cart', username=session['username'], counting=value))
+        elif value == 0:
+            value = value + 1
+            return redirect(url_for('cart', username=session['username'], counting=value))
+
 
 
 @app.route('/delete_cart/<product_name>/<username>')
@@ -1466,17 +1717,17 @@ def search():
 
 @app.errorhandler(401)
 def error401(error):
-    return render_template('error401.html'), 401
+    return render_template('error/error401.html'), 401
 
 
 @app.errorhandler(403)
 def error403(error):
-    return render_template('error403.html'), 403
+    return render_template('error/error403.html'), 403
 
 
 @app.errorhandler(404)
 def error404(error):
-    return render_template('error404.html'), 404
+    return render_template('error/error404.html'), 404
 
 
 @app.errorhandler(413)
@@ -1491,7 +1742,7 @@ def error429(error):
 
 @app.errorhandler(500)
 def error500(error):
-    return render_template('error500.html'), 500
+    return render_template('error/error500.html'), 500
 
 
 @app.errorhandler(501)
