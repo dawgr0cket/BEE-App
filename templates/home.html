@@ -79,11 +79,118 @@ a{
   margin-right: auto;
  }
 
+.sustainability-features {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  margin: 20px 0;
+
+}
+
+
+.feature-item {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 200px;
+
+  margin: 10px;
+
+  text-align: center;
+
+}
+
+
+.feature-item img {
+
+  width: 88px;
+
+  height: 88px;
+
+  object-fit: contain;
+
+  margin-bottom: 10px;
+
+}
+
+
+.feature-item p:first-child {
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  margin-bottom: 5px;
+
+}
+
+
+.feature-item p:last-child {
+
+  font-size: 16px;
+
+  color: #666;
+
+  margin-top: 5px;
+
+}
 
 </style>
 <body>
 {% if 'username' in session %}
 <header>Welcome To B.E.E, {{ session['username'] }}!</header>
+<header>
+        <h1>Better . Eco-friendly . Efficiency</h1>
+    </header>
+    <main>
+        <h2>One-Stop Shop for all your essential</h2>
+        <h2>But Eco-Friendly</h2>
+        <p class="text1">Want to shop sustainably but don’t know how?</p>
+        <h3>Get Started With Us!</h3>
+        <div class="container">
+           <img class="box" src="static/img/Frame 4.png">
+           <img class="box" src="static/img/Frame 5.png">
+           <img class="box" src="static/img/Frame 6.png">
+        </div>
+        <div class="sustainability-features">
+            <div class="feature-item">
+                <img src="static/img/Ellipse 36(1).png">
+                <p>1 FOR THE PLANET</p>
+                <p>A tree planted for every purchase!</p>
+            </div>
+            <div class="feature-item">
+                <img src="static/img/Ellipse 36(1).png">
+                <p>VETTED PRODUCTS</p>
+                <p>Bringing you the best quality.</p>
+            </div>
+            <div class="feature-item">
+                <img src="static/img/Ellipse 36(1).png">
+                <p>PLASTIC-FREE PACKAGING</p>
+                <p>Packaged and shipped with recycled cardboard and tape!</p>
+            </div>
+            <div class="feature-item">
+                <img src="static/img/Ellipse 36(1).png">
+                <p>POINTS AND REWARDS</p>
+                <p>Occasional discounts you won't want to miss!</p>
+            </div>
+            <div class="feature-item">
+                <img src="static/img/Ellipse 36(1).png">
+                <p>FRIENDLY SPACE</p>
+                <p>Blog page to interact with the community!</p>
+            </div>
+            <!-- Repeat for each feature -->
+        </div>
+    </main>
 {% else %}
     <header>
         <h1>Better . Eco-friendly . Efficiency</h1>
