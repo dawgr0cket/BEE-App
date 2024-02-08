@@ -141,7 +141,7 @@
                 <div class="blog-content">
                     <p>{{ row["description"] }}</p>
                 </div>
-                <p>Created In {{ row["datetime"] }}</p>
+                <p>Created On {{ row["datetime"] }}</p>
 
                 {% if session['username'] == row["username"] or session['username'] == 'adminappdev' %}
                 <div class="blog-actions">
