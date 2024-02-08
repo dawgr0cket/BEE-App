@@ -165,10 +165,10 @@
                 <p class="price">${{ row['product_price'] }}0</p>
                 {% if 'username' in session %}
                     <button><a href="/add_to_cart/{{ row['product_name'] }}/{{ session['username'] }}">Add To Cart</a></button>
-                    <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    <a href="/add_to_wishlist/{{ row['product_name'] }}/{{ session['username'] }}" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                 {% else %}
                     <button><a href="/login">Add To Cart</a></button>
-                    <a href="/add_to_wishlist" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
+                    <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                 {% endif %}
                 </div>
             </div>

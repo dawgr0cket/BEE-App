@@ -9,40 +9,15 @@
 <p>Guest's Cart</p>
 {% endif %}
 <script>
-function increment(item) {
-  var countingElement = document.getElementById("counting");
-  var currentValue = parseInt(countingElement.innerHTML);
-  const urlParams = new URLSearchParams(window.location.search);
-  const countingValue = urlParams.get('counting');
-
-  // Update the counting element with the extracted value
-  if (countingValue) {
-    countingElement.innerHTML = countingValue;
-  } else {
-    countingElement.innerHTML = currentValue;
+  function increment(productName) {
+    // Redirect to the specific route
+    window.location.href = "/increment/" + encodeURIComponent(productName);
   }
 
-  // Redirect to the increment route with the item as a parameter
-  window.location.href = "/increase/" + encodeURIComponent(item) + "?value=" + countingElement.innerHTML;
-}
-
-  function decrement(item) {
-    var countingElement = document.getElementById("counting");
-    var currentValue = parseInt(countingElement.innerHTML);
-    var newValue = currentValue - 1;
-    countingElement.innerHTML = newValue;
-
-    // Redirect to the decrement route with the item as a parameter
-    window.location.href = "/decrease/" + encodeURIComponent(item) + "?value=" + newValue;
+  function decrement(productName) {
+    // Redirect to the specific route
+    window.location.href = "/decrement/" + encodeURIComponent(productName);
   }
-
-function getUrlParameter(name) {
-  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-  var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-  var results = regex.exec(location.search);
-  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
 </script>
 <style>
 body {
@@ -184,7 +159,7 @@ td {
             </td>
             <td>
                 <button onclick="increment('{{ row['product_name'] }}')">+</button>
-                <h2 id="counting">1</h2>
+                <h2 id="counting">{{ quantity[loop.index - 1] }}</h2>
                 <button onclick="decrement('{{ row['product_name'] }}')">-</button>
             </td>
             <td>

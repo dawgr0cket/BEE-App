@@ -1447,11 +1447,6 @@ def eco():
     return render_template('eco.html', rows=rows)
 
 
-@app.route('/wishlist')
-def wishlist():
-    return render_template('wishlist.html')
-
-
 @app.route('/profile')
 @login_required
 def profile():
@@ -1572,31 +1567,83 @@ def editprofilepic(username):
 @app.route('/add_to_cart/<product_name>/<username>')
 def add_to_cart(product_name, username):
     try:
-        with sqlite3.connect('database.db') as con:
-            cur = con.cursor()
-            cur.execute("INSERT INTO cart (username, product_name) VALUES (?, ?)", (username, product_name))
+        con = get_db()
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ?", (username, product_name))
+        result = cur.fetchone()
+        product_exists = result[0] > 0
+
+        if not product_exists:
+            # Product does not exist in the cart, so insert it
+            cur.execute("INSERT INTO cart (username, product_name, product_quantity) VALUES (?, ?, ?)",
+                        (username, product_name, 1))
+            con.commit()
+
+            flash("Product added to cart successfully")
+        else:
+            flash("Product already exists in the cart")
+
+        return redirect(url_for('eco'))
     except:
-        msg = 'An Error has occurred'
-        flash(msg)
-        return redirect(url_for('shop'))
-    finally:
-        msg = 'Added to cart'
-        flash(msg)
+        flash("An error occurred while adding the product to the cart")
         return redirect(url_for('eco'))
 
 
 @app.route('/add_to_cart1/<product_name>/<username>')
 def add_to_cart1(product_name, username):
     try:
-        with sqlite3.connect('database.db') as con:
-            cur = con.cursor()
-            cur.execute("INSERT INTO cart (username, product_name) VALUES (?, ?)", (username, product_name))
+        con = get_db()
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ?", (username, product_name))
+        result = cur.fetchone()
+        product_exists = result[0] > 0
+
+        if not product_exists:
+            # Product does not exist in the cart, so insert it
+            cur.execute("INSERT INTO cart (username, product_name, product_quantity) VALUES (?, ?, ?)",
+                        (username, product_name, 1))
+            con.commit()
+
+            flash("Product added to cart successfully")
+        else:
+            flash("Product already exists in the cart")
+
+        return redirect(url_for('tradein'))
+    except:
+        flash("An error occurred while adding the product to the cart")
+        return redirect(url_for('tradein'))
+
+
+@app.route('/add_to_wishlist/<product_name>/<username>')
+def add_to_wishlist(product_name, username):
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
+        con.commit()
     except:
         msg = 'An Error has occurred'
         flash(msg)
-        return redirect(url_for('shop'))
+        return redirect(url_for('eco'))
     finally:
-        msg = 'Added to cart'
+        msg = 'Added to wishlist'
+        flash(msg)
+        return redirect(url_for('eco'))
+
+
+@app.route('/add_to_wishlist1/<product_name>/<username>')
+def add_to_wishlist1(product_name, username):
+    try:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
+        con.commit()
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('tradein'))
+    finally:
+        msg = 'Added to wishlist'
         flash(msg)
         return redirect(url_for('tradein'))
 
@@ -1609,16 +1656,17 @@ def cart(username):
         rows = []
         lists = []
         total = 0
+        quantity = []
         vouchers = []
         address = []
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute("SELECT product_name FROM cart WHERE username = ?", (username,))
+            cur.execute("SELECT product_name, product_quantity FROM cart WHERE username = ?", (username,))
             products = cur.fetchall()
             for product in products:
                 product_list.append(product['product_name'])
-
+                quantity.append(product['product_quantity'])
             for l in product_list:
                 cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ?", (l,))
                 row = cur.fetchone()
@@ -1644,29 +1692,88 @@ def cart(username):
         flash(msg)
         return redirect(url_for('shop'))
 
-    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses)
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses, quantity=quantity)
 
 
-@app.route('/increase/<item>', methods=['GET'])
-def increase(item):
-    # Decode the item parameter
-    decoded_item = unquote(item)
-    # Extract the value parameter
-    value = int(request.args.get('value'))
+@app.route('/wishlist/<username>')
+@login_required
+def wishlist(username):
+    try:
+        product_list = []
+        rows = []
+        lists = []
+        with sqlite3.connect('database.db') as con:
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute("SELECT product_name FROM wishlist WHERE username = ?", (username,))
+            products = cur.fetchall()
+            for product in products:
+                product_list.append(product['product_name'])
+
+            for l in product_list:
+                cur.execute("SELECT rowid, * FROM inventory WHERE product_name = ?", (l,))
+                row = cur.fetchone()
+                rows.append(row)
+
+            for i in rows:
+                list_1 = {
+                    'name': i['product_name'],
+                    'price': i['product_price'],
+                    'image': i['product_image'],
+                }
+                lists.append(list_1)
+
+    except:
+        msg = 'An Error has occurred'
+        flash(msg)
+        return redirect(url_for('wishlist'))
+
+    return render_template('wishlist.html', products=products, rows=rows, lists=lists)
+
+
+@app.route('/increment/<item>')
+def increment(item):
     con = get_db()
     cur = con.cursor()
-    cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (decoded_item,))
+    cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (item,))
     quantities = cur.fetchall()
+    cur.execute('SELECT product_quantity FROM cart WHERE product_name = ?', (item,))
+    cartquantities = cur.fetchall()
+    cart_item = cartquantities[0][0]
     for quantity in quantities:
-        if value == quantity[0]:
-            return redirect(url_for('cart', username=session['username'], counting=value))
-        elif value < quantity[0]:
-            value = value + 1
-            return redirect(url_for('cart', username=session['username'], counting=value))
-        elif value == 0:
-            value = value + 1
-            return redirect(url_for('cart', username=session['username'], counting=value))
+        if cart_item == quantity[0]:
+            msg = 'Maximum item quantity!'
+            flash(msg)
+            return redirect(url_for('cart', username=session['username']))
+        elif cart_item < quantity[0]:
+            cart_item = cart_item + 1
+            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
+                        (cart_item, item, session['username']))
+            con.commit()
+            msg = 'Item quantity updated!'
+            flash(msg)
+            return redirect(url_for('cart', username=session['username']))
 
+
+@app.route('/decrement/<item>')
+def decrement(item):
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT product_quantity FROM cart WHERE product_name = ?', (item,))
+    cartquantities = cur.fetchall()
+    cart_item = cartquantities[0][0]
+    if cart_item == 1:
+        msg = 'Minimum item quantity!'
+        flash(msg)
+        return redirect(url_for('cart', username=session['username']))
+    elif cart_item > 1:
+        cart_item = cart_item - 1
+        cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
+                    (cart_item, item, session['username']))
+        con.commit()
+        msg = 'Item quantity updated!'
+        flash(msg)
+        return redirect(url_for('cart', username=session['username']))
 
 
 @app.route('/delete_cart/<product_name>/<username>')
