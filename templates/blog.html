@@ -3,97 +3,159 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}B.E.E - Blog{% endblock %}</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-            text-align: center;
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f2f2f2;
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            margin-bottom: 0; /* Set margin-bottom to zero for the body element */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center; /* Center align content within the container */
+        }
+
+        .blog-title {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
         }
 
         .blog-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            padding: 20px;
-            background-color: #F7EAEA;
         }
 
         .individual-blog {
-            width: 300px;
+            background-color: #fff;
             padding: 20px;
-            background-color: #ffffff;
-            border: 2px solid #F7EAEA;
-            border-radius: 10px;
-            margin: 10px;
-            text-align: left;
-        }
-
-        .img {
-            width: 100%;
-            height: auto;
-            border: 3px solid #F7EAEA;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Hide overflowing content */
+            max-width: 100%; /* Set maximum width of individual blog post */
+            border: 2px solid #ccc; /* Add border style */
         }
 
         .blog-details {
             margin-bottom: 10px;
         }
 
-        .blog-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .blog-details i {
+            color: #666;
         }
 
-        .edit-delete-actions img {
-            width: 20px;
-            margin-right: 5px;
+        .blog-actions {
+            margin-top: 10px;
+        }
+
+        .edit-delete-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .edit-delete-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+        }
+
+        .edit-button {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px; /* Add margin between edit and delete buttons */
+        }
+
+        .edit-delete-actions button:hover {
+            opacity: 0.8;
+        }
+
+        .add-blog-link {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .blog-content {
+            max-height: 200px; /* Limit the maximum height of the content */
+            overflow-y: auto; /* Add vertical scrollbar when content overflows */
+            width: 100%; /* Ensure content width matches its container */
+            word-wrap: break-word; /* Wrap long words */
+        }
+
+        .blog-image {
+            width: 100%; /* Set the width to 100% of its container */
+            height: auto; /* Set height to auto to maintain aspect ratio */
+            max-height: 300px; /* Limit maximum height to prevent oversized images */
+            object-fit: cover; /* Maintain aspect ratio and fill container */
+            margin-bottom: 10px; /* Add margin below the image */
+        }
+
+        /* Styles for blog content */
+        .individual-blog strong {
+            font-size: 24px;
+            color: #333;
+            display: block; /* Ensure each blog title appears on a new line */
+            margin-bottom: 10px;
+        }
+
+        .individual-blog p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
         }
     </style>
 
-    {% extends "base.html" %} {% block title %}B.E.E - Blog{% endblock %} {% block content %}
+    {% extends "base.html" %} {% block content %}
 </head>
 
 <body>
 
-    <h1 class="display-4">Blog</h1>
-    <p>This is the blog page!</p>
+    <div class="container">
+        <h1 class="blog-title">Blog</h1>
 
-    <div class="blog-container">
-        {% for row in rows %}
-        <div class="individual-blog">
-            <strong>{{ row["title"] }}</strong>
-            <div class="blog-details">
-                <i>@{{ row["username"] }}</i>
-                <p>{{ row["summary"] }}</p>
-            </div>
-            <img src="{{url_for('static', filename='img/' + row['blog_pic'])}}" class="img" alt="Blog Image">
-            <p>{{ row["description"] }}</p>
-            <p>{{ row["datetime"] }}</p>
+        <p class="add-blog-link">Create Your Own Blog Now! <br>
+            <a href="/addblog">Create Blog</a></p>
 
-            {% if session['username'] == row["username"] or session['username'] == 'adminappdev' %}
-            <div class="blog-actions">
-                <div class="edit-delete-actions">
-                    <a href="/editblog/{{ row['rowid'] }}"><img src="static/img/img_5.png" alt="Edit" title="Edit"></a>
-                    <a href="/deleteblog/{{ row['rowid'] }}"><img src="static/img/img_4.png" alt="Delete" title="Delete"></a>
+        <div class="blog-container">
+            {% for row in rows %}
+            <div class="individual-blog">
+                <strong>{{ row["title"] }}</strong>
+                <div class="blog-details">
+                    <i>@{{ row["username"] }}</i>
+                    <p>{{ row["summary"] }}</p>
                 </div>
+                <img src="{{url_for('static', filename='img/' + row['blog_pic'])}}" class="img blog-image" alt="Blog Image">
+                <div class="blog-content">
+                    <p>{{ row["description"] }}</p>
+                </div>
+                <p>Created In {{ row["datetime"] }}</p>
+
+                {% if session['username'] == row["username"] or session['username'] == 'adminappdev' %}
+                <div class="blog-actions">
+                    <div class="edit-delete-actions">
+                        <button class="edit-button" onclick="location.href='/editblog/{{ row['rowid'] }}'">Edit</button>
+                        <button class="delete-button" onclick="location.href='/deleteblog/{{ row['rowid'] }}'">Delete</button>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 
-    <p>Want To Add Your Own Blog?<a href="/addblog">Add Blog</a></p>
     {% endblock %}
 </body>
 
