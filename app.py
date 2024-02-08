@@ -97,7 +97,7 @@ def create_stripe_checkout_session(lists, username, session=None):
                     "images": ["static/img/" + row['image']]
                 }
             },
-            'quantity': 1
+            'quantity': row['quantity']
         }
         line_items.append(item)
 
@@ -150,6 +150,7 @@ def create_stripe_checkout_session(lists, username, session=None):
 @app.route('/checkout/<lists>/<username>', methods=['GET', 'POST'])
 def checkout(lists, username):
     if request.method == 'POST':
+        print(lists)
         try:
             block = request.form['block']
             unitno = request.form['unitno']
@@ -159,16 +160,9 @@ def checkout(lists, username):
             form = Checkoutform(block, unitno, street, city, postalcode)
             con = get_db()
             cur = con.cursor()
-            cur.execute('SELECT * FROM addresses WHERE username = ?', (username,))
-            existing_user = cur.fetchone()
-            if existing_user:
-                # User exists, perform the update
-                cur.execute('UPDATE addresses SET block=?, unitno=?, street=?, city=?, postal_code=? WHERE username=?',
-                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
-            else:
-                # User doesn't exist, perform the insert
-                cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
-                            (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            # User doesn't exist, perform the insert
+            cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
+                        (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
         except:
             msg = 'An Error has occurred!'
@@ -269,8 +263,11 @@ def success(username):
         sessionid = str(shortuuid.uuid())[0:10]
         productnamelist = []
         orders = []
+        quantity = []
+        new_quantity = []
         total = 10
-        cur.execute('UPDATE addresses SET session_id = ? WHERE username = ?', (sessionid, username))
+        cur.execute('UPDATE addresses SET session_id = ? WHERE username = ? ORDER BY entry_id DESC LIMIT 1',
+                    (sessionid, username))
         con.commit()
         cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
         address = cur.fetchall()
@@ -283,9 +280,20 @@ def success(username):
             cur.execute('SELECT * FROM inventory WHERE product_name = ?', (productname,))
             order = cur.fetchall()
             for price in order:
+                quantity.append(price[4])
                 total += int(price[1])
             orders.append(order)
-
+        i = 0
+        print(quantity)
+        for item in products:
+            newq = quantity[i] - item[4]
+            new_quantity.append(newq)
+            i += 1
+        p = 0
+        for product_name in productnamelist:
+            cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?', (new_quantity[p], product_name))
+            con.commit()
+            p += 1
         if session['discount'] is not None:
             discount_code = session.get('discounts')
             cur.execute('SELECT * FROM addvouchers WHERE code = ?', (discount_code,))
@@ -1672,13 +1680,14 @@ def cart(username):
                 row = cur.fetchone()
                 rows.append(row)
 
-            for i in rows:
+            for i, row in enumerate(rows):
                 list_1 = {
-                    'name': i['product_name'],
-                    'price': i['product_price'],
-                    'image': i['product_image'],
+                    'name': row['product_name'],
+                    'price': row['product_price'],
+                    'image': row['product_image'],
+                    'quantity': quantity[i]  # Access the corresponding quantity from the quantity list
                 }
-                total = total + i['product_price']
+                total = total + row['product_price']
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
