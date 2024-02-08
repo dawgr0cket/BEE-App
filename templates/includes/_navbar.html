@@ -135,7 +135,7 @@
         <a href="/">
           <img src="/static/img/img_1.png" alt="" width="30px">
         </a>
-        <a href="/wishlist">
+        <a href="/wishlist/{{ session['username'] }}">
           <img src="/static/img/img_2.png" alt="" width="30px">
         </a>
         {% if 'username' in session %}

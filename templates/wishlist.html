@@ -2,10 +2,63 @@
 {% block title %}B.E.E - Wish List{% endblock %}
 
 {% block content %}
+<style>
+    body {
+        background-color: #ffffea;
+    }
+    button.wishlist {
+        background: #ff9999;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: auto;
+        cursor: pointer;
+        width: 150px;
+    }
+    .container table.table {
+        --bs-table-bg: #F1F1F1;
+    }
+    table a{
+        text-decoration:none;
+        color: white;
+    }
+</style>
 <h1 class="display-4">Wish List</h1>
 {% if 'username' in session %}
-<p>{{session['username']}}'s Wishlist</p>
+    <p>{{session['username']}}'s Wishlist</p>
+        <div class="container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Item</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in rows %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ product[1] }}</td>
+                            <td>{{ product[5] }}</td>
+                            <td>${{ product[2] }}0</td>
+                            {% if product[5] == 0 %}
+                                <td><button class='wishlist' style="color: black;background: grey;">Out Of Stock</button></td>
+                                <td><a href="/removewishlist/{{ product[1] }}/{{ session['username'] }}"><img src="/static/img/img_2.png" alt="" width="30px"></a></td>
+
+                            {% else %}
+                                <td><button class='wishlist' ><a href="/add_to_cart3/{{ product[1] }}/{{ session['username'] }}">Add To Cart</a></button></td>
+                                <td><a href="/removewishlist/{{ product[1] }}/{{ session['username'] }}"><img src="/static/img/img_2.png" alt="" width="30px"></a></td>
+
+                            {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% else %}
-<p>Guest's Wishlist</p>
+    <p>Guest's Wishlist</p>
 {% endif %}
 {% endblock %}
