@@ -138,7 +138,22 @@
         background-color: #FFFEA;
         padding: 20px;
         text-align: center;
+        position: relative;
     }
+
+    footer .copyright-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.copyright {
+    margin: 0;
+    font-size: 14px;
+}
 
     footer div {
         flex: 1;
@@ -256,6 +271,9 @@
         </div>
     </section>
 <footer>
+    <div class="copyright-container">
+        <p class="copyright">&copy;2024</p>
+    </div>
     <div style="margin-bottom: 20px;">
         <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
         <p style="font-size: 30px;">B.E.E</p>
