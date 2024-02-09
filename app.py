@@ -835,11 +835,39 @@ def users():
 
     cur = con.cursor()
     cur.execute("SELECT rowid, * FROM user")
-
     rows = cur.fetchall()
+    cur.execute('''
+    SELECT u.username, COALESCE(t.row_count, 0) AS row_count
+    FROM (
+      SELECT DISTINCT username
+      FROM user
+    ) u
+    LEFT JOIN (
+      SELECT username, COUNT(DISTINCT session_id) AS row_count
+      FROM sessions
+      GROUP BY username
+    ) t ON u.username = t.username
+''')
+    orders = cur.fetchall()
+    results = []
+    users = []
+    for i in rows:
+        users.append(i['username'])
+
+    # Process the query result
+    for row in orders:
+        username = row[0]
+        row_count = row[1]
+        results.append((username, row_count))
+
+    row_order = []
+    for user in users:
+        for username in results:
+            if user == username[0]:
+                row_order.append(username[1])
     con.close()
 
-    return render_template('users.html', rows=rows)
+    return render_template('users.html', rows=rows, row_order=row_order)
 
 
 @app.route('/delete_user/<int:user_id>/<user>')
@@ -1099,9 +1127,40 @@ def addvouchers():
     cur = con.cursor()
     cur.execute("SELECT rowid, * FROM user")
 
+    rows_user = cur.fetchall()
+    cur.execute("SELECT rowid, * FROM user")
     rows = cur.fetchall()
+    cur.execute('''
+        SELECT u.username, COALESCE(t.row_count, 0) AS row_count
+        FROM (
+          SELECT DISTINCT username
+          FROM user
+        ) u
+        LEFT JOIN (
+          SELECT username, COUNT(DISTINCT session_id) AS row_count
+          FROM sessions
+          GROUP BY username
+        ) t ON u.username = t.username
+    ''')
+    orders = cur.fetchall()
+    results = []
+    users = []
+    for i in rows:
+        users.append(i['username'])
+
+    # Process the query result
+    for row in orders:
+        username = row[0]
+        row_count = row[1]
+        results.append((username, row_count))
+
+    row_order = []
+    for user in users:
+        for username in results:
+            if user == username[0]:
+                row_order.append(username[1])
     con.close()
-    return render_template('add_vouchers.html', rows=rows)
+    return render_template('add_vouchers.html', rows_user=rows_user, row_order=row_order)
 
 
 @app.route('/retrieve_vouchers/<username>')

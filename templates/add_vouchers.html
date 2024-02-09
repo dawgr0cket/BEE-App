@@ -88,14 +88,14 @@ table {
       <th>Number Of Orders</th>
       <th></th>
       </thead>
-      {% for row in rows %}
+      {% for row in rows_user %}
         <tr style="border-bottom: 1px solid black;">
           <td>{{ row['user_id'] }}</td>
           <td>{{ row['username'] }}</td>
           <td>{{ row['email'] }}</td>
           <td>{{ row['phone_no'] }}</td>
           <td></td>
-          <td></td>
+          <td>{{ row_order[loop.index - 1] }}</td>
             <td><a href="/retrieve_vouchers/{{ row['username'] }}">Retrieve</a>
             </td>
         </tr>
