@@ -11,55 +11,58 @@
 <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
+
 <style>
     *{
         margin:0;
         padding:0;
         box-sizing: border-box;
     }
-    body{
-    background-color: #FFFFEA;
+
+    body {
+        background-color: #FFFFEA;
     }
 
-    hr{
-    width:30px;
-    height:2px;
-    background-color:green;
+    hr {
+        width:30px;
+        height:2px;
+        background-color:green;
     }
-.top {
-  background-image: url('static/img/top.jpg');
-  background-repeat: no-repeat;
-  background-attachment: flex;
-  background-size: 100% 100%;
-  background-position:center;
-  height:250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding-left: 10px;
-  padding-bottom: 10px;
-}
 
-.top p, h1 {
-  color: white;
-  margin: 0;
-}
+    .top {
+        background-image: url('static/img/top.jpg');
+        background-repeat: no-repeat;
+        background-attachment: flex;
+        background-size: 100% 100%;
+        background-position:center;
+        height:250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding-left: 10px;
+        padding-bottom: 10px;
+    }
 
-.button {
-  background-color: green;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin-top: 10px;
-  cursor: pointer;
-}
+    .top p, h1 {
+        color: white;
+        margin: 0;
+    }
 
- .product-grid {
+    .button {
+        background-color: green;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         padding:10px;
@@ -68,6 +71,7 @@
         gap: 80px;
         justify-items: center;
     }
+
     .product-card {
         background: white;
         padding: 30px;
@@ -83,8 +87,9 @@
         object-fit: cover;
         transition: 0.3s all;
     }
+
     .product-card:hover img {
-    opacity:0.7;
+        opacity:0.7;
     }
 
     .product-card .content {
@@ -98,14 +103,17 @@
     .product-card h5 {
         margin: 10px 0;
     }
-    .product-card a{
-    text-decoration:none;
-    color: white;
+
+    .product-card a {
+        text-decoration:none;
+        color: white;
     }
+
     .product-card .price {
         color: red;
         font-weight: bold;
     }
+
     .product-card button {
         background: #ff9999;
         color: white;
@@ -115,70 +123,109 @@
         margin-bottom: 0;
         cursor: pointer;
     }
-    .heart.mywishlist{
+
+    .heart.mywishlist {
         object-fit: initial;
         height: initial;
         width: 30px;
         margin-top: 5px;
     }
+
     footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #FFFEA;
-            padding: 20px;
-        }
-        footer div {
-            flex: 1;
-            margin: 10px;
-        }
-        footer img {
-            width: 100px;
-            height: auto;
-        }
-        footer p {
-            margin: 5px 0;
-        }
-        footer form {
-            display: flex;
-            align-items: center;
-        }
-        footer input[type="email"] {
-            flex: 1;
-            margin-right: 10px;
-        }
-        .BEE {
-        padding: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #FFFEA;
+        padding: 20px;
         text-align: center;
-        }
-        .BEE h5 {
-        font-size: 24px;
-        margin-bottom: 10px;
-        }
-        .BEE p {
-        font-size: 16px;
-        margin-bottom: 20px;
-        }
-        .BEE input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-        }
-        .BEE button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 0px;
-        }
-        .BEE button:hover {
-        background-color: #45a049;
-        }
+    }
+
+    footer div {
+        flex: 1;
+        margin: 10px;
+    }
+
+    footer p {
+        margin: 5px 0;
+    }
+
+    .newsletter {
+  padding: 40px;
+  text-align: center;
+  color: black;
+  margin-top: 50px;
+  border-radius: 10px;
+}
+
+.newsletter h2 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.newsletter h3 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.newsletter p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.newsletter input[type="email"] {
+  width: 300px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 1.2em;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s;
+}
+
+.newsletter button[type="submit"]:hover {
+  background-color: #45A049;
+}
+
+@media (max-width: 768px) {
+  .newsletter {
+    padding: 20px;
+  }
+
+  .newsletter h5 {
+    font-weight: 600
+  }
+
+  .newsletter p {
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+
+  .newsletter form {
+    flex-direction: column;
+  }
+
+  .newsletter input[type="email"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
 
 </style>
 <body>
@@ -208,7 +255,7 @@
             {% endfor %}
         </div>
     </section>
-<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+<footer>
     <div style="margin-bottom: 20px;">
         <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
         <p style="font-size: 30px;">B.E.E</p>
@@ -218,17 +265,17 @@
         <p>Instagram: @b.e.e_different</p>
         <p>Facebook: @b.e.e_different</p>
     </div>
-    <div style="margin-bottom: 20px;">
-        <section class="BEE">
-            <p>NEWSLETTER</p>
-            <h5>Join Our BEE Community</h5>
-            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
-            <form>
-                <input type="email" id="email" placeholder="E-mail">
-                <button type="submit">SUBSCRIBE</button>
-            </form>
-        </section>
-    </div>
+    <div class="newsletter">
+  <div class="newsletter-content">
+      <P>NEWSLETTER</P>
+    <h5>JOIN OUR BEE Community</h5>
+    <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+    <form>
+      <input type="email" placeholder="E-mail">
+      <button type="submit">SUBSCRIBE</button>
+    </form>
+  </div>
+</div>
 </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

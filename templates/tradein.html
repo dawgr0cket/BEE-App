@@ -1,12 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
 {% extends "base.html" %}
 {% block title %}B.E.E - Trade-In{% endblock %}
 
 {% block content %}
+
 <head>
     <title>B.E.E Trade-In</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
+
 <style>
     *{
         margin:0;
@@ -132,6 +137,7 @@
         align-items: center;
         background-color: #FFFEA;
         padding: 20px;
+        text-align: center;
     }
 
     footer div {
@@ -139,26 +145,89 @@
         margin: 10px;
     }
 
-    footer img {
-        width: 100px;
-        height: auto;
-    }
-
     footer p {
         margin: 5px 0;
     }
 
-    footer form {
-        display: flex;
-        align-items: center;
-    }
+    .newsletter {
+  padding: 40px;
+  text-align: center;
+  color: black;
+  margin-top: 50px;
+  border-radius: 10px;
+}
 
-    footer input[type="email"] {
-        flex: 1;
-        margin-right: 10px;
-    }
+.newsletter h2 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
 
+.newsletter h3 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.newsletter p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.newsletter input[type="email"] {
+  width: 300px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 1.2em;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s;
+}
+
+.newsletter button[type="submit"]:hover {
+  background-color: #45A049;
+}
+
+@media (max-width: 768px) {
+  .newsletter {
+    padding: 20px;
+  }
+
+  .newsletter h5 {
+    font-weight: 600
+  }
+
+  .newsletter p {
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+
+  .newsletter form {
+    flex-direction: column;
+  }
+
+  .newsletter input[type="email"] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
 </style>
+
 <div class="top">
     <h1 class="display-4">Trade-In</h1>
     <p>Trade-In Your preloved clothes</p> {{ tradeinform }}
@@ -207,34 +276,33 @@
                 </div>
             {% endif %}
         {% endfor %}
-</div>
+        </div>
     </section>
-<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
-    <div style="margin-bottom: 20px;">
-        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
-        <p style="font-size: 30px;">B.E.E</p>
-    </div>
-    <div style="margin-bottom: 20px;">
-        <p>Follow Us</p>
-        <p>Instagram: @b.e.e_different</p>
-        <p>Facebook: @b.e.e_different</p>
-    </div>
-    <div style="margin-bottom: 20px;">
-        <section class="BEE">
-            <p>NEWSLETTER</p>
-            <h5>Join Our BEE Community</h5>
-            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
-            <form>
-                <input type="email" id="email" placeholder="E-mail">
-                <button type="submit">SUBSCRIBE</button>
-            </form>
-        </section>
-    </div>
-</footer>
+    <footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+        <div style="margin-bottom: 20px;">
+            <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+            <p style="font-size: 30px;">B.E.E</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <p>Follow Us</p>
+            <p>Instagram: @b.e.e_different</p>
+            <p>Facebook: @b.e.e_different</p>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <section class="BEE">
+                <p>NEWSLETTER</p>
+                <h5>Join Our BEE Community</h5>
+                <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+                <form>
+                    <input type="email" id="email" placeholder="E-mail">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </section>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 </body>
 </html>
-
 {% endblock %}
