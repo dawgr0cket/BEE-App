@@ -42,7 +42,7 @@ print("Connected to database successfully")
 #         ('blog', 'Blog
 # Create Your Own Blog Now!
 # Create Blog
-#
+# i want to see blogs how do i see blogs? how do i post blogs? where do i post blogs? where do i see other blogs? where do i see blogs?
 # I Love To Recycle!
 # @wongjaeno
 # i love to save the environment by making my own planter with recyclable materials.
@@ -72,7 +72,7 @@ print("Connected to database successfully")
 #
 # Add To Cart
 #
-#
+# i want to shop eco where do i buy clothes i want eco clothes
 # White Polo Shirt
 # $24.00
 #
@@ -89,6 +89,7 @@ print("Connected to database successfully")
 # $15.00
 #
 # Out Of Stock
+# i want to shop trade-in tradein trade in
 #
 # Orange Round-Neck Shirt
 # Orange Round-Neck Shirt
@@ -103,7 +104,7 @@ print("Connected to database successfully")
 # Product	Price	Stock Left	Quantity
 # Hoodie
 #
-#
+# i want to checkout check out payment pay
 # 35.0
 #
 # 13
@@ -118,7 +119,7 @@ print("Connected to database successfully")
 # '),
 # ('order_history', 'Order History
 # adminappdev''s Order History
-#
+# previous orders what did i order
 # Past Orders
 # Order ID	Date	Items	Total	Status
 # #CUnDVerHNW	2024-01-25	2	$33	Packing...
@@ -127,14 +128,14 @@ print("Connected to database successfully")
 # ('view_vouchers', 'Vouchers
 # adminappdev''s Vouchers
 #
-# $5 OFF
+# $5 OFF what vouchers do i have
 # Code:
 # 9BYoeSnEHviTerM4iycoVh
 # Condition:
 # '),
 # ('view_tradeins', 'Trade-In Forms
 # adminappdev''s Trade-In Forms
-#
+# what did i tradein trade-in trade in
 # Trade-In No.	Trade-In ID	No. Of Clothes	Status	Date Of Submission	View Form
 # 1	f30a20b1	1
 # Approved
@@ -147,7 +148,7 @@ print("Connected to database successfully")
 # '),
 # ('tradeinno', 'Trade-In Form
 # Hello adminappdev! What do you want to trade in?
-#
+# i want to trade in i want to tradein i want to trade-in
 #
 # Number Of Clothes
 #

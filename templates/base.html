@@ -107,10 +107,17 @@ document.getElementById('search-form').addEventListener('submit', function(e) {
     <div class="content">
         {% block content %}
         {% endblock %}
-        <form id="search-form" class="searchhidden" action="/search" method="GET">
-          <input type="text" name="query" placeholder="Search...">
-          <button type="submit">Search</button>
-        </form>
+        {% if 'username' in session %}
+            <form id="search-form" class="searchhidden" action="/search" method="GET">
+              <input type="text" name="query" placeholder="Search...">
+              <button type="submit">Search</button>
+            </form>
+        {% else %}
+            <form class="searchhidden" action="/login" method="GET">
+              <input type="text" name="query" placeholder="Search...">
+              <button type="submit">Search</button>
+            </form>
+        {% endif %}
         <div class="container">
             <div class="chatbox">
                 <div class="chatbox__support">

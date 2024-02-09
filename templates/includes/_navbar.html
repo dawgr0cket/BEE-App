@@ -132,17 +132,23 @@
           </div>
         </a>
         {% endif %}
+        {% if 'username' in session %}
         <a href="#" onclick="toggleForm()">
           <img src="/static/img/img_1.png" alt="" width="30px">
         </a>
         <a href="/wishlist/{{ session['username'] }}">
           <img src="/static/img/img_2.png" alt="" width="30px">
         </a>
-        {% if 'username' in session %}
         <a href="/cart/{{ session['username'] }}">
           <img src="/static/img/img_3.png" alt="" width="30px">
         </a>
         {% else %}
+        <a href="/login">
+          <img src="/static/img/img_1.png" alt="" width="30px">
+        </a>
+        <a href="/login">
+          <img src="/static/img/img_2.png" alt="" width="30px">
+        </a>
         <a href="/login">
           <img src="/static/img/img_3.png" alt="" width="30px">
         </a>

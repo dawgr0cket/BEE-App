@@ -2,20 +2,69 @@
 <html>
 <head>
     <title>Search Results</title>
+
 </head>
 <body>
+
+
 {% extends "base.html" %}
 {% block title %}B.E.E - Admin/Forms{% endblock %}
 
 {% block content %}
+<style>
+    body {
+        background-color: #ffffea;
+    }
+    li a {
+        color: black; /* Text color */
+        text-decoration: none;
+    }
+</style>
     <h1>Search Results</h1>
     <p>Showing results for: {{ query }}</p>
     <ul>
         {% for result in results %}
-        <li>
-            <h3>{{ result[0] }}</h3>
-            <p>{{ result[1] }}</p>
-        </li>
+            {% if result[0] == 'blog' %}
+                <li>
+                    <h3><a href="/blog">Blog Page</a></h3>
+                    <p>Want to know about how others are saving the environment? View and upload blogs here!</p>
+                </li>
+            {% elif result[0] == 'eco' %}
+                <li>
+                    <h3><a href="/eco">Eco Shop</a></h3>
+                    <p>Browse our shop page where clothes are sustainably made with the environment in mind!</p>
+                </li>
+            {% elif result[0] == 'tradein' %}
+                <li>
+                    <h3><a href="/tradein">Trade-In Shop</a></h3>
+                    <p>Browse our trade-in page where clothes are traded in by our valued customers!<br>Clothes are carefully picked and in mint conditions.</p>
+                </li>
+            {% elif result[0] == 'cart' %}
+                <li>
+                    <h3><a href="/cart/{{ session['username'] }}">Cart</a></h3>
+                    <p>Done browsing and ready to check out? Vouchers can be applied at checkout and enjoy good discounts!</p>
+                </li>
+            {% elif result[0] == 'order_history' %}
+                <li>
+                    <h3><a href="/order_history/{{ session['username'] }}">Order History</a></h3>
+                    <p>Want to see your order history? Look through all your orders made within 365 days!</p>
+                </li>
+            {% elif result[0] == 'view_vouchers' %}
+                <li>
+                    <h3><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></h3>
+                    <p>View vouchers that are currently on your account, their conditions and expiry date.</p>
+                </li>
+            {% elif result[0] == 'view_tradeins' %}
+                <li>
+                    <h3><a href="/view_tradeins/{{ session['username'] }}">Past Trade-Ins</a></h3>
+                    <p>Keep track of your past trade-ins and look for trade-in status.</p>
+                </li>
+            {% elif result[0] == 'tradeinno' %}
+                <li>
+                    <h3><a href="/tradeinno">Trade-In Form</a></h3>
+                    <p>Have clothes that have minimally defects and no longer worn? Trade them in and enjoy vouchers up to $20 OFF!</p>
+                </li>
+            {% endif %}
         {% endfor %}
     </ul>
 </body>
