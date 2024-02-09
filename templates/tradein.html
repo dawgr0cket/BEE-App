@@ -13,49 +13,51 @@
         padding:0;
         box-sizing: border-box;
     }
-    body{
-    background-color: #FFFFEA;
+
+    body {
+        background-color: #FFFFEA;
     }
 
-    hr{
-    width:30px;
-    height:2px;
-    background-color:green;
+    hr {
+        width:30px;
+        height:2px;
+        background-color:green;
     }
-.top {
-  background-image: url('static/img/top.jpg');
-  background-repeat: no-repeat;
-  background-attachment: flex;
-  background-size: 100% 100%;
-  background-position:center;
-  height:250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding-left: 10px;
-  padding-bottom: 10px;
-}
 
-.top p, h1 {
-  color: white;
-  margin: 0;
-}
+    .top {
+        background-image: url('static/img/top.jpg');
+        background-repeat: no-repeat;
+        background-attachment: flex;
+        background-size: 100% 100%;
+        background-position:center;
+        height:250px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding-left: 10px;
+        padding-bottom: 10px;
+    }
 
-.button {
-  background-color: green;
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin-top: 10px;
-  cursor: pointer;
-}
+    .top p, h1 {
+        color: white;
+        margin: 0;
+    }
 
- .product-grid {
+    .button {
+        background-color: green;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         padding:10px;
@@ -64,6 +66,7 @@
         gap: 80px;
         justify-items: center;
     }
+
     .product-card {
         background: white;
         padding: 30px;
@@ -79,8 +82,9 @@
         object-fit: cover;
         transition: 0.3s all;
     }
+
     .product-card:hover img {
-    opacity:0.7;
+        opacity:0.7;
     }
 
     .product-card .content {
@@ -94,14 +98,17 @@
     .product-card h5 {
         margin: 10px 0;
     }
-    .product-card a{
-    text-decoration:none;
-    color: white;
+
+    .product-card a {
+        text-decoration:none;
+        color: white;
     }
+
     .product-card .price {
         color: red;
         font-weight: bold;
     }
+
     .product-card button {
         background: #ff9999;
         color: white;
@@ -111,38 +118,45 @@
         margin-bottom: 0;
         cursor: pointer;
     }
-    .heart.mywishlist{
+
+    .heart.mywishlist {
         object-fit: initial;
         height: initial;
         width: 30px;
         margin-top: 5px;
     }
+
     footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #FFFEA;
-            padding: 20px;
-        }
-        footer div {
-            flex: 1;
-            margin: 10px;
-        }
-        footer img {
-            width: 100px;
-            height: auto;
-        }
-        footer p {
-            margin: 5px 0;
-        }
-        footer form {
-            display: flex;
-            align-items: center;
-        }
-        footer input[type="email"] {
-            flex: 1;
-            margin-right: 10px;
-        }
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #FFFEA;
+        padding: 20px;
+    }
+
+    footer div {
+        flex: 1;
+        margin: 10px;
+    }
+
+    footer img {
+        width: 100px;
+        height: auto;
+    }
+
+    footer p {
+        margin: 5px 0;
+    }
+
+    footer form {
+        display: flex;
+        align-items: center;
+    }
+
+    footer input[type="email"] {
+        flex: 1;
+        margin-right: 10px;
+    }
 
 </style>
 <div class="top">
@@ -206,12 +220,15 @@
         <p>Facebook: @b.e.e_different</p>
     </div>
     <div style="margin-bottom: 20px;">
-        <p>NEWSLETTER</p>
-        <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
-        <form>
-            <input type="email" placeholder="Email" required>
-            <input type="submit" value="Subscribe">
-        </form>
+        <section class="BEE">
+            <p>NEWSLETTER</p>
+            <h5>Join Our BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" id="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </section>
     </div>
 </footer>
 

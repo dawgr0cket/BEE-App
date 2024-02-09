@@ -116,6 +116,32 @@
             color: #666;
             margin-bottom: 10px;
         }
+            footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFEA;
+            padding: 20px;
+        }
+        footer div {
+            flex: 1;
+            margin: 10px;
+        }
+        footer img {
+            width: 100px;
+            height: auto;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer form {
+            display: flex;
+            align-items: center;
+        }
+        footer input[type="email"] {
+            flex: 1;
+            margin-right: 10px;
+        }
     </style>
 
     {% extends "base.html" %} {% block content %}
@@ -155,8 +181,28 @@
             {% endfor %}
         </div>
     </div>
-
     {% endblock %}
+<footer style="background-color: #FFFEA; padding: 20px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+        <p style="font-size: 30px;">B.E.E</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>Follow Us</p>
+        <p>Instagram: @b.e.e_different</p>
+        <p>Facebook: @b.e.e_different</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <section class="BEE">
+            <p>NEWSLETTER</p>
+            <h5>Join Our BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" id="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </section>
+    </div>
+</footer>
 </body>
-
 </html>
