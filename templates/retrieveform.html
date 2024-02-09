@@ -33,37 +33,62 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-#users th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-right: 50px;
-  padding-left: 10px;
-  text-align: left;
-  background-color: #F6BDBD;
+
+.image-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  overflow: auto;
+}
+
+/* Popup image */
+.popup-image {
+  max-width: 90%;
+  max-height: 90%;
+  margin: 50px auto; /* Adjust the margin as needed */
+  display: block;
+}
+
+/* Cancel button */
+.cancel-button {
+  position: absolute;
+  top: 60px;
+  right: 360px;
+  background-color: #ff9999;
+  border: none;
+  border-radius: 10px;
   color: white;
-}
-table, td {
-  padding-left: 10px;
-  border: 1px solid;
-}
-
-table {
-  width: 75%;
-  border-collapse: collapse;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.img:hover{
-    color: #424242;
-  -webkit-transition: all .3s ease-in;
-  -moz-transition: all .3s ease-in;
-  -ms-transition: all .3s ease-in;
-  -o-transition: all .3s ease-in;
-  transition: all .3s ease-in;
-  opacity: 1;
-  transform: scale(5);
-  -ms-transform: scale(5); /* IE 9 */
-  -webkit-transform: scale(5); /* Safari and Chrome */
+  /* Styles for trade-in forms div */
+.tradein-forms {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #FDFDFD;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.tradein-forms h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.tradein-forms p {
+  margin-bottom: 5px;
+}
+
+  .tradein-forms img:hover{
+    cursor: pointer;
+  }
 
 .return {
     font-size: 18px;
@@ -108,26 +133,41 @@ table {
 </ul>
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-  <h2>Users</h2>
-  <p>Trade ID: {{ id }}</p>
-  {% for user in user %}
-  <p>Username: {{ user['username'] }}</p>
-  <p>Phone Number: {{ user['phone_no'] }}</p>
-  <p>Email: {{ user['email'] }}</p>
-  {% endfor %}
-<!--    {% set y = 1 %}-->
-    {% for row in rows %}
-      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
-                                                    width="70px"/>
-      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
-<!--      {% set y = y + 1 %}-->
+  <div class="tradein-forms">
+    <h2>Users</h2>
+    <p>Trade ID: {{ id }}</p>
+    {% for user in user %}
+      <p>Username: {{ user['username'] }}</p>
+      <p>Phone Number: {{ user['phone_no'] }}</p>
+      <p>Email: {{ user['email'] }}</p>
     {% endfor %}
-
-<!--          <a class="return" href="/forms">Back To forms</a>-->
-          <p class="return"><a href="/forms">Back To Forms</a></p>
+    {% for row in rows %}
+      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img" onclick="showImagePopup('/static/img/{{ row['tradein_pic'] }}')" width="70px"/>
+      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
+    {% endfor %}
+      <p class="return"><a href="/forms">Back To Forms</a></p>
+  </div>
 </div>
+<div class="image-popup" id="imagePopup">
+  <img src="" class="popup-image" id="popupImage" />
+  <button class="cancel-button" onclick="hideImagePopup()">Cancel</button>
+</div>
+<script>
+  function showImagePopup(src) {
+    // Set the source of the popup image
+    document.getElementById('popupImage').src = src;
 
+    // Show the image popup
+    document.getElementById('imagePopup').style.display = 'block';
+  }
+
+  function hideImagePopup() {
+    // Hide the image popup
+    document.getElementById('imagePopup').style.display = 'none';
+  }
+</script>
 </body>
+
 </html>
 
 {% endblock %}

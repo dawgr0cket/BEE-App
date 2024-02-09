@@ -1,57 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-body {
-  margin: 0;
-}
-
-ul.admin {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 20%;
-  background-color: #948686;
-  position: sticky;
-  height: 100%;
-  overflow: auto;
-}
-
-.admin li a {
-  display: block;
-  color: #000;
-  padding: 50px 16px;
-  text-decoration: none;
-}
-
-.admin li a.active {
-  background-color: #302A2A;
-  color: white;
-}
-
-.admin li a:hover:not(.active) {
-  background-color: #555;
-  color: white;
-}
-#users th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-right: 50px;
-  padding-left: 10px;
-  text-align: left;
-  background-color: #F6BDBD;
-  color: white;
-}
-table, td {
-  padding-left: 10px;
-  border: 1px solid;
-}
-
-table {
-  width: 75%;
-  border-collapse: collapse;
-}
-</style>
+  <link rel="stylesheet" type="text/css" href="/static/css/users.css">
 </head>
 <body>
 {% extends "base.html" %}
@@ -80,7 +30,7 @@ table {
       <th>Phone Number</th>
       <th>Date Of Birth</th>
       <th>Gender</th>
-      <th>Number of Orders Made</th>
+      <th>No. of Orders Made</th>
       <th>Delete</th>
       </thead>
       {{ results }}
