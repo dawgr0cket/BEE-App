@@ -34,16 +34,19 @@
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: space-around;
-      margin-right: 500px;
+      justify-content: flex-start;
+      margin-right: 400px;
     }
-    .navbar-nav li {
-      flex-grow: 1;
-      text-align: center;
+
+    ul.navbar-nav {
+      margin-left: 100px;
     }
-    .navbar-brand {
-      flex-grow: 1;
+
+    .navbar-nav li a {
+      margin-left: 30px;
     }
+
+
     .navbar-brand img {
       margin-right: 15px;
     }
@@ -74,9 +77,12 @@
       max-height: 100%;
       vertical-align: middle;
     }
-    .dropdown:hover .dropdown-menu {
-      display: block;
-    }
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+.dropdown-item:hover {
+  width:100px;
+}
   </style>
 </head>
 <body>
