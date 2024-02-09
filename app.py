@@ -1734,15 +1734,26 @@ def add_to_wishlist(product_name, username):
     try:
         con = get_db()
         cur = con.cursor()
-        cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
-        con.commit()
+
+        # Check if the product is already in the wishlist
+        cur.execute("SELECT * FROM wishlist WHERE username = ? AND product_name = ?", (username, product_name))
+        existing_product = cur.fetchone()
+
+        if existing_product:
+            # Product already exists in the wishlist
+            msg = 'Product already exists in the wishlist'
+            flash(msg)
+        else:
+            # Product does not exist, add it to the wishlist
+            cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
+            con.commit()
+            msg = 'Added to wishlist'
+            flash(msg)
+
     except:
-        msg = 'An Error has occurred'
+        msg = 'An error has occurred'
         flash(msg)
-        return redirect(url_for('eco'))
     finally:
-        msg = 'Added to wishlist'
-        flash(msg)
         return redirect(url_for('eco'))
 
 
@@ -1751,15 +1762,26 @@ def add_to_wishlist1(product_name, username):
     try:
         con = get_db()
         cur = con.cursor()
-        cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
-        con.commit()
+
+        # Check if the product is already in the wishlist
+        cur.execute("SELECT * FROM wishlist WHERE username = ? AND product_name = ?", (username, product_name))
+        existing_product = cur.fetchone()
+
+        if existing_product:
+            # Product already exists in the wishlist
+            msg = 'Product already exists in the wishlist'
+            flash(msg)
+        else:
+            # Product does not exist, add it to the wishlist
+            cur.execute("INSERT INTO wishlist (username, product_name) VALUES (?, ?)", (username, product_name))
+            con.commit()
+            msg = 'Added to wishlist'
+            flash(msg)
+
     except:
-        msg = 'An Error has occurred'
+        msg = 'An error has occurred'
         flash(msg)
-        return redirect(url_for('tradein'))
     finally:
-        msg = 'Added to wishlist'
-        flash(msg)
         return redirect(url_for('tradein'))
 
 
