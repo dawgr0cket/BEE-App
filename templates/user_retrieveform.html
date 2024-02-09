@@ -67,6 +67,57 @@ table {
   width: 75%;
   border-collapse: collapse;
 }
+  .image-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    overflow: auto;
+  }
+
+  /* Popup image */
+  .popup-image {
+    max-width: 90%;
+    max-height: 90%;
+    margin: 50px auto; /* Adjust the margin as needed */
+    display: block;
+  }
+
+  /* Cancel button */
+  .cancel-button {
+    position: absolute;
+    top: 60px;
+    right: 360px;
+    background-color: #ff9999;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+    /* Styles for trade-in forms div */
+  .tradein-forms {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .tradein-forms h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .tradein-forms p {
+    margin-bottom: 5px;
+  }
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
@@ -74,15 +125,35 @@ table {
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
 <div style="float: left;margin-left:5%;">
+  <div class="tradein-forms">
     <h1 class="display-4">Trade-In Forms</h1>
-        <p>Trade-In ID: {{ rows[0][6] }}</p>
-        <p>No. Of Clothes: {{ rows[0][2] }}</p>
+    <p>Trade-In ID: {{ rows[0][6] }}</p>
+    <p>No. Of Clothes: {{ rows[0][2] }}</p>
     {% for row in rows %}
-      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img"
-                                                    width="70px"/>
+      <p>Photo of item {{ loop.index }}:</p>
+      <img src="/static/img/{{ row['tradein_pic'] }}" class="img" width="70px" onclick="showImagePopup('/static/img/{{ row['tradein_pic'] }}')" />
       <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
-
     {% endfor %}
-
+  </div>
 </div>
+<!-- Image popup container -->
+<div class="image-popup" id="imagePopup">
+  <img src="" class="popup-image" id="popupImage" />
+  <button class="cancel-button" onclick="hideImagePopup()">Cancel</button>
+</div>
+
+<script>
+  function showImagePopup(src) {
+    // Set the source of the popup image
+    document.getElementById('popupImage').src = src;
+
+    // Show the image popup
+    document.getElementById('imagePopup').style.display = 'block';
+  }
+
+  function hideImagePopup() {
+    // Hide the image popup
+    document.getElementById('imagePopup').style.display = 'none';
+  }
+</script>
 {% endblock %}
