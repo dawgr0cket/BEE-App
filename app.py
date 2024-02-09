@@ -1629,6 +1629,8 @@ def editprofile():
 def editprofilepic(username):
     form = UserForm()
     if request.method == 'POST':
+        con = get_db()
+        cur = con.cursor()
         profile_pic = request.files['profile_pic']
         pic_filename = secure_filename(profile_pic.filename)
         pic_name = str(uuid.uuid1()) + "_" + pic_filename
@@ -1637,11 +1639,13 @@ def editprofilepic(username):
         if session['profile_pic'] != 'img_6.png':
             location = 'static/img/'
             path = os.path.join(location, session['profile_pic'])
-            os.remove(path)
-        with sqlite3.connect('database.db') as con:
-            cur = con.cursor()
+            try:
+                os.remove(path)
+            except OSError as e:
+                cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
+                con.commit()
             cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
-            cur.close()
+            con.commit()
         session['profile_pic'] = pic_name
         return redirect(url_for('profile'))
     else:
