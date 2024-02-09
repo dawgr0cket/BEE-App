@@ -60,13 +60,41 @@ body {
 }
 table, td {
   padding-left: 10px;
-  border: 1px solid;
 }
 
 table {
   width: 75%;
   border-collapse: collapse;
 }
+#tradein {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  #tradein th {
+    padding: 12px;
+    text-align: left;
+    background-color: #F6BDBD;
+    color: white;
+  }
+
+  #tradein td {
+    padding: 12px;
+    border: 1px solid #F6BDBD;
+  }
+
+  #tradein td a {
+    color: #04AA6D;
+    text-decoration: none;
+  }
+
+  #tradein td a:hover {
+    text-decoration: underline;
+  }
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
@@ -74,38 +102,39 @@ table {
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
 <div style="float: left;margin-left:5%;">
-    <h1 class="display-4">Trade-In Forms</h1>
-    <p>{{session['username']}}'s Trade-In Forms</p>
-    <table id="tradein">
-      <thead>
-      <th>Trade-In No.</th>
-      <th>Trade-In ID</th>
-      <th>No. Of Clothes</th>
-      <th>Status</th>
-      <th>Date Of Submission</th>
-      <th>View Form</th>
-      </thead>
-      {% for tradein in tradeins %}
+  <h1 class="display-4">Trade-In Forms</h1>
+  <p>{{session['username']}}'s Trade-In Forms</p>
+  <table id="tradein">
+    <thead>
       <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ tradein[6] }}</td>
-        <td>{{ tradein[2] }}</td>
-        {% if rows[loop.index - 1][0] is none %}
-            <td><p><b>Pending</b></p></td>
-        {% elif rows[loop.index - 1][0] == 0 %}
-            <td><p><b>Rejected</b></p></td>
-        {% else %}
-          <td>
-              <p><b>Approved</b></p><br>
-              <p>Mail your clothing items to<br>123 henderson road Avenue 4 S782038, #02-238</p>
-          </td>
-        {% endif %}
-
-        <td>{{ tradein[5] }}</td>
-
-        <td><a href="/user_retrieveform/{{ tradein[6] }}">View</a></td>
+        <th>Trade-In No.</th>
+        <th>Trade-In ID</th>
+        <th>No. Of Clothes</th>
+        <th>Status</th>
+        <th>Date Of Submission</th>
+        <th>View Form</th>
       </tr>
-      {% endfor %}
-    </table>
+    </thead>
+    {% for tradein in tradeins %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ tradein[6] }}</td>
+      <td>{{ tradein[2] }}</td>
+      {% if rows[loop.index - 1][0] is none %}
+      <td><p><b>Pending</b></p></td>
+      {% elif rows[loop.index - 1][0] == 0 %}
+      <td><p><b>Rejected</b></p></td>
+      {% else %}
+      <td>
+        <p><b>Approved</b></p><br>
+        <p>Mail your clothing items to<br>123 henderson road Avenue 4 S782038, #02-238</p>
+      </td>
+      {% endif %}
+
+      <td>{{ tradein[5] }}</td>
+      <td><a href="/user_retrieveform/{{ tradein[6] }}">View</a></td>
+    </tr>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}

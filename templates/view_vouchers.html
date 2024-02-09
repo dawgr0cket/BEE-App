@@ -48,6 +48,37 @@ body {
   background-color: #555;
   color: white;
 }
+/* Styles for Vouchers page */
+  .vouchers-container {
+    margin-top: 20px;
+  }
+
+  .voucher {
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .voucher h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  .voucher h5 {
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+
+  .voucher p {
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .voucher b {
+    font-size: 18px;
+  }
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
@@ -55,16 +86,18 @@ body {
     <li><a href="/view_vouchers/{{ session['username'] }}" class="active">Vouchers</a></li>
 </ul>
 <div style="float: left;margin-left:5%;">
-    <h1 class="display-4">Vouchers</h1>
-    <p>{{session['username']}}'s Vouchers</p>
+  <h1 class="display-4">Vouchers</h1>
+  <p>{{session['username']}}'s Vouchers</p>
+  <div class="vouchers-container">
     {% for row in rows %}
-    <div>
-        <h4>{{ row[2] }}</h4>
-        <h5>Code:</h5>
-        <b>{{ row[5] }}</b>
-        <p>Condition:</p>
-        {{ row[4] }}
+    <div class="voucher">
+      <h4>{{ row[2] }}</h4>
+      <h5>Code:</h5>
+      <b>{{ row[5] }}</b>
+      <p>Condition:</p>
+      <p>{{ row[4] }}</p>
     </div>
     {% endfor %}
+  </div>
 </div>
 {% endblock %}
