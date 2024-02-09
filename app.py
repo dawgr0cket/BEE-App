@@ -30,11 +30,13 @@ import sqlite3
 from datetime import datetime, date
 from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
+Bootstrap(app) #idk wat this for yet
 
 # stripe.api_key = os.environ.get(
 #     'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF')  # add in secret key
