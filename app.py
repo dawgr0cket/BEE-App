@@ -328,7 +328,7 @@ def success(username):
         msg = 'Purchase Completed!'
         flash(msg)
         session['discount'] = None
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products)
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session)
     except Exception as e:
         msg = 'An Error has Occurred'
         flash(msg)
@@ -1452,6 +1452,8 @@ def view_order(orderid):
     for orders in order_details:
         total = total + orders[5] * orders[6]
     discount = order_details[0][3] - total
+    if discount != 0:
+        discount = -1 * discount
     cur.execute('SELECT * FROM addresses WHERE session_id = ?', (orderid,))
     addresses = cur.fetchall()
     return render_template('view_order.html', order_details=order_details, orderid=orderid, discount=discount,

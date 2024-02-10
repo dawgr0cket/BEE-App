@@ -13,8 +13,9 @@ ul.admin {
   width: 20%;
   background-color: #948686;
   position: sticky;
-  height: 100%;
-  overflow: auto;
+  top: 0; /* Stick the navbar to the top of the viewport */
+  height: 100vh; /* Set the height of the navbar to fill the viewport */
+  overflow: hidden;
 }
 
 .admin li a {
@@ -33,6 +34,13 @@ ul.admin {
   background-color: #555;
   color: white;
 }
+
+.plus img {
+  width: 40px;
+  position: absolute;
+  right: 57%;
+  top: 150px;
+}
 #addvouchers th {
   padding-top: 12px;
   padding-bottom: 12px;
@@ -44,19 +52,42 @@ ul.admin {
 }
 table, td {
   padding-left: 10px;
-  border: 1px solid;
 }
 
 table {
   width: 75%;
   border-collapse: collapse;
 }
-.plus img {
-  width: 40px;
-  position: absolute;
-  right: 57%;
-  top: 150px;
-}
+#addvouchers {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 95%;
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  #addvouchers th {
+    padding: 12px;
+    text-align: left;
+    background-color: #F6BDBD;
+    color: white;
+  }
+
+  #addvouchers td {
+    padding: 12px;
+    border: 1px solid #F6BDBD;
+  }
+
+  #addvouchers td a {
+    color: #04AA6D;
+    text-decoration: none;
+  }
+
+  #addvouchers td a:hover {
+    text-decoration: underline;
+  }
+
 </style>
 </head>
 <body>
@@ -88,7 +119,7 @@ table {
       <th></th>
       </thead>
       {% for row in rows_user %}
-        <tr style="border-bottom: 1px solid black;">
+        <tr>
           <td>{{ row['user_id'] }}</td>
           <td>{{ row['username'] }}</td>
           <td>{{ row['email'] }}</td>

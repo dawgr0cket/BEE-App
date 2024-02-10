@@ -100,6 +100,7 @@
 
     .product-card h5 {
         margin: 10px 0;
+        color: black;
     }
 
     .product-card a {
@@ -273,6 +274,7 @@ footer {
                 </div>
             {% else %}
                 <div class="product-card">
+                    <a style="text-decoration:none;" href="/product/{{ row['product_name'] }}">
                     <img src="{{ url_for('static', filename='img/' + row['product_image']) }}" alt="{{ row['product_name'] }}">
                     <div class="content">
                         <h5>{{ row['product_name'] }}</h5>
@@ -286,6 +288,7 @@ footer {
                         <button><a href="/login">Add To Cart</a></button>
                         <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                     {% endif %}
+                    </a>
                 </div>
             {% endif %}
         {% endfor %}
