@@ -13,9 +13,7 @@ body {
     margin: 4px 2px;
     cursor: pointer;
 }
-.rounded {
-    clip-path: circle();
-}
+
 .profilenav {
     list-style-type: none;
     margin: 0;
@@ -99,3 +97,25 @@ body {
   .tradein-forms img:hover{
     cursor: pointer;
   }
+
+  .return {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 20px;
+}
+.return a {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 4px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.return a:hover {
+    background-color: pink;
+    color: black;
+}

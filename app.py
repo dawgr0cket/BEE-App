@@ -279,8 +279,8 @@ def success(username):
         con.commit()
         q = 0
         for product in products:
-            cur.execute('INSERT INTO sessions (session_id, username, product_name, status, quantity) VALUES (?,?,?,?,?)',
-                        (sessionid, username, product[1], 0, product[2]))
+            cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
+                        (sessionid, username, product[1], product[2]))
             con.commit()
             q += 1
             productnamelist.append(product[1])
@@ -517,6 +517,7 @@ def login():
                 session['profile_pic'] = 'img_6.png'
             else:
                 session['profile_pic'] = user[7]
+            flash('You are logged in!')
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -557,6 +558,7 @@ def signup():
 @app.route('/logout')
 def logout():
     session.clear()
+    flash('You are logged out!')
     return redirect(url_for('home'))
 
 
@@ -925,6 +927,50 @@ def rejectform(form_id):
         con.commit()
     con.close()
     return redirect(url_for('forms'))
+
+
+@app.route('/otworder/<order_id>')
+@login_required
+def otworder(order_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE sessions SET status = ? WHERE session_id = ?', ('On The Way', order_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('orders'))
+
+
+@app.route('/shiporder/<order_id>')
+@login_required
+def shiporder(order_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE sessions SET status = ? WHERE session_id = ?', ('Shipped', order_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('orders'))
+
+
+@app.route('/deliveredorder/<order_id>')
+@login_required
+def deliveredorder(order_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE sessions SET status = ? WHERE session_id = ?', ('Delivered', order_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('orders'))
+
+
+@app.route('/cancelorder/<order_id>')
+@login_required
+def cancelorder(order_id):
+    with sqlite3.connect('database.db') as con:
+        cur = con.cursor()
+        cur.execute('UPDATE sessions SET status = ? WHERE session_id = ?', ('Cancelled', order_id))
+        con.commit()
+    con.close()
+    return redirect(url_for('orders'))
 
 
 @app.route('/retrieveform/<id>/<user>')
@@ -1380,7 +1426,7 @@ def view_order(orderid):
     cur.execute('SELECT * FROM sessions WHERE session_id = ?', (orderid,))
     order_details = cur.fetchall()
     for orders in order_details:
-        total = total + orders[6] * orders[7]
+        total = total + orders[5] * orders[6]
     discount = order_details[0][3] - total
     cur.execute('SELECT * FROM addresses WHERE session_id = ?', (orderid,))
     addresses = cur.fetchall()
