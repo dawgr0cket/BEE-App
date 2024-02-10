@@ -89,6 +89,11 @@ function toggleForm() {
   form.classList.toggle('searchvisible');
 }
 
+function hideSidebar(){
+    const sidebar = document.querySelector('.navbar-nav')
+    sidebar.style.display = 'none'
+}
+
 document.getElementById('search-form').addEventListener('submit', function(e) {
   e.preventDefault();
   const query = document.getElementById('search-query').value;
