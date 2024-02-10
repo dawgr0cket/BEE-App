@@ -154,19 +154,19 @@ td {
         </thead>
         <tr>
             <td>
-                <p>{{ row['product_name'] }} ({{ row['product_size'] }})</p>
+                <p>{{ row['product_name'] }} ({{ products[loop.index - 1]['product_size'] }})</p>
                 <object><img src="/static/img/{{ row['product_image'] }}" width="100px"></object>
             </td>
             <td>
-                <p>{{ row['product_price'] }}</p>
+                <p>${{ row['product_price'] }}</p>
             </td>
             <td>
                 <p>{{ row['product_quantity'] }}</p>
             </td>
             <td>
-                <button onclick="increment('{{ row['product_name'] }}')">+</button>
+                <button onclick="increment('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')">+</button>
                 <h2 id="counting">{{ quantity[loop.index - 1] }}</h2>
-                <button onclick="decrement('{{ row['product_name'] }}')">-</button>
+                <button onclick="decrement('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')">-</button>
             </td>
             <td>
                 <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>

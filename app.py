@@ -275,15 +275,17 @@ def success(username):
         new_quantity = []
         itemprice = []
         total = 10
+        subtotal = 0
         cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
         q = 0
-        for product in products:
+        for product in session['cart']:
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
-                        (sessionid, username, product[1], product[2]))
+                        (sessionid, username, product['name'], product['quantity']))
             con.commit()
             q += 1
-            productnamelist.append(product[1])
+        for l in products:
+            productnamelist.append(l[1])
 
         print(productnamelist)
         y = 0
@@ -293,6 +295,7 @@ def success(username):
             for price in order:
                 quantity.append(price[4])
                 item1 = int(price[1])*products[y][2]
+                subtotal += item1
                 total += (int(price[1])*products[y][2])
                 itemprice.append(price[1])
                 y += 1
@@ -309,6 +312,7 @@ def success(username):
             cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?', (new_quantity[p], product_name))
             con.commit()
             cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?', (itemprice[p], product_name, sessionid))
+            con.commit()
             p += 1
 
         cur.execute('SELECT * FROM addresses WHERE session_id = ? ORDER BY id DESC LIMIT 1', (sessionid,))
@@ -328,7 +332,7 @@ def success(username):
         msg = 'Purchase Completed!'
         flash(msg)
         session['discount'] = None
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session)
+        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session, subtotal=subtotal)
     except Exception as e:
         msg = 'An Error has Occurred'
         flash(msg)
@@ -1771,8 +1775,8 @@ def add_to_cart(product_name, username):
 
         if not product_exists:
             # Product does not exist in the cart, so insert it
-            cur.execute("INSERT INTO cart (username, product_name, product_quantity) VALUES (?, ?, ?)",
-                        (username, product_name, 1))
+            cur.execute("INSERT INTO cart (username, product_name, product_quantity, product_size) VALUES (?, ?, ?, ?)",
+                        (username, product_name, 1, 'M'))
             con.commit()
 
             flash("Product added to cart successfully")
@@ -1949,7 +1953,9 @@ def cart(username):
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute("SELECT product_name, product_quantity, product_size FROM cart WHERE username = ?", (username,))
+            cur.execute(
+                "SELECT product_name, product_quantity, COALESCE(product_size, 'Free Size') AS product_size FROM cart WHERE username = ?",
+                (username,))
             products = cur.fetchall()
             for product in products:
                 product_list.append(product['product_name'])
@@ -1961,7 +1967,7 @@ def cart(username):
 
             for i, row in enumerate(rows):
                 list_1 = {
-                    'name': row['product_name'],
+                    'name': row['product_name'] + ' (' + products[i]['product_size'] + ')',
                     'price': row['product_price'],
                     'image': row['product_image'],
                     'quantity': quantity[i]  # Access the corresponding quantity from the quantity list
@@ -1974,7 +1980,7 @@ def cart(username):
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
             addresses = cur.fetchall()
-
+            session['cart'] = lists
     except:
         msg = 'An Error has occurred'
         flash(msg)
@@ -2019,14 +2025,18 @@ def wishlist(username):
     return render_template('wishlist.html', products=products, rows=rows, lists=lists)
 
 
-@app.route('/increment/<item>')
-def increment(item):
+@app.route('/increment/<item>/<size>')
+def increment(item, size):
     con = get_db()
     cur = con.cursor()
     cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (item,))
     quantities = cur.fetchall()
-    cur.execute('SELECT product_quantity FROM cart WHERE product_name = ?', (item,))
-    cartquantities = cur.fetchall()
+    if size == 'Free Size':
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?', (item, session['username']))
+        cartquantities = cur.fetchall()
+    else:
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?', (item, size, session['username']))
+        cartquantities = cur.fetchall()
     cart_item = cartquantities[0][0]
     for quantity in quantities:
         if cart_item == quantity[0]:
@@ -2035,20 +2045,29 @@ def increment(item):
             return redirect(url_for('cart', username=session['username']))
         elif cart_item < quantity[0]:
             cart_item = cart_item + 1
-            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
+            if size == 'Free Size':
+                cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
                         (cart_item, item, session['username']))
-            con.commit()
+                con.commit()
+            else:
+                cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND product_size = ?',
+                        (cart_item, item, session['username'], size))
+                con.commit()
             msg = 'Item quantity updated!'
             flash(msg)
             return redirect(url_for('cart', username=session['username']))
 
 
-@app.route('/decrement/<item>')
-def decrement(item):
+@app.route('/decrement/<item>/<size>')
+def decrement(item, size):
     con = get_db()
     cur = con.cursor()
-    cur.execute('SELECT product_quantity FROM cart WHERE product_name = ?', (item,))
-    cartquantities = cur.fetchall()
+    if size == 'Free Size':
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?', (item, session['username']))
+        cartquantities = cur.fetchall()
+    else:
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?', (item, size, session['username']))
+        cartquantities = cur.fetchall()
     cart_item = cartquantities[0][0]
     if cart_item == 1:
         msg = 'Minimum item quantity!'
@@ -2056,9 +2075,14 @@ def decrement(item):
         return redirect(url_for('cart', username=session['username']))
     elif cart_item > 1:
         cart_item = cart_item - 1
-        cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
-                    (cart_item, item, session['username']))
-        con.commit()
+        if size == 'Free Size':
+            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
+                        (cart_item, item, session['username']))
+            con.commit()
+        else:
+            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND product_size = ?',
+                        (cart_item, item, session['username'], size))
+            con.commit()
         msg = 'Item quantity updated!'
         flash(msg)
         return redirect(url_for('cart', username=session['username']))

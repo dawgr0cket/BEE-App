@@ -33,7 +33,7 @@
                     <form action="/add_to_cart4/{{ product[0][0] }}/{{ session['username'] }}" method="POST">
                         <div class="mb-3">
                             <label for="size" class="form-label">Size</label>
-                            <select name='size' id="size" class="form-select">
+                            <select name='size' id="size" class="form-select" required>
                                 <option selected disabled>Select Size</option>
                                 {% for size in sizes %}
                                 <option name='size' value="{{ size }}">{{ size }}</option>
@@ -43,7 +43,7 @@
                         <button type="submit" class="btn btn-primary">Add to Cart</button>
                     </form>
                 {% else %}
-                    <button><a href="/add_to_cart5/{{ product[0][0] }}/{{ session['username'] }}">Add To Cart</a></button>
+                    <button><a href="/add_to_cart1/{{ product[0][0] }}/{{ session['username'] }}">Add To Cart</a></button>
                 {% endif %}
             </div>
         </div>

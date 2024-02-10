@@ -24,14 +24,16 @@
         {% for order in orders %}
           <hr>
           <div class="col-xl-10">
-            <p>{{ order[0][0] }}</p>
-            <p>Quantity: {{ products[loop.index - 1][2] }}</p>  <!-- Added quantity section -->
+            <p>{{ session['cart'][loop.index - 1]['name'] }}</p>
+            <p>Quantity: {{ session['cart'][loop.index - 1]['quantity'] }}</p>  <!-- Added quantity section -->
           </div>
           <div class="col-xl-2">
-            <p class="float-end">${{ order[0][1] }}</p>
+            <p class="float-end">${{ order[0][1]*session['cart'][loop.index - 1]['quantity'] }}</p>
           </div>
           <hr>
         {% endfor %}
+        <p>Discount: -${{ total-subtotal-10 }}.0</p>
+        <p>Shipping: $10.00</p>
       </div>
       <hr style="border: 2px solid black;">
       <div class="row text-black">

@@ -77,10 +77,10 @@ body {
               <td>{{ order[4][0:10] }}</td>
               <td>{{ item_list[loop.index - 1] }}</td>
               <td>${{ order[3] }}</td>
-              {% if order[5] == 0 %}
-              <td><b>Packing...</b></td>
-              {% elif order[5] == 1 %}
-              <td><b>To Be Shipped</b></td>
+              {% if order[7] == 0 or none %}
+              <td><b>Ordered</b></td>
+              {% else %}
+              <td><b>{{ order[7] }}</b></td>
               {% endif %}
               <td><a href="/view_order/{{ order[0] }}" class="btn btn-primary mb-3">Retrieve Order</a></td>
             </tr>
