@@ -7,27 +7,36 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     /* Add the following styles for the mobile navbar */
-   @media (max-width: 787px) {
+   @media (max-width: 768px) {
     .navbar-toggler {
       background-color:#CCCCFF;
       border-color: #000000;
     }
-<!--    .navbar-nav{-->
-<!--      display: flex;-->
-<!--      position: fixed;-->
-<!--      top: 0;-->
-<!--      right: 0;-->
-<!--      height: 100vh;-->
-<!--      width: 250px;-->
-<!--      background-color: rgba(255,255,255,0.2);-->
-<!--      backdrop-filter: blur(10px);-->
-<!--      z-index: 999;-->
-<!--      box-shadow: -10px 0 10px rgba(0,0,0,0.1);-->
-<!--      flex-direction: column;-->
-<!--      align-items: flex-start;-->
-<!--      justify-content: flex-start;-->
+    .navbar-nav{
+      display: flex;
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 250px;
+      background-color: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      box-shadow: -10px 0 10px rgba(0,0,0,0.1);
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
     }
    }
+    /* Styles for screens larger than or equal to 768px */
+    @media (min-width: 768px) {
+      .navbar-toggler {
+        display: none;
+      }
+      .navbar-collapse {
+        display: block;
+      }
+    }
     .navbar-toggler-icon {
       background-color: #CCCCFF;
     }
@@ -102,21 +111,21 @@
     .dropdown-item:hover {
       width:100px;
     }
-    .navbar-nav{
-      display: flex;
-      position: fixed;
-      top: 0;
-      right: 0;
-      height: 100vh;
-      width: 250px;
-      background-color: rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
-      z-index: 999;
-      box-shadow: -10px 0 10px rgba(0,0,0,0.1);
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-    }
+<!--    .navbar-nav{-->
+<!--      display: flex;-->
+<!--      position: fixed;-->
+<!--      top: 0;-->
+<!--      right: 0;-->
+<!--      height: 100vh;-->
+<!--      width: 250px;-->
+<!--      background-color: rgba(255,255,255,0.2);-->
+<!--      backdrop-filter: blur(10px);-->
+<!--      z-index: 999;-->
+<!--      box-shadow: -10px 0 10px rgba(0,0,0,0.1);-->
+<!--      flex-direction: column;-->
+<!--      align-items: flex-start;-->
+<!--      justify-content: flex-start;-->
+<!--    }-->
   </style>
 </head>
 <body>
@@ -131,16 +140,8 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
-<!--          <a href="#" onclick="showSidebar()">-->
-<!--          <img src="/static/img/menu-icon.png" alt="" width="30px">-->
-<!--        </a>-->
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
-<!--        <li>-->
-<!--            <a href="#" onclick="hideSidebar()">-->
-<!--              <img src="/static/img/close.png" alt="" width="30px">-->
-<!--            </a>-->
-<!--        </li>-->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
           <span class="close-icon" aria-hidden="true">&times;</span>
         </button>
