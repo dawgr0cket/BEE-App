@@ -36,7 +36,7 @@ ul.admin {
 
 .plus img {
   width: 40px;
-  position: absolute;
+<!--  position: absolute;-->
   right: 60%;
   top: 150px;
 }
@@ -123,7 +123,7 @@ ul.admin {
 </ul>
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-  <h2>Inventory</h2>
+  <h2>Inventory <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a></h2>
   <div class="container">
     <div class="row">
       {% for row in rows %}
@@ -146,7 +146,6 @@ ul.admin {
       {% endfor %}
     </div>
   </div>
-  <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a>
 </div>
 
 </body>

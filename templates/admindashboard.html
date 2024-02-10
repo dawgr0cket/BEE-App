@@ -36,6 +36,11 @@ ul.admin {
   color: white;
 }
 
+.chart {
+width: auto;
+margin-bottom: 30px;
+}
+
 </style>
 </head>
 <body>
@@ -54,8 +59,7 @@ ul.admin {
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
 
-<div style="margin-left:25%;padding:30px 16px;">
-  <h2>Dashboard</h2>
+<div style="margin-left:20%; padding:30px 16px;">
     <div class="chart">
         <h2>Revenue Bar Chart</h2>
         {{ chart_html | safe }}
@@ -65,7 +69,6 @@ ul.admin {
         {{ pie_chart_html | safe }}
     </div>
 </div>
-
 </body>
 </html>
 

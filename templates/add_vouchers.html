@@ -37,10 +37,10 @@ ul.admin {
 
 .plus img {
   width: 40px;
-  position: absolute;
   right: 57%;
   top: 150px;
 }
+
 #addvouchers th {
   padding-top: 12px;
   padding-bottom: 12px;
@@ -107,7 +107,7 @@ table {
 </ul>
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-  <h2>Add Vouchers</h2>
+  <h2>Add Vouchers <a class="plus" href="/create_vouchers"><img src="static/img/plus_PNG83.png"></a></h2>
     <table id="addvouchers">
       <thead>
       <th>User Id</th>
@@ -131,9 +131,7 @@ table {
         </tr>
       {% endfor %}
     </table>
-      <a class="plus" href="/create_vouchers"><img src="static/img/plus_PNG83.png"></a>
 </div>
-
 </body>
 </html>
 
