@@ -10,37 +10,33 @@
 <body>
     <h1>Transaction Details</h1>
 
-<div class="card">
+<div class="card" style="width: 33%; margin: 0 auto;">
   <div class="card-body mx-4">
     <div class="container">
-      <p class="my-5 mx-5" style="font-size: 30px;">Thank for your purchase</p>
+      <p class="my-5 mx-5" style="font-size: 30px;">Thank you for your purchase</p>
       <div class="row">
         <ul class="list-unstyled">
           <li class="text-black">{{ username }}</li>
           <li class="text-muted mt-1"><span class="text-black">Invoice</span> #{{ sessionid }}</li>
-          <li class="text-black mt-1">January 23 2024</li>
+          <li class="text-black mt-1">January 23, 2024</li>
           <li class="text-black mt-1">Address: {{ address[1] }} {{ address[3] }}, {{ address[2] }}, {{ address[5] }}, {{ address[4] }}</li>
         </ul>
-          {% for order in orders %}
-            <hr>
-            <div class="col-xl-10">
-              <p>{{ order[0][0] }}</p>
-              <p>Quantity: {{ products[loop.index - 1][2] }}</p>  <!-- Added quantity section -->
-            </div>
-            <div class="col-xl-2">
-              <p class="float-end">${{ order[0][1] }}
-              </p>
-            </div>
-            <hr>
-          {% endfor %}
+        {% for order in orders %}
+          <hr>
+          <div class="col-xl-10">
+            <p>{{ order[0][0] }}</p>
+            <p>Quantity: {{ products[loop.index - 1][2] }}</p>  <!-- Added quantity section -->
+          </div>
+          <div class="col-xl-2">
+            <p class="float-end">${{ order[0][1] }}</p>
+          </div>
+          <hr>
+        {% endfor %}
       </div>
-
-        <hr style="border: 2px solid black;">
+      <hr style="border: 2px solid black;">
       <div class="row text-black">
-
         <div class="col-xl-12">
-          <p class="float-end fw-bold">Total: ${{ total }}
-          </p>
+          <p class="float-end fw-bold">Total: ${{ total }}</p>
         </div>
         <hr style="border: 2px solid black;">
       </div>
@@ -48,7 +44,6 @@
         <a href="/order_history/{{ session['username'] }}"><u class="text-info">View Order History</u></a>
         <p></p>
       </div>
-
     </div>
   </div>
 </div>

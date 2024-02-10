@@ -97,6 +97,7 @@
 
     .product-card h5 {
         margin: 10px 0;
+        color: black;
     }
 
     .product-card a {
@@ -233,6 +234,7 @@
         <div class="product-grid">
             {% for row in rows %}
             <div class="product-card">
+                <a style="text-decoration:none;" href="/product/{{ row['product_name'] }}">
                 <!-- This is where the product list will go. -->
                 <img src="static/img/{{ row['product_image'] }}">
                 <div class="content">
@@ -246,6 +248,7 @@
                     <a href="/login" ><img src="/static/img/img_2.png" class="heart mywishlist" alt="" width="30px"></a>
                 {% endif %}
                 </div>
+                </a>
             </div>
             {% endfor %}
         </div>
