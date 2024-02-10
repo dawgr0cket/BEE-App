@@ -250,8 +250,8 @@ ul.admin {
   <li><a href="#about">About</a></li>
 </ul>
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-    <h1 class="display-4">Order History</h1>
-    <p>{{session['username']}}'s Order History</p>
+    <h1 class="display-4">Order Invoice</h1>
+    <p>Order #{{ orderid }}</p>
 <section class="width" style="background-color: #FFFFEA;">
       <div class="col-lg-8 col-xl-6">
         <div class="card border-top border-bottom border-3" style="border-color: #f37a27 !important;">
@@ -307,40 +307,42 @@ ul.admin {
                 <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order_details[0][3] }}.00</p>
               </div>
             </div>
+            {% if order_details[0][7] != 'Cancelled' %}
+              <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
 
-            <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="horizontal-timeline">
+                    <ul class="list-inline items d-flex justify-content-between">
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Ordered</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Shipped</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">On The Way</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Delivered</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="horizontal-timeline">
-                  <ul class="list-inline items d-flex justify-content-between">
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Ordered</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Shipped</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">On The Way</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Delivered</p>
-                      </div>
-                    </li>
-                  </ul>
                 </div>
               </div>
-
-              </div>
-            </div>
-
+            {% else %}
+              <h3>Sorry, your order has been cancelled. Refunds will be processed within 2-3 business days.</h3>
+            {% endif %}
             <p class="mt-4 pt-2 mb-0">Want any help? <a href="#!" style="color: #f37a27;">Please contact
                 us</a></p>
 
