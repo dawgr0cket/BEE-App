@@ -9,7 +9,7 @@
     /* Add the following styles for the mobile navbar */
    @media (max-width: 787px) {
     .navbar-toggler {
-      background-color:red ; #CCCCFF
+      background-color:#CCCCFF;
       border-color: #000000;
     }
 <!--    .navbar-nav{-->
@@ -131,13 +131,19 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
+<!--          <a href="#" onclick="showSidebar()">-->
+<!--          <img src="/static/img/menu-icon.png" alt="" width="30px">-->
+<!--        </a>-->
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
-        <li>
-            <a href="#" onclick="hideSidebar()">
-              <img src="/static/img/close.png" alt="" width="30px">
-            </a>
-        </li>
+<!--        <li>-->
+<!--            <a href="#" onclick="hideSidebar()">-->
+<!--              <img src="/static/img/close.png" alt="" width="30px">-->
+<!--            </a>-->
+<!--        </li>-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
+          <span class="close-icon" aria-hidden="true">&times;</span>
+        </button>
         <li class="nav-item">
           <a class="nav-link" href="/aboutus">About Us</a>
         </li>
