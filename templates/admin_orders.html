@@ -116,14 +116,14 @@ table {
           <td>{{ row[1] }}</td>
           <td>{{ item_list[loop.index - 1] }}</td>
           <td>${{ row[3] }}</td>
-          {% if row[7] is none %}
+          {% if row[7] is none or row[7] == 0 %}
           <td><b>Packing...</b></td>
           {% else %}
           <td><b>{{ row[7] }}</b></td>
           {% endif %}
             <td><a href="/shiporder/{{ row[0] }}">Shipped</a> | <a href="/otworder/{{ row[0] }}">On The Way</a> | <a href="/deliveredorder/{{ row[0] }}">Delivered</a> | <a href="/cancelorder/{{ row[0] }}"><img src="static/img/Red-Cross-PNG-Pic.png" width="20px"></a>
             </td>
-          <td><a href="">View Order</td>
+          <td><a href="/admin_retrieveorder/{{ row[0] }}">View Order</td>
           <td><a href="/deleteorder/{{ row[0] }}"><img src="static/img/img_4.png" width="20px"></a></td>
         </tr>
       {% endfor %}

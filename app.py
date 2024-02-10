@@ -806,9 +806,9 @@ def orders():
     try:
         con = get_db()
         cur = con.cursor()
-        cur.execute('SELECT * FROM sessions GROUP BY session_id')
+        cur.execute('SELECT * FROM sessions GROUP BY session_id ORDER BY payment_timestamp ASC')
         orders = cur.fetchall()
-        cur.execute('SELECT session_id FROM sessions GROUP BY session_id')
+        cur.execute('SELECT session_id FROM sessions GROUP BY session_id ORDER BY payment_timestamp ASC')
         ids = cur.fetchall()
         for row in ids:  # Iterate over the rows
             session_id = row[0]  # Access the value of the session_id column in the row
@@ -1207,8 +1207,32 @@ def addvouchers():
         for username in results:
             if user == username[0]:
                 row_order.append(username[1])
+    cur.execute('''
+        SELECT u.username, COALESCE(t.row_count, 0) AS row_count
+        FROM (
+          SELECT DISTINCT username
+          FROM user
+        ) u
+        LEFT JOIN (
+          SELECT username, COUNT(DISTINCT tradein_id) AS row_count
+          FROM tradeinentries
+          GROUP BY username
+        ) t ON u.username = t.username
+    ''')
+    tradeins = cur.fetchall()
+    tradein_list = []
+    row_tradein = []
+    for tradein in tradeins:
+        username = tradein[0]
+        row_count = tradein[1]
+        tradein_list.append((username, row_count))
+    for user in users:
+        for line in tradein_list:
+            if user == line[0]:
+                row_tradein.append(line[1])
+
     con.close()
-    return render_template('add_vouchers.html', rows_user=rows_user, row_order=row_order)
+    return render_template('add_vouchers.html', rows_user=rows_user, row_order=row_order, row_tradein=row_tradein)
 
 
 @app.route('/retrieve_vouchers/<username>')
@@ -1434,10 +1458,21 @@ def view_order(orderid):
                            addresses=addresses)
 
 
-@app.route('/retrieve_order/<orderid>')
+@app.route('/admin_retrieveorder/<orderid>')
 @login_required
-def retrieve_order(orderid):
-        pass
+def admin_retrieveorder(orderid):
+    con = get_db()
+    cur = con.cursor()
+    total = 10
+    cur.execute('SELECT * FROM sessions WHERE session_id = ?', (orderid,))
+    order_details = cur.fetchall()
+    for orders in order_details:
+        total = total + orders[5] * orders[6]
+    discount = order_details[0][3] - total
+    cur.execute('SELECT * FROM addresses WHERE session_id = ?', (orderid,))
+    addresses = cur.fetchall()
+    return render_template('admin_retrieveorder.html', order_details=order_details, orderid=orderid, discount=discount,
+                           addresses=addresses)
 
 
 @app.route('/view_vouchers/<username>')
@@ -1567,9 +1602,13 @@ def deletetradein(id):
             else:
                 cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
                 cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
-                con.commit()  # Delete the blog post from the database
+                con.commit()
                 return redirect(url_for('forms'))
+        cur.execute("DELETE FROM tradeinform WHERE tradein_id = ?", (id,))
+        cur.execute('DELETE FROM tradeinentries WHERE tradein_id = ?', (id,))
+        con.commit()
     con.close()
+    flash('Trade-In form deleted!')
     return redirect(url_for('forms'))
 
 

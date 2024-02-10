@@ -94,7 +94,7 @@ table {
           <td>{{ row['username'] }}</td>
           <td>{{ row['email'] }}</td>
           <td>{{ row['phone_no'] }}</td>
-          <td></td>
+          <td>{{ row_tradein[loop.index - 1] }}</td>
           <td>{{ row_order[loop.index - 1] }}</td>
             <td><a href="/retrieve_vouchers/{{ row['username'] }}">Retrieve</a>
             </td>

@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
+{% block title %}B.E.E - Profile{% endblock %}
+
+{% block content %}
 <style>
 body {
   margin: 0;
+  background-color: #ffffea;
 }
 
 ul.admin {
@@ -33,13 +35,209 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-</style>
-</head>
-<body>
-{% extends "base.html" %}
-{% block title %}B.E.E - Admin/Forms{% endblock %}
 
-{% block content %}
+  {% if order_details[0][7] == 'Shipped' %}
+    .items-list:nth-child(3) .circle,
+    .items-list:nth-child(4) .circle {
+      background-color: grey;
+    }
+
+    .circle {
+      /* CSS styles for the 1st and 2nd circles */
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #f37a27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .items-list:not(:last-child) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .items-list:not(:first-child):not(:last-child):not(:nth-child(2)) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: grey;
+    }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .item-text {
+      font-size: 12px;
+      color: white;
+      margin: 0;
+    }
+  {% elif order_details[0][7] == 'On The Way' %}
+    .items-list:nth-child(4) .circle {
+      background-color: grey;
+    }
+
+    .circle {
+      /* CSS styles for the 1st and 2nd circles */
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #f37a27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .items-list:not(:last-child) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .items-list:not(:first-child):not(:last-child):not(nth-child(2)) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: grey;
+    }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .item-text {
+      font-size: 12px;
+      color: white;
+      margin: 0;
+    }
+  {% elif order_details[0][7] == 'Delivered' %}
+    .circle {
+      /* CSS styles for the 1st and 2nd circles */
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #f37a27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .items-list:not(:last-child) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .item-text {
+      font-size: 12px;
+      color: white;
+      margin: 0;
+    }
+  {% elif order_details[0][7] is none or order_details[0][7] == 0 %}
+    .items-list:nth-child(3) .circle,
+    .items-list:nth-child(4) .circle,
+    .items-list:nth-child(2) .circle {
+      background-color: grey;
+    }
+
+    .circle {
+      /* CSS styles for the 1st and 2nd circles */
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #f37a27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .items-list:not(:last-child) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .items-list:not(:first-child):not(:last-child) .circle:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 2px;
+      background-color: grey;
+    }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #f37a27;
+    }
+
+    .item-text {
+      font-size: 12px;
+      color: white;
+      margin: 0;
+    }
+  {% endif %}
+</style>
 <ul class="admin" style="float: left;">
   <li><a href="/admindashboard">Dashboard</a></li>
   <li>
@@ -51,3 +249,103 @@ ul.admin {
   <li><a href="/add_vouchers">Add Vouchers</a></li>
   <li><a href="#about">About</a></li>
 </ul>
+<div style="margin-left:25%;padding:30px 16px;height:868px;">
+    <h1 class="display-4">Order History</h1>
+    <p>{{session['username']}}'s Order History</p>
+<section class="width" style="background-color: #FFFFEA;">
+      <div class="col-lg-8 col-xl-6">
+        <div class="card border-top border-bottom border-3" style="border-color: #f37a27 !important;">
+          <div class="card-body p-5">
+
+            <p class="lead fw-bold mb-5" style="color: #f37a27;">Purchase Receipt</p>
+            <div class="mb-4">
+              <p class="muted mb-1" style="font-size: 18px;">Shipping Address:</p>
+              <p>{% for address in addresses %}{{ address[1] }} {{ address[3] }}<br>{{ address[2] }}, {{ address[4] }} {{ address[5] }}{% endfor %}</p>
+            </div>
+            <div class="row">
+              <div class="col mb-3">
+                <p class="small text-muted mb-1">Date</p>
+                <p>{{ order_details[0][4][0:10] }}</p>
+              </div>
+              <div class="col mb-3">
+                <p class="small text-muted mb-1">Order No.</p>
+                <p>#{{ orderid }}</p>
+              </div>
+            </div>
+            <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
+              {% for order in order_details %}
+                <div class="row">
+                  <div class="col-md-8 col-lg-9">
+                    <p>{{ order[2] }} x {{ order[5] }}</p>
+                  </div>
+                  <div class="col-md-4 col-lg-3">
+                    <p>${{ order[5]*order[6] }}.00</p>
+                  </div>
+                </div>
+              {% endfor %}
+              <hr>
+              <div class="row">
+                <div class="col-md-8 col-lg-9">
+                  <p class="mb-0">Discount</p>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                  <p class="mb-0">- ${{ discount }}.00</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-8 col-lg-9">
+                  <p class="mb-0">Shipping</p>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                  <p class="mb-0">$10.00</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="row my-4">
+              <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
+                <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order_details[0][3] }}.00</p>
+              </div>
+            </div>
+
+            <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
+
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="horizontal-timeline">
+                  <ul class="list-inline items d-flex justify-content-between">
+                    <li class="list-inline-item items-list">
+                      <div class="circle">
+                        <p class="item-text">Ordered</p>
+                      </div>
+                    </li>
+                    <li class="list-inline-item items-list">
+                      <div class="circle">
+                        <p class="item-text">Shipped</p>
+                      </div>
+                    </li>
+                    <li class="list-inline-item items-list">
+                      <div class="circle">
+                        <p class="item-text">On The Way</p>
+                      </div>
+                    </li>
+                    <li class="list-inline-item items-list">
+                      <div class="circle">
+                        <p class="item-text">Delivered</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              </div>
+            </div>
+
+            <p class="mt-4 pt-2 mb-0">Want any help? <a href="#!" style="color: #f37a27;">Please contact
+                us</a></p>
+
+          </div>
+      </div>
+</section>
+</div>
+{% endblock %}
