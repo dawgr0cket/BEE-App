@@ -1626,6 +1626,20 @@ def eco():
     return render_template('eco.html', rows=rows)
 
 
+@app.route('/product/<product_name>')
+def productpage(product_name):
+    sizes = []
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('SELECT * FROM inventory WHERE product_name = ?', (product_name,))
+    product = cur.fetchall()
+    cur.execute('SELECT product_size FROM inventorysize WHERE product_name = ?', (product_name,))
+    product_size = cur.fetchall()
+    for size in product_size:
+        sizes.append(size[0])
+    return render_template('product.html', product=product, sizes=sizes)
+
+
 @app.route('/profile')
 @login_required
 def profile():
@@ -1768,8 +1782,34 @@ def add_to_cart(product_name, username):
         return redirect(url_for('eco'))
     except:
         flash("An error occurred while adding the product to the cart")
-        return redirect(url_for('eco'))\
+        return redirect(url_for('eco'))
 
+
+@app.route('/add_to_cart4/<product_name>/<username>', methods=['GET', 'POST'])
+def add_to_cart4(product_name, username):
+    if request.method == 'POST':
+        try:
+            size = request.form['size']
+            con = get_db()
+            cur = con.cursor()
+            cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ? AND product_size", (username, product_name, size))
+            result = cur.fetchone()
+            product_exists = result[0] > 0
+
+            if not product_exists:
+                # Product does not exist in the cart, so insert it
+                cur.execute("INSERT INTO cart (username, product_name, product_quantity, size) VALUES (?, ?, ?, ?)",
+                            (username, product_name, 1, size))
+                con.commit()
+
+                flash("Product added to cart successfully")
+            else:
+                flash("Product already exists in the cart")
+
+            return redirect(url_for('productpage', product_name=product_name))
+        except:
+            flash("Please select a size!")
+            return redirect(url_for('productpage', product_name=product_name))
 
 
 @app.route('/add_to_cart3/<product_name>/<username>')
