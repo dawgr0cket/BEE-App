@@ -1789,16 +1789,17 @@ def add_to_cart(product_name, username):
 def add_to_cart4(product_name, username):
     if request.method == 'POST':
         try:
-            size = request.form['size']
+            size = request.form.get('size')
             con = get_db()
             cur = con.cursor()
-            cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ? AND product_size", (username, product_name, size))
+            cur.execute("SELECT COUNT(*) FROM cart WHERE username = ? AND product_name = ? AND product_size = ?",
+                        (username, product_name, size))
             result = cur.fetchone()
             product_exists = result[0] > 0
 
             if not product_exists:
                 # Product does not exist in the cart, so insert it
-                cur.execute("INSERT INTO cart (username, product_name, product_quantity, size) VALUES (?, ?, ?, ?)",
+                cur.execute("INSERT INTO cart (username, product_name, product_quantity, product_size) VALUES (?, ?, ?, ?)",
                             (username, product_name, 1, size))
                 con.commit()
 
@@ -1807,8 +1808,9 @@ def add_to_cart4(product_name, username):
                 flash("Product already exists in the cart")
 
             return redirect(url_for('productpage', product_name=product_name))
-        except:
-            flash("Please select a size!")
+        except Exception as e:
+            flash("An error occurred while adding the product to the cart.")
+            print("Error:", e)
             return redirect(url_for('productpage', product_name=product_name))
 
 
@@ -1823,8 +1825,8 @@ def add_to_cart3(product_name, username):
 
         if not product_exists:
             # Product does not exist in the cart, so insert it
-            cur.execute("INSERT INTO cart (username, product_name, product_quantity) VALUES (?, ?, ?)",
-                        (username, product_name, 1))
+            cur.execute("INSERT INTO cart (username, product_name, product_quantity, product_size) VALUES (?, ?, ?, ?)",
+                        (username, product_name, 1, 'M'))
             con.commit()
 
             flash("Product added to cart successfully")
@@ -1947,7 +1949,7 @@ def cart(username):
         with sqlite3.connect('database.db') as con:
             con.row_factory = sqlite3.Row
             cur = con.cursor()
-            cur.execute("SELECT product_name, product_quantity FROM cart WHERE username = ?", (username,))
+            cur.execute("SELECT product_name, product_quantity, product_size FROM cart WHERE username = ?", (username,))
             products = cur.fetchall()
             for product in products:
                 product_list.append(product['product_name'])
