@@ -60,7 +60,10 @@ body {
           <div class="card-body p-5">
 
             <p class="lead fw-bold mb-5" style="color: #f37a27;">Purchase Reciept</p>
-
+            <div class="mb-4">
+              <p class="muted mb-1" style="font-size: 18px;">Shipping Address</p>
+              <p>{% for address in addresses %}{{ address[1] }} {{ address[3] }}<br>{{ address[2] }}, {{ address[4] }} {{ address[5] }}{% endfor %}</p>
+            </div>
             <div class="row">
               <div class="col mb-3">
                 <p class="small text-muted mb-1">Date</p>
@@ -71,19 +74,26 @@ body {
                 <p>#{{ orderid }}</p>
               </div>
             </div>
-
             <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
               {% for order in order_details %}
                 <div class="row">
                   <div class="col-md-8 col-lg-9">
-                    <p>{{ order[2] }}</p>
+                    <p>{{ order[2] }} x {{ order[6] }}</p>
                   </div>
                   <div class="col-md-4 col-lg-3">
-                    <p>£299.99</p>
+                    <p>${{ order[7]*order[6] }}.00</p>
                   </div>
                 </div>
               {% endfor %}
               <hr>
+              <div class="row">
+                <div class="col-md-8 col-lg-9">
+                  <p class="mb-0">Discount</p>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                  <p class="mb-0">- ${{ discount }}.00</p>
+                </div>
+              </div>
               <div class="row">
                 <div class="col-md-8 col-lg-9">
                   <p class="mb-0">Shipping</p>
@@ -96,7 +106,7 @@ body {
 
             <div class="row my-4">
               <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
-                <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order_details[0][3] }}</p>
+                <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order_details[0][3] }}.00</p>
               </div>
             </div>
 

@@ -33,7 +33,7 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-#forms th {
+#tradein th {
   padding-top: 12px;
   padding-bottom: 12px;
   padding-right: 50px;
@@ -44,13 +44,41 @@ ul.admin {
 }
 table, td {
   padding-left: 10px;
-  border: 1px solid;
 }
 
 table {
   width: 75%;
   border-collapse: collapse;
 }
+#tradein {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 95%;
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  #tradein th {
+    padding: 12px;
+    text-align: left;
+    background-color: #F6BDBD;
+    color: white;
+  }
+
+  #tradein td {
+    padding: 12px;
+    border: 1px solid #F6BDBD;
+  }
+
+  #tradein td a {
+    color: #04AA6D;
+    text-decoration: none;
+  }
+
+  #tradein td a:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -72,7 +100,7 @@ table {
 
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <h2>Trade-In Forms</h2>
-    <table id="forms">
+    <table id="tradein">
       <thead>
       <th>Trade-In ID</th>
       <th>Username</th>

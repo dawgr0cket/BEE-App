@@ -1376,9 +1376,16 @@ def order_history(username):
 def view_order(orderid):
     con = get_db()
     cur = con.cursor()
+    total = 10
     cur.execute('SELECT * FROM sessions WHERE session_id = ?', (orderid,))
     order_details = cur.fetchall()
-    return render_template('view_order.html', order_details=order_details, orderid=orderid)
+    for orders in order_details:
+        total = total + orders[6] * orders[7]
+    discount = order_details[0][3] - total
+    cur.execute('SELECT * FROM addresses WHERE session_id = ?', (orderid,))
+    addresses = cur.fetchall()
+    return render_template('view_order.html', order_details=order_details, orderid=orderid, discount=discount,
+                           addresses=addresses)
 
 
 @app.route('/retrieve_order/<orderid>')
@@ -1541,7 +1548,6 @@ def profile():
 @app.route('/editprofile', methods=['GET', 'POST'])
 @login_required
 def editprofile():
-    error = None
     form = UserForm()
 
     if request.method == 'POST':
@@ -1551,68 +1557,68 @@ def editprofile():
         dob = request.form['dob']
         gender = form.gender.data  # Use get() method to retrieve the value
 
-        # session['username'] = username
-        # session['email'] = email
+        try:
+            con = get_db()
+            cur = con.cursor()
+            if username != session['username']:
+                cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                tables = cur.fetchall()
 
-        if len(phone_no) == 8 and phone_no.isdigit():
-            session['phone_no'] = phone_no
-        else:
-            error = "Invalid phone number"
+                for table in tables:
+                    table_name = table[0]
 
-        if request.form['dob'] == '':
-            session['dob'] = None
-        else:
-            session['dob'] = dob
+                    # Retrieve column names for the current table
+                    cur.execute(f"PRAGMA table_info({table_name})")
+                    columns = cur.fetchall()
 
-        if error is None:
-            with sqlite3.connect('database.db') as con:
-                cur = con.cursor()
+                    # Check if the "username" column exists in the current table
+                    if any(column[1] == 'username' for column in columns):
+                        # Check if the username already exists in the current table
+                        cur.execute(f"SELECT COUNT(*) FROM {table_name} WHERE username = ?", (username,))
+                        result = cur.fetchone()
 
-                # Prepare the SQL update statement dynamically based on the form inputs provided
-                try:
-                    if username:
-                        cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
-                        tables = cur.fetchall()
+                        if result[0] > 0:
+                            # Username already exists, display an error message
+                            msg = "Username already taken. Please choose a different username."
+                            flash(msg)
+                            return render_template('editprofile')
+                        else:
+                            # Generate and execute UPDATE statement
+                            update_statement = f"UPDATE {table_name} SET username = ? WHERE username = ?"
+                            cur.execute(update_statement, (username, session['username']))
+                            con.commit()
+                            session['username'] = username
 
-                        for table in tables:
-                            table_name = table[0]
+            if email != session['email']:
+                session['email'] = email
+                cur.execute('UPDATE user SET email = ? WHERE username = ?', (email, session['username']))
+                con.commit()
 
-                            # Retrieve column names for the current table
-                            cur.execute(f"PRAGMA table_info({table_name})")
-                            columns = cur.fetchall()
-
-                            # Check if the "username" column exists in the current table
-                            if any(column[1] == 'username' for column in columns):
-                                # Generate and execute UPDATE statement
-                                update_statement = f"UPDATE {table_name} SET username = ? WHERE username = ?"
-                                cur.execute(update_statement, (username, session['username']))
-                                con.commit()
-
-                    if email:
-                        update_statement += " email = '{}',".format(email)
-
-                    if phone_no:
-                        update_statement += " phone_no = '{}',".format(phone_no)
-
-                    if dob:
-                        update_statement += " dob = '{}',".format(dob)
-
-                    if gender:
-                        update_statement += " gender = '{}',".format(gender)
-
-                    # Remove the trailing comma if any
-                    update_statement = update_statement.rstrip(',')
-
-                    # Add the WHERE clause
-                    update_statement += " WHERE username = '{}'".format(session['username'])
-
-                    cur.execute(update_statement)
+            if phone_no != '':
+                if len(phone_no) == 8 and phone_no.isdigit():
+                    session['phone_no'] = phone_no
+                    cur.execute('UPDATE user SET phone_no = ? WHERE username = ?', (phone_no, session['username']))
                     con.commit()
+                else:
+                    msg = "Invalid phone number"
+                    flash(msg)
+                    return redirect(url_for('editprofile'))
 
-                    print("Update successful!")
-                except Exception as e:
-                    print("Error occurred during update:", str(e))
+            if dob != '' and dob is not None:
+                session['dob'] = dob
+                cur.execute('UPDATE user SET dob = ? WHERE username = ?', (dob, session['username']))
+                con.commit()
 
+            if gender is not None:
+                session['gender'] = gender
+                cur.execute('UPDATE user SET gender = ? WHERE username = ?', (gender, session['username']))
+                con.commit()
+                # Remove the trailing comma if any
+
+        except Exception as e:
+            print("Error occurred during update:", str(e))
+        msg = 'Update Successful!'
+        flash(msg)
         return redirect(url_for('profile'))
 
     else:
