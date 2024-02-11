@@ -13,7 +13,7 @@
       border-color: #000000;
       display: block;
     }
-    .navbar-nav{
+    .sidebar{
       display: flex;
       position: fixed;
       top: 0;
@@ -37,13 +37,13 @@
       .navbar-collapse {
         display: block;
       }
-      .navbar-nav{
+      .sidebar{
         display:none;
       }
-      .container-fluid{
-        width:1000px;
-        margin:0 auto;
-      }
+<!--      .container-fluid{-->
+<!--        width:1000px;-->
+<!--        margin:0 auto;-->
+<!--      }-->
     }
     .navbar-toggler-icon {
       background-color: #CCCCFF;
@@ -122,13 +122,9 @@
       display:inline;
       position:relative;
     }
-    .nav-item a{
-      font-size: 30px;
-    }
   </style>
 </head>
 <body>
-
 <nav class="navbar navbar-expand-sm bg navbar-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
@@ -161,7 +157,6 @@
         <li class="nav-item">
           <a class="nav-link" href="/admindashboard">Dashboard</a>
         </li>
-
         {% endif %}
         {% if 'username' in session %}
         <li class="nav-item">
@@ -171,11 +166,44 @@
         <li class="nav-item">
           <a class="nav-link" href="/login">Login/Signup</a>
         </li>
+        {% endif %}
+
+      </ul>
+      <ul class="sidebar">
         <button class="navbar-togglerx" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
             <span class="close-icon" aria-hidden="true">&times;</span>
-          </button>
+        </button>
+          <li class="nav-item">
+            <a class="nav-link" href="/aboutus">About Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/blog">Blog</a>
+          </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Shop</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/eco">Eco</a></li>
+            <li><a class="dropdown-item" href="/tradein">Trade In</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
+        </li>
+        {% if 'adminappdev' in session.values() %}
+        <li class="nav-item">
+          <a class="nav-link" href="/admindashboard">Dashboard</a>
+        </li>
         {% endif %}
-      </ul>
+        {% if 'username' in session %}
+        <li class="nav-item">
+          <a class="nav-link" href="/logout" onpointerdown="Do you want to log out?">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Login/Signup</a>
+        </li>
+        {% endif %}
+        </ul>
       <div class="navbar-brand d-flex justify-content-end">
         {% if 'profile_pic' in session %}
         <a href="/profile">
