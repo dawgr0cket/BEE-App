@@ -279,6 +279,7 @@ def success(username):
         cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
         q = 0
+        print(session['cart'])
         for product in session['cart']:
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
                         (sessionid, username, product['name'], product['quantity']))
@@ -561,8 +562,8 @@ def signup():
 
 @app.route('/logout')
 def logout():
-    session.clear()
     flash('You are logged out!')
+    session.clear()
     return redirect(url_for('home'))
 
 
@@ -1986,7 +1987,7 @@ def cart(username):
         flash(msg)
         return redirect(url_for('shop'))
 
-    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses, quantity=quantity)
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses, quantity=quantity, session=session)
 
 
 @app.route('/wishlist/<username>')
