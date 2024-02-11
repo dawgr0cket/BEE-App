@@ -285,12 +285,11 @@ def success(username):
         cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
         q = 0
-        cur.execute('SELECT data FROM retrieve WHERE username = ? ORDER BY rowid DESC LIMIT 1', (username,))
-        data = cur.fetchone()
-        for product in data:
+        for product in products:
             print(product)
+            name = product[1] + ' (' + product[3] + ')'
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
-                        (sessionid, username, product['name'], product['quantity']))
+                        (sessionid, username, name, product[2]))
             con.commit()
 
         for l in products:
@@ -320,7 +319,9 @@ def success(username):
         for product_name in productnamelist:
             cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?', (new_quantity[p], product_name))
             con.commit()
-            cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?', (itemprice[p], product_name, sessionid))
+        for t in products:
+            name = t[1] + ' (' + t[3] + ')'
+            cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?', (itemprice[p], name, sessionid))
             con.commit()
             p += 1
 
