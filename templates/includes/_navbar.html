@@ -11,6 +11,7 @@
     .navbar-toggler {
       background-color:#CCCCFF;
       border-color: #000000;
+      display: block;
     }
     .navbar-nav{
       display: flex;
@@ -29,12 +30,19 @@
     }
    }
     /* Styles for screens larger than or equal to 768px */
-    @media (min-width: 768px) {
+    @media only screen and (min-width: 1000px) {
       .navbar-toggler {
         display: none;
       }
       .navbar-collapse {
         display: block;
+      }
+      .navbar-nav{
+        display:none;
+      }
+      .container-fluid{
+        width:1000px;
+        margin:0 auto;
       }
     }
     .navbar-toggler-icon {
@@ -47,30 +55,23 @@
     .navbar-nav li {
       text-align: center;
       margin: 5px 0;
+      display: inline;
+      float: left;
     }
     .navbar-brand,
     .navbar-brand p {
       text-align: center;
     }
   }
-
-    .navbar-nav {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-right: 400px;
-    }
-
     ul.navbar-nav {
       margin-left: 100px;
+      width:100%;
     }
 
     .navbar-nav li a {
       margin-left: 30px;
+      position: relative;
     }
-
-
     .navbar-brand img {
       margin-right: 15px;
     }
@@ -79,7 +80,7 @@
     }
     .navbar-dark .navbar-nav .nav-link {
       color: #000000 !important;
-      font-size: 20px;
+      font-size: 15px;
     }
     .navbar-brand p {
       color: black;
@@ -111,21 +112,19 @@
     .dropdown-item:hover {
       width:100px;
     }
-<!--    .navbar-nav{-->
-<!--      display: flex;-->
-<!--      position: fixed;-->
-<!--      top: 0;-->
-<!--      right: 0;-->
-<!--      height: 100vh;-->
-<!--      width: 250px;-->
-<!--      background-color: rgba(255,255,255,0.2);-->
-<!--      backdrop-filter: blur(10px);-->
-<!--      z-index: 999;-->
-<!--      box-shadow: -10px 0 10px rgba(0,0,0,0.1);-->
-<!--      flex-direction: column;-->
-<!--      align-items: flex-start;-->
-<!--      justify-content: flex-start;-->
-<!--    }-->
+    .navbar-togglerx{
+      margin: 15px;
+      padding: 15px;
+      border: none;
+      background-color: #CCCCFF;
+      box-shadow: -10px 0 10px rgba(0,0,0,0.1);
+      border-radius: 5px;
+      display:inline;
+      position:relative;
+    }
+    .nav-item a{
+      font-size: 30px;
+    }
   </style>
 </head>
 <body>
@@ -142,9 +141,6 @@
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
-          <span class="close-icon" aria-hidden="true">&times;</span>
-        </button>
         <li class="nav-item">
           <a class="nav-link" href="/aboutus">About Us</a>
         </li>
@@ -165,6 +161,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/admindashboard">Dashboard</a>
         </li>
+
         {% endif %}
         {% if 'username' in session %}
         <li class="nav-item">
@@ -174,6 +171,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/login">Login/Signup</a>
         </li>
+        <button class="navbar-togglerx" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
+            <span class="close-icon" aria-hidden="true">&times;</span>
+          </button>
         {% endif %}
       </ul>
       <div class="navbar-brand d-flex justify-content-end">
