@@ -169,7 +169,9 @@ def checkout(lists, username):
             cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
                         (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
-            cur.execute('INSERT INTO retrieve (username, data) VALUES (?, ?)', (username, lists))
+            json_data = json.dumps(lists)
+            # Insert the JSON data into the database
+            cur.execute('INSERT INTO retrieve (username, data) VALUES (?, ?)', (username, json_data))
             con.commit()
         except:
             msg = 'An Error has occurred!'
