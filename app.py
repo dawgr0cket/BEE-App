@@ -36,6 +36,7 @@ app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
+
 # Bootstrap(app) #idk wat this for yet
 
 # stripe.api_key = os.environ.get(
@@ -167,6 +168,8 @@ def checkout(lists, username):
             cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
                         (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
             con.commit()
+            cur.execute('INSERT INTO retrieve (username, data) VALUES (?, ?)', (username, lists))
+            con.commit()
         except:
             msg = 'An Error has occurred!'
             flash(msg)
@@ -279,8 +282,10 @@ def success(username):
         cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
         q = 0
-        print(session['cart'])
-        for product in session['cart']:
+        cur.execute('SELECT data FROM retrieve WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
+        data = cur.fetchall()
+        for product in data:
+            print(product)
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
                         (sessionid, username, product['name'], product['quantity']))
             con.commit()
@@ -1981,7 +1986,7 @@ def cart(username):
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
             addresses = cur.fetchall()
-            session['cart'] = lists
+
     except:
         msg = 'An Error has occurred'
         flash(msg)

@@ -28,6 +28,7 @@ print("Connected to database successfully")
 # conn.execute('ALTER TABLE cart ADD COLUMN product_size STRING')
 # conn.execute('ALTER TABLE sessions DROP COLUMN status')
 # conn.execute('DROP TABLE cart')
+# conn.execute('CREATE TABLE retrieve (username VARCHAR(255) NOT NULL, data TEXT)')
 # conn.execute('CREATE TABLE sessions (session_id STRING, username VARCHAR(255) NOT NULL, product_name STRING,total INT, payment_timestamp INT NOT NULL DEFAULT CURRENT_TIMESTAMP, status BOOLEAN)')
 # conn.execute('CREATE TABLE addresses (id INTEGER PRIMARY KEY AUTOINCREMENT, block TEXT NOT NULL, unitno TEXT NOT NULL, street TEXT NOT NULL, city TEXT NOT NULL, postal_code TEXT NOT NULL, username VARCHAR(255) NOT NULL)')
 # conn.execute('''
