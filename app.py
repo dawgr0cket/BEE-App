@@ -1,6 +1,7 @@
 import ast
 import base64
 import io
+import json
 import os
 import decimal
 import traceback
@@ -282,14 +283,14 @@ def success(username):
         cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
         con.commit()
         q = 0
-        cur.execute('SELECT data FROM retrieve WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
-        data = cur.fetchall()
+        cur.execute('SELECT data FROM retrieve WHERE username = ? ORDER BY rowid DESC LIMIT 1', (username,))
+        data = cur.fetchone()
         for product in data:
             print(product)
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
                         (sessionid, username, product['name'], product['quantity']))
             con.commit()
-            q += 1
+
         for l in products:
             productnamelist.append(l[1])
 
