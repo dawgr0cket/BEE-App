@@ -88,18 +88,41 @@ ul.admin {
   justify-content: space-between;
   width: 100%;
 }
-.btn {
+.btn-group button {
    flex-grow: 1;
-  margin: 0 5px;
+  margin: 0 3px;
 }
-.btn-primary {
-  background-color: #0000ff;
-  color: #fff;
+.submit {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: lightblue;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
 }
 
-.btn-danger {
-  background-color: #f1dddd;
-  color: #fff;
+.submit:hover {
+    background-color: darkturquoise;
+    color: white;
+}
+.disc {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.disc:hover {
+    background-color: pink;
+    color: white;
 }
 </style>
 </head>
@@ -133,9 +156,9 @@ ul.admin {
               <h5 class="card-title">{{ row['product_name'] }}</h5>
               <p class="card-text">${{ row['product_price'] }}</p>
               <div class="btn-group">
-                <a href="/admin_product/{{ row['product_name'] }}" class="btn btn-primary">View</a>
-                <a href="/delete_inventory/{{ row['product_name'] }}" class="btn btn-danger">Delete</a>
-                <a href="/edit_inventory/{{ row['product_name'] }}" class="btn btn-primary">Edit</a>
+                <a href="/admin_product/{{ row['product_name'] }}" class="submit">View</a>
+                <a href="/delete_inventory/{{ row['product_name'] }}" class="disc">Delete</a>
+                <a href="/edit_inventory/{{ row['product_name'] }}" class="submit">Edit</a>
               </div>
             </div>
           </div>

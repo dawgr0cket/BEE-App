@@ -48,6 +48,53 @@ body {
   background-color: #555;
   color: white;
 }
+
+#tradein th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-right: 50px;
+  padding-left: 10px;
+  text-align: left;
+  background-color: #F6BDBD;
+  color: white;
+}
+table, td {
+  padding-left: 10px;
+}
+
+table {
+  width: 75%;
+  border-collapse: collapse;
+}
+#tradein {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #FDFDFD;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  #tradein th {
+    padding: 12px;
+    text-align: left;
+    background-color: #F6BDBD;
+    color: white;
+  }
+
+  #tradein td {
+    padding: 12px;
+    border: 1px solid #F6BDBD;
+  }
+
+  #tradein td a {
+    color: #04AA6D;
+    text-decoration: none;
+  }
+
+  #tradein td a:hover {
+    text-decoration: underline;
+  }
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}" class="active">Order History</a></li>
@@ -59,7 +106,7 @@ body {
     <p>{{session['username']}}'s Order History</p>
       <div class="container">
         <h1>Past Orders</h1>
-        <table class="table table-striped">
+        <table id="tradein">
           <thead>
             <tr>
               <th>Order ID</th>
@@ -75,14 +122,14 @@ body {
             <tr>
               <td>#{{ order[0] }}</td>
               <td>{{ order[4][0:10] }}</td>
-              <td>{{ item_list[loop.index - 1] }}</td>
+              <td>{{ quantity[loop.index - 1] }}</td>
               <td>${{ order[3] }}</td>
-              {% if order[7] == 0 or none %}
+              {% if order[7] == 0 or null %}
               <td><b>Ordered</b></td>
               {% else %}
               <td><b>{{ order[7] }}</b></td>
               {% endif %}
-              <td><a href="/view_order/{{ order[0] }}" class="btn btn-primary mb-3">Retrieve Order</a></td>
+              <td><a href="/view_order/{{ order[0] }}">Retrieve Order</a></td>
             </tr>
             {% endfor %}
           </tbody>

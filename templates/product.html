@@ -18,6 +18,53 @@
     .container {
         margin-top: 100px;
     }
+
+    .form-select {
+        width: 200px;
+    }
+
+    button.atc {
+        background: #ff9999;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    button.atc:hover {
+        background: pink;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    a.atc {
+        text-decoration: none;
+        background: #ff9999;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    a.atc:hover {
+        text-decoration: none;
+        background: pink;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        cursor: pointer;
+        border-radius: 10px;
+    }
 </style>
 <body>
     <div class="container">
@@ -27,7 +74,7 @@
             </div>
             <div class="col-lg-8">
                 <h2>{{ product[0][0] }}</h2>
-                <h4>${{ product[0][1] }}0</h4>
+                <h4>${{ product[0][1] }}0</h4><p><i>9% GST incl.</i></p>
                 <p>{{ product[0][3] }}</p>
                 {% if product[0][5] == 'Eco' %}
                     <form action="/add_to_cart4/{{ product[0][0] }}/{{ session['username'] }}" method="POST">
@@ -40,10 +87,10 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        <button type="submit" class="atc">Add to Cart</button>
                     </form>
                 {% else %}
-                    <button><a href="/add_to_cart1/{{ product[0][0] }}/{{ session['username'] }}">Add To Cart</a></button>
+                    <a class='atc' href="/add_to_cart1/{{ product[0][0] }}/{{ session['username'] }}">Add To Cart</a>
                 {% endif %}
             </div>
         </div>

@@ -114,7 +114,7 @@ table {
         <tr>
           <td>#{{ row[0] }}</td>
           <td>{{ row[1] }}</td>
-          <td>{{ item_list[loop.index - 1] }}</td>
+          <td>{{ quantity[loop.index - 1] }}</td>
           <td>${{ row[3] }}</td>
           {% if row[7] is none or row[7] == 0 %}
           <td><b>Packing...</b></td>

@@ -9,6 +9,7 @@
         <style>
             body {
                 margin: 0;
+                background-color: #ffffea;
             }
 
             ul.admin {
@@ -42,7 +43,46 @@
             .error-message {
                 color: red;
             }
-        </style>
+
+            .form-control {
+                list-style: none;
+                border-radius: 10px;
+
+            }
+.submit {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: lightblue;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.submit:hover {
+    background-color: darkturquoise;
+    color: white;
+}
+.disc {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.disc:hover {
+    background-color: pink;
+    color: white;
+}
+
+</style>
         <script>
             function validateForm() {
                 var shop = document.forms["inventoryForm"]["shop"].value;
@@ -122,59 +162,61 @@
             <li><a class="active" href="/admin_inventory">Inventory</a></li>
             <li><a href="/add_vouchers">Add Vouchers</a></li>
         </ul>
-        <h1 class="display-4">Add Product</h1>
-        <hr>
+        <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+        <h2>Add Product</h2>
+
         <form name="inventoryForm" action="/add_inventory" method="POST" enctype="multipart/form-data"
-              style="margin-left:25%;padding:30px 16px;height: 1000px;" onsubmit="return validateForm()">
+              style="padding-right: 500px;" onsubmit="return validateForm()">
             {{ form.hidden_tag() }}
             <br>
 
-            {{ form.shop.label(class="form-label") }}
+            {{ form.shop.label(class="form-label") }}:
             {{ form.shop(class="form-control", required="required") }}
 
-            {{ form.product_name.label(class="form-label") }}
+            {{ form.product_name.label(class="form-label") }}:
             {{ form.product_name(class="form-control", required="required") }}
 
-            {{ form.product_price.label(class="form-label") }}
+            {{ form.product_price.label(class="form-label") }}:
             {{ form.product_price(class="form-control", required="required") }}
             <div id="priceError" class="error-message"></div>
             <br>
 
-            {{ form.product_image.label(class="form-label") }}
+            {{ form.product_image.label(class="form-label") }}:
             {{ form.product_image(class="form-control", required="required") }}
             <div id="imageError" class="error-message"></div>
             <br>
 
-            {{ form.product_description.label(class="form-label") }}
+            {{ form.product_description.label(class="form-label") }}:
             {{ form.product_description(class="form-control", required="required") }}
             <br>
 
-            <b>Size Of Clothes</b>
-            <label for="XS"><b>XS</b></label>
+            <h6>Size Of Clothes:</h6>
+            <label for="XS">XS</label>
             <input type="checkbox" name="product_size" id="XS" value="XS">
-            <label for="S"><b>S</b></label>
+            <label for="S">S</label>
             <input type="checkbox" name="product_size" id="S" value="S">
-            <label for="M"><b>M</b></label>
+            <label for="M">M</label>
             <input type="checkbox" name="product_size" id="M" value="M">
-            <label for="L"><b>L</b></label>
+            <label for="L">L</label>
             <input type="checkbox" name="product_size" id="L" value="L">
-            <label for="XL"><b>XL</b></label>
+            <label for="XL">XL</label>
             <input type="checkbox" name="product_size" id="XL" value="XL">
             <div id="sizeError" class="error-message"></div>
             <br>
 
-            {{ form.product_quantity.label(class="form-label") }}
+            {{ form.product_quantity.label(class="form-label") }}:
             {{ form.product_quantity(class="form-control", required="required") }}
             <div id="quantityError" class="error-message"></div>
 
             <br>
             <hr>
-            {{ form.submit(class="btn btn-secondary") }}
-            <a href="/admin_inventory">Discard Changes</a>
+            {{ form.submit(class="submit") }}
+            <a class="disc" href="/admin_inventory">Discard Changes</a>
 
             <!-- Error message for empty fields -->
             <div id="emptyFieldsError" class="error-message"></div>
         </form>
     {% endblock %}
+        </div>
     </body>
 </html>

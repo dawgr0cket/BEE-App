@@ -817,24 +817,29 @@ def generate_charts():
 @login_required
 def orders():
     orders = []
-    item_list = []
+    quantity = []
+    sessions_list = []
     try:
         con = get_db()
         cur = con.cursor()
-        cur.execute('SELECT * FROM sessions GROUP BY session_id ORDER BY payment_timestamp ASC')
+        cur.execute('SELECT * FROM sessions GROUP BY session_id ORDER BY rowid DESC')
         orders = cur.fetchall()
-        cur.execute('SELECT session_id FROM sessions GROUP BY session_id ORDER BY payment_timestamp ASC')
+        cur.execute('SELECT session_id FROM sessions GROUP BY session_id ORDER BY rowid DESC')
         ids = cur.fetchall()
-        for row in ids:  # Iterate over the rows
-            session_id = row[0]  # Access the value of the session_id column in the row
-            cur.execute('SELECT COUNT(*) FROM sessions WHERE session_id = ?', (session_id,))
-            row_count = cur.fetchone()[0]
-            item_list.append(row_count)
+        for row in ids:
+            sessions_list.append(row[0])
+        for s in sessions_list:
+            cur.execute('SELECT quantity FROM sessions WHERE session_id = ?', (s,))
+            quant = cur.fetchall()
+            start = 0
+            for q in quant:
+                start += int(q[0])
+            quantity.append(start)
     except:
         msg = 'Failed to get orders'
         flash(msg)
     finally:
-        return render_template('admin_orders.html', orders=orders, item_list=item_list)
+        return render_template('admin_orders.html', orders=orders, quantity=quantity)
 
 
 @app.route('/deleteorder/<orderid>')
@@ -1438,25 +1443,31 @@ def edit_inventory(product_name):
 
 @app.route('/order_history/<username>')
 def order_history(username):
-    orders = []
     item_list = []
+    quantity = []
     try:
         con = get_db()
         cur = con.cursor()
-        cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id', (username,))
+        cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id ORDER BY rowid DESC', (username,))
         orders = cur.fetchall()
-        cur.execute('SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id', (username,))
+        cur.execute('SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id ORDER BY rowid DESC', (username,))
+        sessions_list = []
         ids = cur.fetchall()
         for row in ids:
-            # session_id = row[0]
-            row_count = row[1]
-            item_list.append(row_count)
+            sessions_list.append(row[0])
+        for s in sessions_list:
+            cur.execute('SELECT quantity FROM sessions WHERE session_id = ?', (s,))
+            quant = cur.fetchall()
+            start = 0
+            for q in quant:
+                start += int(q[0])
+            quantity.append(start)
     except:
         msg = 'Failed to get orders'
         flash(msg)
         return redirect(url_for('profile'))
 
-    return render_template('order_history.html', orders=orders, item_list=item_list)
+    return render_template('order_history.html', orders=orders, item_list=item_list, quantity=quantity)
 
 
 @app.route('/view_order/<orderid>')
