@@ -21,7 +21,7 @@
             text-align: center; /* Center align content within the container */
         }
 
-        .add-blog-link {
+.add-blog-link {
     font-size: 18px;
     font-weight: bold;
     color: #333;
@@ -32,7 +32,7 @@
     display: inline-block;
     font-size: 14px;
     font-weight: normal;
-    background-color: pink;
+    background-color: #F1DDDD;
     color: black;
     padding: 4px 20px;
     border-radius: 20px;
@@ -41,7 +41,7 @@
 }
 
 .add-blog-link a:hover {
-    background-color: #F1DDDD;
+    background-color: pink;
     color: black;
 }
 
@@ -156,13 +156,10 @@ footer {
         position: relative;
         }
 
-         footer .copyright-container {
-    position: absolute;
+.copyright-container {
     bottom: 0;
     left: 0;
     padding: 10px;
-    display: flex;
-    align-items: flex-end;
 }
 
 .copyright {
@@ -255,7 +252,6 @@ footer {
     width: 100%;
     margin-bottom: 10px;
   }
-}
     </style>
 
     {% extends "base.html" %} {% block content %}
@@ -295,11 +291,7 @@ footer {
             {% endfor %}
         </div>
     </div>
-
 <footer>
-    <div class="copyright-container">
-        <p class="copyright">&copy;2024</p>
-    </div>
     <div style="margin-bottom: 20px;">
         <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
         <p style="font-size: 30px;">B.E.E</p>
@@ -321,6 +313,9 @@ footer {
         </div>
     </div>
 </footer>
+    <div class="copyright-container">
+        <p class="copyright">&copy;2024</p>
+    </div>
 </body>
+    {% endblock %}
 </html>
-{% endblock %}

@@ -87,7 +87,7 @@ a {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 20px 0;
+    margin: 50px 0px 0px;
 }
 
 .feature-item {
@@ -129,13 +129,10 @@ footer {
         position: relative;
         }
 
-footer .copyright-container {
-    position: absolute;
+    .copyright-container {
     bottom: 0;
     left: 0;
     padding: 10px;
-    display: flex;
-    align-items: flex-end;
 }
 
 .copyright {
@@ -156,8 +153,6 @@ footer .copyright-container {
   padding: 40px;
   text-align: center;
   color: black;
-  margin-top: 50px;
-  border-radius: 10px;
 }
 
 .newsletter h2 {
@@ -281,10 +276,7 @@ footer .copyright-container {
         <!-- Repeat for each feature -->
     </div>
 </main>
-<footer>
-    <div class="copyright-container">
-        <p class="copyright">&copy;2024</p>
-    </div>
+<footer style="height: 350px">
     <div style="margin-bottom: 20px;">
         <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
         <p style="font-size: 30px;">B.E.E</p>
@@ -306,6 +298,9 @@ footer .copyright-container {
         </div>
     </div>
 </footer>
+    <div class="copyright-container">
+        <p class="copyright">&copy;2024</p>
+    </div>
 {% else %}
 <header>
     <h1>Better . Eco-friendly . Efficiency</h1>
@@ -322,10 +317,7 @@ footer .copyright-container {
     </div>
     <a href="/signup"><button type="submit" class="registerbtn">Sign Up Now!</button></a>
 </main>
-<footer>
-    <div class="copyright-container">
-        <p class="copyright">&copy;2024</p>
-    </div>
+<footer style="height:350px">
     <div style="margin-bottom: 20px;">
         <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
         <p style="font-size: 30px;">B.E.E</p>
@@ -347,8 +339,10 @@ footer .copyright-container {
         </div>
     </div>
 </footer>
+    <div class="copyright-container">
+        <p class="copyright">&copy;2024</p>
+    </div>
 {% endif %}
-{% endblock %}
 </body>
+{% endblock %}
 </html>
-
