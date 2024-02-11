@@ -13,6 +13,10 @@
       border-color: #000000;
       display: block;
     }
+    .navbar-nav li{
+      display: none;
+      flex-direction: row;
+    }
     .sidebar{
       display: flex;
       position: fixed;
@@ -30,7 +34,7 @@
     }
    }
     /* Styles for screens larger than or equal to 768px */
-    @media only screen and (min-width: 1000px) {
+    @media (min-width: 768px) {
       .navbar-toggler {
         display: none;
       }
@@ -40,13 +44,14 @@
       .sidebar{
         display:none;
       }
-<!--      .container-fluid{-->
-<!--        width:1000px;-->
-<!--        margin:0 auto;-->
-<!--      }-->
+    }
+    .navbar-toggler{
+      background-color: transparent;
     }
     .navbar-toggler-icon {
-      background-color: #CCCCFF;
+      width: 30px;
+      height: 30px;
+      border: none;
     }
     .navbar-nav {
       display: flex;
@@ -57,8 +62,8 @@
       margin: 5px 0;
       display: inline;
       float: left;
+      height:50px
     }
-    .navbar-brand,
     .navbar-brand p {
       text-align: center;
     }
@@ -113,14 +118,39 @@
       width:100px;
     }
     .navbar-togglerx{
-      margin: 15px;
-      padding: 15px;
+<!--      margin: 10px;-->
+<!--      padding: 0px;-->
+      width: 50px;
+      height: 50px;
       border: none;
-      background-color: #CCCCFF;
+      background-color: transparent;
+    }
+    .sidebar{
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 250px;
+      z-index: 999;
+      background-color: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
       box-shadow: -10px 0 10px rgba(0,0,0,0.1);
-      border-radius: 5px;
-      display:inline;
-      position:relative;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      list-style: none;
+      display: none;
+    }
+    .sidebar li{
+      width:100%;
+      padding: 15px;
+    }
+    .sidebar a{
+      width: 100%;
+    }
+    .custom-icons {
+      font-size: 40px;
+      color: black;
     }
   </style>
 </head>
@@ -133,7 +163,7 @@
     </a>
     <!-- Add the responsive class for toggling the navigation bar on smaller screens -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-      <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
@@ -167,11 +197,10 @@
           <a class="nav-link" href="/login">Login/Signup</a>
         </li>
         {% endif %}
-
       </ul>
       <ul class="sidebar">
         <button class="navbar-togglerx" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-expanded="false" aria-label="Close navigation">
-            <span class="close-icon" aria-hidden="true">&times;</span>
+            <span class="close-icon custom-icons" aria-hidden="true">&times;</span>
         </button>
           <li class="nav-item">
             <a class="nav-link" href="/aboutus">About Us</a>
