@@ -76,14 +76,14 @@ ul.admin {
       background-color: grey;
     }
 
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
-    }
+<!--    .line {-->
+<!--      position: absolute;-->
+<!--      top: 50%;-->
+<!--      left: 0;-->
+<!--      width: 100%;-->
+<!--      height: 2px;-->
+<!--      background-color: #f37a27;-->
+<!--    }-->
 
     .item-text {
       font-size: 12px;
@@ -129,14 +129,14 @@ ul.admin {
       background-color: grey;
     }
 
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
-    }
+<!--    .line {-->
+<!--      position: absolute;-->
+<!--      top: 50%;-->
+<!--      left: 0;-->
+<!--      width: 100%;-->
+<!--      height: 2px;-->
+<!--      background-color: #f37a27;-->
+<!--    }-->
 
     .item-text {
       font-size: 12px;
@@ -167,14 +167,14 @@ ul.admin {
       background-color: #f37a27;
     }
 
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
-    }
+<!--    .line {-->
+<!--      position: absolute;-->
+<!--      top: 50%;-->
+<!--      left: 0;-->
+<!--      width: 100%;-->
+<!--      height: 2px;-->
+<!--      background-color: #f37a27;-->
+<!--    }-->
 
     .item-text {
       font-size: 12px;
@@ -222,14 +222,14 @@ ul.admin {
       background-color: grey;
     }
 
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
-    }
+<!--    .line {-->
+<!--      position: absolute;-->
+<!--      top: 50%;-->
+<!--      left: 0;-->
+<!--      width: 100%;-->
+<!--      height: 2px;-->
+<!--      background-color: #f37a27;-->
+<!--    }-->
 
     .item-text {
       font-size: 12px;
@@ -238,7 +238,7 @@ ul.admin {
     }
   {% endif %}
 </style>
-<ul class="admin" style="float: left;">
+<ul class="admin" style="float: left; position: absolute; height:968px">
   <li><a href="/admindashboard">Dashboard</a></li>
   <li>
     <a class="active" href="/orders">Orders</a>
@@ -249,14 +249,14 @@ ul.admin {
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
-    <h1 class="display-4">Order Invoice</h1>
-    <p>Order #{{ orderid }}</p>
+    <h1 class="display-4" style="text-align:center;">Order Invoice</h1>
+    <p style="text-align: center;">Order #{{ orderid }}</p>
 <section class="width" style="background-color: #FFFFEA;">
-      <div class="col-lg-8 col-xl-6">
-        <div class="card border-top border-bottom border-3" style="border-color: #f37a27 !important;">
+      <div class="col-lg-8 col-xl-6" style="position: absolute; top: 50%; left: 50%; transform: translate(-25%, -5%">
+        <div class="card border-top border-bottom border-3" style="border-color: #70a5c2 !important;">
           <div class="card-body p-5">
 
-            <p class="lead fw-bold mb-5" style="color: #f37a27;">Purchase Receipt</p>
+            <p class="lead fw-bold mb-5" style="color:black;">Purchase Receipt</p>
             <div class="mb-4">
               <p class="muted mb-1" style="font-size: 18px;">Shipping Address:</p>
               <p>{% for address in addresses %}{{ address[1] }} {{ address[3] }}<br>{{ address[2] }}, {{ address[4] }} {{ address[5] }}{% endfor %}</p>
@@ -307,7 +307,7 @@ ul.admin {
               </div>
             </div>
             {% if order_details[0][7] != 'Cancelled' %}
-              <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
+              <p class="lead fw-bold mb-4 pb-2" style="color: black;">Tracking Order</p>
 
               <div class="row">
                 <div class="col-lg-12">
