@@ -28,7 +28,7 @@ from wtforms import StringField, SubmitField, FileField, EmailField, IntegerFiel
     TextAreaField, validators
 from wtforms.validators import Length, ValidationError, DataRequired
 import sqlite3
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
 # from flask_bootstrap import Bootstrap
@@ -37,7 +37,7 @@ app = Flask(__name__)
 db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
-
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 # Bootstrap(app) #idk wat this for yet
 
 # stripe.api_key = os.environ.get(
@@ -342,7 +342,8 @@ def success(username):
         msg = 'Purchase Completed!'
         flash(msg)
         session['discount'] = None
-        return render_template('successfultrans.html', orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session, subtotal=subtotal)
+        session['username'] = username
+        return render_template("successfultrans.html", orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session, subtotal=subtotal)
     except Exception as e:
         msg = 'An Error has Occurred'
         flash(msg)
@@ -1432,7 +1433,6 @@ def edit_inventory(product_name):
 
 
 @app.route('/order_history/<username>')
-@login_required
 def order_history(username):
     orders = []
     item_list = []
