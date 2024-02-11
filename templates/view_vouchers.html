@@ -54,7 +54,7 @@ body {
   }
 
   .voucher {
-    background-color: #FDFDFD;
+    background-color: lavenderblush;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     padding: 20px;
@@ -91,11 +91,13 @@ body {
   <div class="vouchers-container">
     {% for row in rows %}
     <div class="voucher">
-      <h4>{{ row[2] }}</h4>
+      <h4><i>{{ row[2] }}</i></h4>
       <h5>Code:</h5>
-      <b>{{ row[5] }}</b>
-      <p>Condition:</p>
+      <p>{{ row[5] }}</p>
+      <h5>Condition:</h5>
       <p>{{ row[4] }}</p>
+      <h5>Expiry Date:</h5>
+      <p>{{ row[6] }}</p>
     </div>
     {% endfor %}
   </div>

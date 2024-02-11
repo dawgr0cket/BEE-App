@@ -124,7 +124,7 @@ table {
               <td>{{ order[4][0:10] }}</td>
               <td>{{ quantity[loop.index - 1] }}</td>
               <td>${{ order[3] }}</td>
-              {% if order[7] == 0 or null %}
+              {% if order[7] == 0 or order[7] is none %}
               <td><b>Ordered</b></td>
               {% else %}
               <td><b>{{ order[7] }}</b></td>

@@ -15,13 +15,25 @@
         cursor: pointer;
         width: 150px;
     }
+
+    button.wishlist:hover {
+        background: pink;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: auto;
+        cursor: pointer;
+        width: 150px;
+    }
+
     .container table.table {
         --bs-table-bg: #F1F1F1;
     }
-    table a{
+    .table a{
         text-decoration:none;
         color: white;
     }
+
 </style>
 <h1 class="display-4">Wish List</h1>
 {% if 'username' in session %}
