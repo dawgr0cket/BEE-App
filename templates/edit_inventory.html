@@ -10,6 +10,7 @@
     <style>
         body {
   margin: 0;
+  background-color: #ffffea;
 }
 
 ul.admin {
@@ -39,6 +40,42 @@ ul.admin {
   background-color: #555;
   color: white;
 }
+
+.submit {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: lightblue;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.submit:hover {
+    background-color: darkturquoise;
+    color: white;
+}
+.disc {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.disc:hover {
+    background-color: pink;
+    color: white;
+}
+.form-control {
+    border-radius: 10px;
+}
     </style>
 </head>
 <body>
@@ -52,30 +89,32 @@ ul.admin {
   <li><a class="active" href="/admin_inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-    <h1 class="display-4">Add Product</h1>
-    <hr>
-    <form action="/edit_inventory/{{ product_name }}" method="POST" style="margin-left:25%;padding:30px 16px;height: 1000px;">
+    <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+    <h2>Add Product</h2>
+
+    <form action="/edit_inventory/{{ product_name }}" method="POST" style="padding-right:500px;">
             {{ form.hidden_tag() }}
             <br>
-            {{ form.product_name.label(class="form-label") }}
+            {{ form.product_name.label(class="form-label") }}:
             {{ form.product_name(class="form-control", value=product_name) }}
 
-            {{ form.product_price.label(class="form-label") }}
+            {{ form.product_price.label(class="form-label") }}:
             {{ form.product_price(class="form-control", value=product_price) }}
             <br>
 
-            {{ form.product_description.label(class="form-label") }}
+            {{ form.product_description.label(class="form-label") }}: (leave description unfilled if no change)
             {{ form.product_description(class="form-control") }}
             <br>
 
-            {{ form.product_quantity.label(class="form-label") }}
+            {{ form.product_quantity.label(class="form-label") }}:
             {{ form.product_quantity(class="form-control", value=product_quantity) }}
             <br>
             <hr>
-            {{ form.submit(class="btn btn-secondary") }}
-    <a href="/admin_inventory">Discard Changes</a>
+            {{ form.submit(class="submit") }}
+    <a class='disc' href="/admin_inventory">Discard Changes</a>
 
     </form>
+    </div>
 {% endblock %}
 </body>
 </html>

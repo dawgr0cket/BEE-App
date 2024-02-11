@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html>
+{% extends "base.html" %}
+{% block title %}B.E.E - Admin/Forms{% endblock %}
+
+{% block content %}
 <head>
 <style>
 body {
   margin: 0;
+  background-color: #ffffea;
 }
 
 ul.admin {
@@ -33,31 +38,70 @@ ul.admin {
   background-color: #555;
   color: white;
 }
-#addvouchers th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-right: 50px;
-  padding-left: 10px;
-  text-align: left;
-  background-color: #F6BDBD;
-  color: white;
-}
-table, td {
-  padding-left: 10px;
-  border: 1px solid;
-}
 
-table {
-  width: 75%;
-  border-collapse: collapse;
-}
+
+    .vouchers-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .voucher {
+        padding: 20px;
+        background-color: #FDFDFD;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .vouchers-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .vouchers-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+  .voucher h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  .voucher h5 {
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+
+  .voucher p {
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .voucher b {
+    font-size: 18px;
+  }
+
+  .voucher a {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-decoration: none;
+  }
+  .voucher a:hover {
+    background-color: pink;
+    color: black;
+  }
 </style>
 </head>
 <body>
-{% extends "base.html" %}
-{% block title %}B.E.E - Admin/Forms{% endblock %}
 
-{% block content %}
 <ul class="admin" style="float: left;">
   <li><a href="/admindashboard">Dashboard</a></li>
   <li>
@@ -68,26 +112,29 @@ table {
   <li><a href="/admin_inventory">Inventory</a></li>
   <li><a class="active" href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-    <h1 class="display-4">Vouchers</h1>
+    <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+    <h2>Vouchers</h2>
     <p>{{ username }}'s Vouchers</p>
     {% if rows|length == 0 %}
-        <h4> No vouchers yet!</h4>
+    <h4> No vouchers yet!</h4>
     {% else %}
+    <div class="vouchers-container">
         {% for row in rows %}
-        <div>
+        <div class="voucher">
             <h4>{{ row[1] }}</h4>
             <h5>Code:</h5>
             <b>{{ row[4] }}</b>
             <p>Condition:
-            {{ row[3] }}
+                {{ row[3] }}
             </p>
             <p><b>Expiry Date:</b>{{ row[5] }}</p>
-            <a href="/delete_vouchers/{{ row[4] }}">delete voucher</a>
-            <a href="/update_vouchers/{{ row[4] }}">update voucher</a>
+            <a href="/delete_vouchers/{{ row[4] }}">Delete</a>
+            <a href="/update_vouchers/{{ row[4] }}">Update</a>
         </div>
         {% endfor %}
+    </div>
     {% endif %}
-
+</div>
 
 </body>
 </html>

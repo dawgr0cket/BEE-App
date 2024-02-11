@@ -1332,6 +1332,8 @@ def update_vouchers(code_name):
                 flash(msg)
                 return redirect(url_for('addvouchers'))
             finally:
+                msg = 'Voucher updated successfully!'
+                flash(msg)
                 return redirect(url_for('addvouchers'))
         else:
             try:
@@ -1345,6 +1347,8 @@ def update_vouchers(code_name):
                 flash(msg)
                 return redirect(url_for('addvouchers'))
             finally:
+                msg = 'Voucher updated successfully!'
+                flash(msg)
                 return redirect(url_for('addvouchers'))
     with sqlite3.connect('database.db') as con:
         con.row_factory = sqlite3.Row

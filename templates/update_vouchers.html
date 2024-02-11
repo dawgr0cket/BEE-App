@@ -10,6 +10,7 @@
     <style>
         body {
   margin: 0;
+  background-color: #FFFFEA;
 }
 
 ul.admin {
@@ -39,6 +40,38 @@ ul.admin {
   background-color: #555;
   color: white;
 }
+.submit {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: lightblue;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.submit:hover {
+    background-color: darkturquoise;
+    color: white;
+}
+.disc {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    background-color: #F1DDDD;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    border: none;
+}
+
+.disc:hover {
+    background-color: pink;
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -49,31 +82,33 @@ ul.admin {
   </li>
   <li><a href="/users">Users</a></li>
   <li><a href="/forms">Forms</a></li>
-  <li><a class="active" href="/admin_inventory">Inventory</a></li>
-  <li><a href="/add_vouchers">Add Vouchers</a></li>
-  <li><a href="#about">About</a></li>
+  <li><a href="/admin_inventory">Inventory</a></li>
+  <li><a class="active" href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-    <h1 class="display-4">Add Vouchers</h1>
-    <hr>
-    <form method="POST" action="/update_vouchers/{{ code_name }}" style="margin-left:25%;padding:30px 16px;height: 1000px;">
+    <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+
+    <h2>Update Vouchers</h2>
+
+    <form method="POST" action="/update_vouchers/{{ code_name }}" style="padding-right: 500px;">
         <br>
 
-            {{ form.voucher_name.label(class="form-label") }}
+            {{ form.voucher_name.label(class="form-label") }}:
             {{ form.voucher_name(class="form-control", value = voucher_name) }}
 
-            {{ form.discount.label(class="form-label") }}
+            {{ form.discount.label(class="form-label") }}:
             {{ form.discount(class="form-control", value = discount) }}
             <br>
 
-            {{ form.condition.label(class="form-label") }}
+            {{ form.condition.label(class="form-label") }}:
             {{ form.condition(class="form-control") }}
             <br>
 
             <hr>
-            {{ form.submit(class="btn btn-secondary") }}
-    <a href="/add_vouchers">Discard Changes</a>
+            {{ form.submit(class="submit") }}
+    <a class='disc' href="/add_vouchers">Discard Changes</a>
 
     </form>
+    </div>
 {% endblock %}
 </body>
 </html>
