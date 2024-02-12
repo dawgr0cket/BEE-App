@@ -272,10 +272,16 @@ footer {
                 </div>
                 <p>Created On {{ row["datetime"][0:10] }}</p>
 
-                {% if session['username'] == row["username"] or session['username'] == 'adminappdev' %}
+                {% if session['username'] == row["username"] %}
                 <div class="blog-actions">
                     <div class="edit-delete-actions">
                         <button class="edit-button" onclick="location.href='/editblog/{{ row['rowid'] }}'">Edit</button>
+                        <button class="delete-button" onclick="location.href='/deleteblog/{{ row['rowid'] }}'">Delete</button>
+                    </div>
+                </div>
+                {% elif session['username'] == 'adminappdev' %}
+                <div class="blog-actions">
+                    <div class="edit-delete-actions">
                         <button class="delete-button" onclick="location.href='/deleteblog/{{ row['rowid'] }}'">Delete</button>
                     </div>
                 </div>

@@ -87,7 +87,7 @@
     }
     .navbar-dark .navbar-nav .nav-link {
       color: #000000 !important;
-      font-size: 17px;
+      font-size: 18px;
       width: 100%;
     }
     .navbar-brand p {
@@ -96,6 +96,10 @@
     {% if 'adminappdev' in session['username'] %}
     .rightnav {
       margin-left: 500px;
+    }
+    {% elif session['username'] != 'adminappdev' %}
+    .rightnav {
+      margin-left: 640px;
     }
     {% else %}
     .rightnav {
