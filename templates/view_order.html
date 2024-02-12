@@ -211,12 +211,19 @@ body {
       margin: 0;
     }
   {% endif %}
+    .backbtn {
+      position: absolute;
+      top: 150px;
+      left: 250px;
+    }
 </style>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}" class="active">Order History</a></li>
     <li><a href="/view_tradeins/{{ session['username'] }}" >Trade-In</a></li>
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
+<div class="backbtn"><a href="/order_history/{{ session['username'] }}" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+
 <div style="float: left;margin-left:5%;">
     <h1 class="display-4">Order History</h1>
 

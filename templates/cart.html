@@ -88,6 +88,7 @@ tbody, td, tfoot, th, thead, tr {
 
 .form-container {
     text-align: center;
+    float: left;
 }
 
 .form-group label {
@@ -168,6 +169,13 @@ tbody, td, tfoot, th, thead, tr {
     color: #999999;
     cursor: not-allowed;
 }
+.checkout-button:hover {
+  /* Default button styles */
+    background-color: lightgreen;
+    color: #999999;
+    cursor: not-allowed;
+}
+
 
 .checkout-button:disabled {
   /* Disabled button styles */
@@ -183,17 +191,21 @@ tbody, td, tfoot, th, thead, tr {
 }
 
 #edit-address-btn {
-    background-color: #F1DDDD;
+    background-color: lightblue;
     padding: 3px 6px;
     border-radius: 7px;
     box-shadow: none;
     text-align: center;
     border-collapse: collapse;
-    border-color: black;
+    border-color: lightblue;
     box-sizing: ;
     border-block-color: black;
     border-block: black;
     border: black;
+}
+
+#edit-address-btn:hover {
+    background-color: skyblue;
 }
 
 .quantity {
@@ -216,24 +228,33 @@ tbody, td, tfoot, th, thead, tr {
   padding: 7px;
 }
 
+#remove:hover {
+    background-color: lightpink;
+}
+
 .minus2 {
-  background-color: #F1DDDD;
+  background-color: lightblue;
   border-radius: 7px;
-  border-color: #f1dddd;
+  border-color: lightblue;
   border-block: black;
   border: black;
   padding: 5px 6px;
 }
 
+.minus2:hover {
+    background-color: skyblue;
+}
+
 #remove {
     text-align: center;
-    background-color: #F1DDDD;
+    background-color: pink;
     border-radius: 5px;
     padding: 3px 6px;
     border-block: black;
-    border: black;
+    border: pink;
     margin-left: 135px;
 }
+
 </style>
 
 {% if rows %}
@@ -268,6 +289,30 @@ tbody, td, tfoot, th, thead, tr {
     {% endfor %}
     </table>
     <div class="form-container">
+
+      <!-- Total Section -->
+    <div class="total-section"style="float: left;">
+        <h3>Total</h3>
+        <p>Subtotal: $<span id="subtotal">{{ total }}</span></p>
+          <p>Discount: -$<span id="deduct"></span></p>
+
+        <p>Shipping: $<span id="shippingfee">10</span></p>
+        <p>Grand Total: <span id="grandtotal"></span></p>
+    </div>
+
+      <form action="/applydisc/{{ session['username'] }}" method="post">
+        <div class="form-group">
+            <label for="discount" class="save">Select a Voucher:</label>
+            <select name="discount" class="minus1">
+                {% for voucher in vouchers %}
+                <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
+                {% endfor %}
+            </select>
+          <button type="submit" class="minus2">Apply Discount</button>
+
+        </div>
+      </form>
+        <button onclick="removedisc('{{ session['username'] }}')" id="remove">Remove Discount</button>
     {% if addresses|length > 0 %}
         {% if addresses %}
         <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
@@ -312,28 +357,6 @@ tbody, td, tfoot, th, thead, tr {
           <button type="submit" class="checkout-button" id="checkout-btn" disabled>Proceed to Checkout</button>
         </form>
     {% endif %}
-      <!-- Total Section -->
-      <div class="total-section">
-        <h3>Total</h3>
-        <p>Subtotal: $<span id="subtotal">{{ total }}</span></p>
-          <p>Discount: -$<span id="deduct"></span></p>
-
-        <p>Shipping: $<span id="shippingfee">10</span></p>
-        <p>Grand Total: <span id="grandtotal"></span></p>
-      </div>
-      <form action="/applydisc/{{ session['username'] }}" method="post">
-        <div class="form-group">
-            <label for="discount" class="save">Select a Voucher:</label>
-            <select name="discount" class="minus1">
-                {% for voucher in vouchers %}
-                <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
-                {% endfor %}
-            </select>
-          <button type="submit" class="minus2">Apply Discount</button>
-
-        </div>
-      </form>
-        <button onclick="removedisc('{{ session['username'] }}')" id="remove">Remove Discount</button>
     </div>
 {% else %}
 <h1>No Items in cart!</h1>

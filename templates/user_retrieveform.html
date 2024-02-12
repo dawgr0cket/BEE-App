@@ -4,12 +4,21 @@
 {% block content %}
 <head>
     <link rel="stylesheet" type="text/css" href="/static/css/user_retrieveform.css">
+    <style>
+        .backbtn {
+            position: absolute;
+            top: 150px;
+            left: 250px;
+        }
+    </style>
 </head>
 <ul class="profilenav" style="float: left;">
     <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
     <li><a href="/view_tradeins/{{ session['username'] }}">Trade-In</a></li>
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
+<div class="backbtn"><a href="/view_tradeins/{{ session['username'] }}" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+
 <div style="float: left;margin-left:5%;">
   <div class="tradein-forms">
     <h1 class="display-4">Trade-In Forms</h1>
@@ -20,7 +29,6 @@
       <img src="/static/img/{{ row['tradein_pic'] }}" class="img" width="70px" onclick="showImagePopup('/static/img/{{ row['tradein_pic'] }}')" />
       <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
     {% endfor %}
-      <p class="return"><a href="/view_tradeins/{{ session['username'] }}">Back To Forms</a></p>
   </div>
 </div>
 <!-- Image popup container -->
