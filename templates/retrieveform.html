@@ -77,7 +77,7 @@ ul.admin {
   /* Styles for trade-in forms div */
 .tradein-forms {
   margin-top: 20px;
-  margin-right: 100px;
+  margin-right: 550px;
   padding: 20px;
   background-color: #FDFDFD;
   border-radius: 5px;
@@ -135,21 +135,20 @@ ul.admin {
   <li><a href="/admin_inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-
+<div class="backbtn"><a href="/forms" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
 <div style="margin-left:25%;padding:30px 16px;height:868px;">
   <div class="tradein-forms">
-    <h2>Users</h2>
-    <p>Trade ID: {{ id }}</p>
+    <h2>Trade-In Form</h2>
+    <p><b>Trade ID:</b> {{ id }}</p>
     {% for user in user %}
-      <p>Username: {{ user['username'] }}</p>
-      <p>Phone Number: {{ user['phone_no'] }}</p>
-      <p>Email: {{ user['email'] }}</p>
+      <p><b>Username:</b> {{ user['username'] }}</p>
+      <p><b>Phone Number:</b> {{ user['phone_no'] }}</p>
+      <p><b>Email:</b> {{ user['email'] }}</p>
     {% endfor %}
     {% for row in rows %}
-      <p>Photo of item {{ loop.index }}: </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img" onclick="showImagePopup('/static/img/{{ row['tradein_pic'] }}')" width="70px"/>
-      <p>Description of item {{ loop.index }}: {{ row['description'] }}</p>
+      <p><b>Photo of item {{ loop.index }}:</b> </p><img src="/static/img/{{ row['tradein_pic'] }}" class="img" onclick="showImagePopup('/static/img/{{ row['tradein_pic'] }}')" width="70px"/>
+      <p><b>Description of item {{ loop.index }}:</b> {{ row['description'] }}</p>
     {% endfor %}
-      <p class="return"><a href="/forms">Back To Forms</a></p>
   </div>
 </div>
 <div class="image-popup" id="imagePopup">

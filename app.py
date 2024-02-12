@@ -913,8 +913,17 @@ def delete_user(user_id, user):
         con = sqlite3.connect('database.db')
         cur = con.cursor()
         cur.execute("DELETE FROM blog WHERE username = ?", (user,))
+        con.commit()
+        cur.execute('SELECT profile_pic FROM user WHERE username = ?', (user,))
+        pfp = cur.fetchall()
+        for pic in pfp:
+            if pic[0] is not None:
+                location = 'static/img/'
+                path = os.path.join(location, pic[0])
+                os.remove(path)
         cur.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
         con.commit()
+
         con.close()
     except:
         msg = 'An Error has occurred!'

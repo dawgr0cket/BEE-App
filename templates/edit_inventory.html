@@ -90,7 +90,8 @@ ul.admin {
   <li><a class="active" href="/admin_inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-    <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+<div class="backbtn"><a href="/admin_inventory" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+<div style="margin-left:25%;padding:30px 16px;">
     <h2>Add Product</h2>
 
     <form action="/edit_inventory/{{ product_name }}" method="POST" style="padding-right:500px;">
@@ -112,7 +113,6 @@ ul.admin {
             <br>
             <hr>
             {{ form.submit(class="submit") }}
-    <a class='disc' href="/admin_inventory">Discard Changes</a>
 
     </form>
     </div>

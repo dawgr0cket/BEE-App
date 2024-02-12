@@ -113,7 +113,9 @@ ul.admin {
   <li><a href="/admin_inventory">Inventory</a></li>
   <li><a class="active" href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-    <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+<div class="backbtn"><a href="/add_vouchers" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+
+    <div style="float: left;margin-left:5%;width:75%;padding:30px 16px">
     <h2>Vouchers</h2>
     <p>{{ username }}'s Vouchers</p>
     {% if rows|length == 0 %}

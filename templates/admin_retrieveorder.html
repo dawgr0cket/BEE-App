@@ -213,11 +213,12 @@ ul.admin {
   <li><a href="/admin_inventory">Inventory</a></li>
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
-<div style="margin-left:25%;padding:30px 16px">
-    <h1 class="display-4" style="text-align:center;">Order Invoice</h1>
-    <p style="text-align: center;">Order #{{ orderid }}</p>
+<div class="backbtn"><a href="/orders" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+<div style="margin-left:25%;padding:30px 16px;">
+    <h2>Order Invoice</h2>
+    <p>Order #{{ orderid }}</p>
 <section class="width" style="background-color: #FFFFEA;">
-      <div class="col-lg-8 col-xl-6" style="position: absolute; top: 43%; left: 50%; transform: translate(-25%, -5%)">
+      <div class="col-lg-8 col-xl-6" style="position: absolute; top: 39%; left: 50%; transform: translate(-25%, -5%)">
         <div class="card border-top border-bottom border-3" style="border-color: #70a5c2 !important;">
           <div class="card-body p-5">
 
@@ -307,7 +308,7 @@ ul.admin {
             {% else %}
               <h3>Sorry, your order has been cancelled. Refunds will be processed within 2-3 business days.</h3>
             {% endif %}
-            <p class="mt-4 pt-2 mb-0">Want any help? <a href="#!" style="color: #f37a27;">Please contact
+            <p class="mt-4 pt-2 mb-0">Want any help? <a href="mailto:b.e.e.different@gmail.com" style="color: #f37a27;">Please contact
                 us</a></p>
 
           </div>
