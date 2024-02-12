@@ -68,56 +68,58 @@ table {
 <!--  }-->
 
 tbody, td, tfoot, th, thead, tr {
-  border-color: inherit;
-  border-style: solid;
-  border-width: 0;
-  text-align: center;
-  }
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+    text-align: center;
+}
 
-  .product-image {
+.product-image {
     width: 100px;
-  }
+}
 
-  .form-group {
+.form-group {
     margin-bottom: 20px;
-  }
+    text-align: center;
+}
 
 <!--font-size: 1.75rem;-->
 <!--    margin-top: 50px;-->
 
-    .form-container {
+.form-container {
     text-align: center;
-    }
+}
 
-  .form-group label {
+.form-group label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
-  }
+}
 
-  .form-group input[type="text"],
-  .form-group input[type="number"] {
+.form-group input[type="text"],
+.form-group input[type="number"] {
     width: 100%;
     padding: 8px;
     font-size: 16px;
     border-radius: 4px;
     border: 1px solid #ccc;
-  }
+}
 
-  .form-group .discount-code {
+.form-group .discount-code {
     display: flex;
     align-items: center;
-  }
+}
 
-  .form-group .discount-code input[type="text"] {
+.form-group .discount-code input[type="text"] {
     flex-grow: 1;
     padding: 8px;
     font-size: 16px;
     border-radius: 4px;
     border: 1px solid #ccc;
-  }
+}
 
-  .form-group .discount-code button {
+
+.form-group .discount-code button {
     padding: 8px 15px;
     font-size: 16px;
     border: none;
@@ -125,9 +127,9 @@ tbody, td, tfoot, th, thead, tr {
     color: white;
     cursor: pointer;
     border-radius: 4px;
-  }
+}
 
-  .checkout-button {
+.checkout-button {
     display: block;
     margin-top: 20px;
     padding: 10px 20px;
@@ -138,40 +140,99 @@ tbody, td, tfoot, th, thead, tr {
     cursor: pointer;
     border-radius: 4px;
     text-decoration: none;
-  }
+}
 
-  .total-section {
+.total-section {
     margin-top: 20px;
     padding: 10px;
-    background-color: #f2f2f2;
-  }
+<!--    background-color: #F1DDDD;-->
+    line-height: 1.2;
+    text-align: center;
+    width: 80%;
+    margin-left: 35px;
+    margin-bottom: inherit;
+}
 
-  .total-section h3 {
+.total-section h3 {
     margin: 0;
     font-weight: bold;
-  }
+}
 
-  .shipping-section {
+.shipping-section {
     margin-top: 20px;
-  }
+}
 
 .checkout-button {
   /* Default button styles */
-  background-color: #f2f2f2;
-  color: #999999;
-  cursor: not-allowed;
+    background-color: #f2f2f2;
+    color: #999999;
+    cursor: not-allowed;
 }
 
 .checkout-button:disabled {
   /* Disabled button styles */
-  opacity: 0.6;
+    opacity: 0.6;
 }
 
 .checkout-button:not(:disabled) {
   /* Enabled button styles */
-  background-color: #4CAF50;
-  color: #ffffff;
-  cursor: pointer;
+    background-color: #4CAF50;
+    color: #ffffff;
+    cursor: pointer;
+    margin: auto;
+}
+
+#edit-address-btn {
+    background-color: #F1DDDD;
+    padding: 3px 6px;
+    border-radius: 7px;
+    box-shadow: none;
+    text-align: center;
+    border-collapse: collapse;
+    border-color: black;
+    box-sizing: ;
+    border-block-color: black;
+    border-block: black;
+    border: black;
+}
+
+.quantity {
+    background-color: #FFFFEA;
+    font-weight: bolder;
+    border: none;
+    font-size: xx-large;
+}
+
+.save {
+    font-size: larger;
+}
+
+.minus1 {
+  background-color: #F1DDDD;
+  border-radius: 7px;
+  border-color: #f1dddd;
+  border-block: black;
+  border: black;
+  padding: 7px;
+}
+
+.minus2 {
+  background-color: #F1DDDD;
+  border-radius: 7px;
+  border-color: #f1dddd;
+  border-block: black;
+  border: black;
+  padding: 5px 6px;
+}
+
+#remove {
+    text-align: center;
+    background-color: #F1DDDD;
+    border-radius: 5px;
+    padding: 3px 6px;
+    border-block: black;
+    border: black;
+    margin-left: 135px;
 }
 </style>
 
@@ -196,12 +257,12 @@ tbody, td, tfoot, th, thead, tr {
                 <p>{{ row['product_quantity'] }}</p>
             </td>
             <td>
-                <button onclick="increment('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')">+</button>
+                <button onclick="increment('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')" class="quantity">+</button>
                 <h2 id="counting">{{ quantity[loop.index - 1] }}</h2>
-                <button onclick="decrement('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')">-</button>
+                <button onclick="decrement('{{ row['product_name'] }}/{{ products[loop.index - 1]['product_size'] }}')" class="quantity">-</button>
             </td>
             <td>
-                <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="30px"></a>
+                <a href="/delete_cart/{{ row['product_name'] }}/{{ session['username'] }}"><img src="/static/img/img_4.png" width="35px"></a>
             </td>
         </tr>
     {% endfor %}
@@ -211,7 +272,7 @@ tbody, td, tfoot, th, thead, tr {
         {% if addresses %}
         <form action="/checkout/{{ lists }}/{{ session['username'] }}" method="post" onsubmit="return validateForm()">
           <!-- Shipping Information -->
-            <div class="form-group shipping-section">
+            <div class="form-group shipping-section" style="text-align: center">
               <h3>Shipping Information</h3>
               <p class="text-muted">Address: {{ addresses[0][1] }} {{ addresses[0][3] }}, {{ addresses[0][2] }}, {{ addresses[0][5] }}, {{ addresses[0][4] }}</p>
               <button type="button" onclick="editAddress()" id="edit-address-btn">Edit Address</button>
@@ -262,17 +323,17 @@ tbody, td, tfoot, th, thead, tr {
       </div>
       <form action="/applydisc/{{ session['username'] }}" method="post">
         <div class="form-group">
-            <label for="discount">Select a Voucher:</label>
-            <select name="discount" id="discount">
+            <label for="discount" class="save">Select a Voucher:</label>
+            <select name="discount" class="minus1">
                 {% for voucher in vouchers %}
                 <option value="{{ voucher['code'] }}">{{ voucher['title'] }}</option>
                 {% endfor %}
             </select>
-          <button type="submit">Apply Discount</button>
+          <button type="submit" class="minus2">Apply Discount</button>
 
         </div>
       </form>
-        <button onclick="removedisc('{{ session['username'] }}')">Remove Discount</button>
+        <button onclick="removedisc('{{ session['username'] }}')" id="remove">Remove Discount</button>
     </div>
 {% else %}
 <h1>No Items in cart!</h1>
