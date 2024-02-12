@@ -14,9 +14,9 @@ body {
 
 .form {
   background-color: #add8e6;
-  border-radius: 10px;
+  border-radius: 25px;
   box-shadow: none;
-  padding: 40px;
+  padding: 30px;
   background-color: #add8e6; /* Change to light blue color */
   width: 550px; /* Reduced width for a narrower form */
   margin: auto;
@@ -56,16 +56,10 @@ input[type=text], input[type=password] {
      margin-bottom :5px;/* Add bottom margin for spacing*/
  }
 
- hr{
-     display:none;/* Hide horizontal rule*/
- }
-
  p{
      color:#757575;/* Change text color to grey*/
  }
-  h1{
-padding: 17px;
-}
+
 
 .popup {
   visibility: hidden;
@@ -106,6 +100,9 @@ padding: 17px;
 
 .show {
     display: block;
+}
+h1 {
+  padding: 20px;
 }
 </style>
 <script>
@@ -190,7 +187,7 @@ emailInput.addEventListener('input', validateEmail);
 <h1 align="center" >Better. Eco-friendly. Efficiency</h1>
 <form action="/signup" method="POST">
   <div class="form">
-    <h1 align="center">Sign Up</h1>
+    <h2 align="center">Sign Up</h2>
     {% if error %}
       <p class=error><b>{{ error }}</b></p>
     {% endif %}
@@ -215,7 +212,7 @@ emailInput.addEventListener('input', validateEmail);
 
     <label for="psw-repeat"><b>Confirm Password</b></label>
     <input type="password" placeholder="Confirm Password" name="psw-repeat" id="psw-repeat" required>
-
+<hr>
     <p align="center">By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
 
     <button type="submit" class="registerbtn" id="submit-button" disabled>Sign Up</button>
