@@ -56,9 +56,16 @@ hr {
 }
 
 /* Add a blue text color to links */
-a {
-  color: dodgerblue;
-}
+    a {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: normal;
+      background-color: #F1DDDD;
+      color: black;
+      padding: 4px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+    }
 
 /* Set a grey background color and center the text of the "sign in" section */
 .signin {
@@ -102,7 +109,7 @@ a {
   </div>
 
   <div class="container signin">
-    <p>Back To Viewing Blogs? <a href="/blog">Click Here</a>.</p>
+    <p>Back To Viewing Blogs? <a href="/blog">Click Here</a></p>
   </div>
 </form>
 {% endblock %}
