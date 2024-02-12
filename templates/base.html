@@ -78,6 +78,28 @@
 .searchvisible {
   visibility: visible;
 }
+
+::placeholder {
+text-align: center;
+color: gray;
+opacity: 1;
+}
+
+.find{
+    border-radius: 10px;
+    height: 35px;
+    background-color: lavenderblush;
+    border: none;
+   }
+
+.go {
+    border-radius: 10px;
+    height: 35px;
+    width: 80px;
+    background-color: hotpink;
+    color: white;
+    border: none;
+    }
 </style>
 <script>
 function removeFlashMessage(element) {
@@ -119,13 +141,13 @@ document.getElementById('search-form').addEventListener('submit', function(e) {
         {% endblock %}
         {% if 'username' in session %}
             <form id="search-form" class="searchhidden" action="/search" method="GET">
-              <input type="text" name="query" placeholder="Search...">
-              <button type="submit">Search</button>
+              <input type="text" name="query" class="find" placeholder="Search...">
+              <button type="submit" class="go">Search</button>
             </form>
         {% else %}
             <form class="searchhidden" action="/login" method="GET">
-              <input type="text" name="query" placeholder="Search...">
-              <button type="submit">Search</button>
+              <input type="text" name="query" class="find" placeholder="Search...">
+              <button type="submit" class="go">Search</button>
             </form>
         {% endif %}
         <div class="container">
