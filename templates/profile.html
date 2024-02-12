@@ -40,22 +40,26 @@ body {
 }
 </style>
 <ul class="profilenav" style="float: left;">
-    <li><a href="/order_history/{{ session['username'] }}">Order History</a></li>
-    <li><a href="/view_tradeins/{{ session['username'] }}">Trade-In</a></li>
-    <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
+    {% for users in user %}
+    <li><a href="/order_history/{{ users['username'] }}">Order History</a></li>
+    <li><a href="/view_tradeins/{{ users['username'] }}">Trade-In</a></li>
+    <li><a href="/view_vouchers/{{ users['username'] }}">Vouchers</a></li>
+    {% endfor %}
 </ul>
 <div style="float: left;margin-left:5%;">
+    {% for users in user %}
     <h1 class="display-4">Profile</h1>
     <div>
-        <img src="static/img/{{ session['profile_pic'] }}" width="100px" class="rounded"><br>
-        <a href="/editprofilepic/{{session['username']}}" class="button">Edit Picture</a>
+        <img src="static/img/{{ users['profile_pic'] }}" width="100px" class="rounded"><br>
+        <a href="/editprofilepic/{{ users['username']}}" class="button">Edit Picture</a>
     </div>
-    <p>{{session['username']}}'s Profile</p>
-    <b>Username:</b><p>  {{session['username']}}</p>
-    <b>Email:</b><p>  {{session['email']}}</p>
-    <b>Phone Number:</b><p>  {{session['phone_no']}}</p>
-    <b>Date Of Birth:</b><p>  {{session['dob']}}</p>
-    <b>Gender:</b><p>  {{session['gender']}}</p>
+    <p>{{ users['username']}}'s Profile</p>
+    <b>Username:</b><p>  {{ users['username']}}</p>
+    <b>Email:</b><p>  {{ users['email']}}</p>
+    <b>Phone Number:</b><p>  {{ users['phone_no']}}</p>
+    <b>Date Of Birth:</b><p>  {{ users['dob']}}</p>
+    <b>Gender:</b><p>  {{ users['gender']}}</p>
     <a href="/editprofile"><img src="static/img/img_5.png" width="20px"></a>
+    {% endfor %}
 </div>
 {% endblock %}

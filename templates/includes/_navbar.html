@@ -280,7 +280,7 @@
       </ul>
       <div class="navbar-brand d-flex justify-content-end">
         {% if 'profile_pic' in session %}
-        <a href="/profile">
+        <a href="/profile/{{ session['username'] }}">
           <div class="item">
             <img src="/static/img/{{ session['profile_pic'] }}" class="rounded"/>
           </div>

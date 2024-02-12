@@ -1403,6 +1403,7 @@ def update_vouchers(code_name):
 
 @app.route('/order_history/<username>')
 def order_history(username):
+
     item_list = []
     quantity = []
     try:
@@ -1424,16 +1425,23 @@ def order_history(username):
             for q in quant:
                 start += int(q[0])
             quantity.append(start)
+        cur.execute('SELECT profile_pic FROM user WHERE username = ?', (username,))
+        pfp = cur.fetchall()
+        for pic in pfp:
+            session['profile_pic'] = pic[0]
+        session['username'] = username
     except:
         msg = 'Failed to get orders'
         flash(msg)
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=username))
 
     return render_template('order_history.html', orders=orders, item_list=item_list, quantity=quantity)
 
 
+
+
+
 @app.route('/view_order/<orderid>')
-@login_required
 def view_order(orderid):
     con = get_db()
     cur = con.cursor()
@@ -1469,7 +1477,6 @@ def admin_retrieveorder(orderid):
 
 
 @app.route('/view_vouchers/<username>')
-@login_required
 def view_vouchers(username):
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
@@ -1482,7 +1489,6 @@ def view_vouchers(username):
 
 
 @app.route('/view_tradeins/<username>')
-@login_required
 def view_tradeins(username):
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
@@ -1632,10 +1638,15 @@ def productpage(product_name):
     return render_template('product.html', product=product, sizes=sizes)
 
 
-@app.route('/profile')
+@app.route('/profile/<username>')
 @login_required
-def profile():
-    return render_template('profile.html')
+def profile(username):
+    con = get_db()
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute('SELECT * FROM user WHERE username = ?', (username,))
+    user = cur.fetchall()
+    return render_template('profile.html', user=user)
 
 
 @app.route('/editprofile', methods=['GET', 'POST'])
