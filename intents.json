@@ -25,6 +25,6 @@
   },
   {"tag": "hours",
   "patterns": ["what are the opening hours of your shop", "where is your shop located", "operating hours"],
-  "responses": ["Unfortunately, we do not have a physical store. :("]
+  "responses": ["For details of our physical store, please refer to 'contact us' at the navigation bar. See you soon! :)"]
   }
 ]}
