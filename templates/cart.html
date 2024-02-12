@@ -26,9 +26,23 @@
 
 </script>
 <style>
+
+.display-4 {
+    font-size: 3rem;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    margin-left: 20px;
+}
+
+.content p {
+    margin-top: 0px;
+    margin-left: 20px;
+}
+
 body {
     background-color: #FFFFEA;
 }
+
 .form-container {
     max-width: 400px;
     margin: 20px auto;
@@ -36,18 +50,28 @@ body {
 
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 95%;
+    margin-left: 20px;
+    caption-side: bottom;
 }
 
-th,
-td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
+<!--th,-->
+<!--td {-->
+<!--    padding: 8px;-->
+<!--    text-align: left;-->
+<!--    border-bottom: 1px solid #ddd;-->
+<!--}-->
 
-  th {
-    background-color: #f2f2f2;
+<!--  th {-->
+<!--    background-color: #f2f2f2;-->
+<!--    border-bottom: 1px solid black;-->
+<!--  }-->
+
+tbody, td, tfoot, th, thead, tr {
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0;
+  text-align: center;
   }
 
   .product-image {
@@ -57,6 +81,13 @@ td {
   .form-group {
     margin-bottom: 20px;
   }
+
+<!--font-size: 1.75rem;-->
+<!--    margin-top: 50px;-->
+
+    .form-container {
+    text-align: center;
+    }
 
   .form-group label {
     display: block;
@@ -147,7 +178,7 @@ td {
 {% if rows %}
     <table>
     {% for row in rows %}
-        <thead>
+        <thead style="font-size: x-large;">
             <th>Product</th>
             <th>Price</th>
             <th>Stock Left</th>
