@@ -722,6 +722,9 @@ def deleteblog(id):
                 cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
                 con.commit()    # Delete the blog post from the database
                 return redirect(url_for('blog'))
+        cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
+        con.commit()  # Delete the blog post from the database
+        return redirect(url_for('blog'))
 
 
 @app.route('/admindashboard')
