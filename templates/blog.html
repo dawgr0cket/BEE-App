@@ -9,8 +9,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+
             background-color: #f2f2f2;
         }
 
@@ -59,29 +58,13 @@
 
     .individual-blog {
         background-color: #fff;
-        padding: 0;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         border: 2px solid #ccc;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
+        text-align: left;
+        padding: 10px;
         position: relative;
-    }
-
-    .individual-blog:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
-        opacity: 0;
-        transition: opacity 0.3s ease;
     }
 
 
@@ -100,7 +83,6 @@
     .individual-blog p {
         font-size: 14px;
         color: black;
-        margin: 0;
     }
 
     .blog-content {
@@ -110,6 +92,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        background-color: lavenderblush
     }
 
     .blog-actions {
@@ -129,13 +112,21 @@
     }
 
     .edit-button {
-        background-color: #3897f0;
+        background-color: darkturquoise;
         color: #fff;
+    }
+    .edit-button:hover {
+        background-color: lightblue;
+        color: black;
     }
 
     .delete-button {
-        background-color: #ed4956;
+        background-color: pink;
         color: #fff;
+    }
+    .delete-button:hover {
+        background-color: #F1DDDD;
+        color: black;
     }
 footer {
         display: flex;
@@ -244,10 +235,12 @@ footer {
     margin-bottom: 10px;
   }
     .user {
-        display: inline;
-        position: absolute;
-
+        text-align: center;
     }
+    .user img {
+        padding-left: 10px;
+    }
+
 
     </style>
 
@@ -266,14 +259,15 @@ footer {
             {% for row in rows %}
             <div class="individual-blog">
                 <div class="user">
-                {% if pfp[loop.index -1] is none %}<img class='rounded' src="/static/img/img_6.png" width="10px">{% else %}<img class='rounded' src="/static/img/{{ pfp[loop.index -1] }}">{% endif %}<i>    @{{ row["username"] }}</i>
+                {% if pfp[loop.index -1] is none %}<img class='rounded' src="/static/img/img_6.png" width="10px">{% else %}<img class='rounded' src="/static/img/{{ pfp[loop.index -1] }}">{% endif %}<p><i>    @{{ row["username"] }}</i></p>
                 </div>
                 <strong>{{ row["title"] }}</strong>
+
+                <img src="{{url_for('static', filename='img/' + row['blog_pic'])}}" class="img blog-image" alt="Blog Image">
                 <div class="blog-details">
 
-                    <p>{{ row["summary"] }}</p>
+                    <p><i>{{ row["summary"] }}</i></p>
                 </div>
-                <img src="{{url_for('static', filename='img/' + row['blog_pic'])}}" class="img blog-image" alt="Blog Image">
                 <div class="blog-content">
                     <p>{{ row["description"] }}</p>
                 </div>
