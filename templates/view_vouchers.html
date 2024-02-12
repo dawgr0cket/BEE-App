@@ -89,6 +89,9 @@ body {
 <div style="float: left;margin-left:5%;">
   <h1 class="display-4">Vouchers</h1>
   <p>{{session['username']}}'s Vouchers</p>
+  {% if rows|length == 0 %}
+  <h2>No vouchers in your account!</h2>
+  {% else %}
   <div class="vouchers-container">
     {% for row in rows %}
     <div class="voucher">
@@ -102,5 +105,6 @@ body {
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 </div>
 {% endblock %}
