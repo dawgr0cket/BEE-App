@@ -1,6 +1,4 @@
 import ast
-import base64
-import io
 import json
 import os
 import decimal
@@ -31,6 +29,7 @@ import sqlite3
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
+
 # from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
@@ -38,14 +37,6 @@ db = SQLAlchemy()
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'sbufbv8829gf2k'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
-# Bootstrap(app) #idk wat this for yet
-
-# stripe.api_key = os.environ.get(
-#     'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF')  # add in secret key
-# app.config[
-#     'STRIPE_PUBLIC_KEY'] = 'pk_test_51OPSVaIGppHzuUaIIJsjb08I1RVMYwSN1IinmZ5TcUrqhi1xSlFnDAlbW1hw046EfdSnCvneXtf6n3hVvFfTcDgX00WfET7pNV'
-# app.config[
-#     'STRIPE_SECRET_KEY'] = 'sk_test_51OPSVaIGppHzuUaIImziYC43tisQhhhwNwjgcFtY1yltxTHYQrQRykjkHpBpGEHaUwmAH7Dbb3RwhuhZhMqztw1S00d7rsLUVF'
 stripe.api_key = os.environ.get(
     'sk_test_51OXo7EE7eSiwC8HIawN9uzawPtA4zM4zGnQPRXAkT45I2BqkgrQtLObsI335ynYMGxNCLn8oGqwc4TmSwXJQHyk800TanNYJTX')  # add in secret key
 app.config[
@@ -90,7 +81,7 @@ def create_stripe_checkout_session(lists, username, session=None):
     list_str = decoded_url[start_index:end_index]  # Extract the list string
     lists = ast.literal_eval(list_str)
     line_items = []
-    discounts = []# Retrieve discounts from Flask session
+    discounts = []  # Retrieve discounts from Flask session
 
     for row in lists:
         item = {
@@ -114,7 +105,7 @@ def create_stripe_checkout_session(lists, username, session=None):
 
         for disc in deduct:
             coupon = stripe.Coupon.create(
-                amount_off=disc[0]*100,
+                amount_off=disc[0] * 100,
                 currency='sgd',
                 duration='once',
                 id=discounts,
@@ -166,8 +157,10 @@ def checkout(lists, username):
             con = get_db()
             cur = con.cursor()
             # User doesn't exist, perform the insert
-            cur.execute('INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
-                        (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(), username))
+            cur.execute(
+                'INSERT INTO addresses (block, unitno, street, city, postal_code, username) VALUES (?,?,?,?,?,?)',
+                (form.get_block(), form.get_unitno(), form.get_street(), form.get_city(), form.get_postalcode(),
+                 username))
             con.commit()
             json_data = json.dumps(lists)
             # Insert the JSON data into the database
@@ -282,12 +275,13 @@ def success(username):
         itemprice = []
         total = 10
         subtotal = 0
-        cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)', (sessionid, username))
+        cur.execute('UPDATE addresses SET session_id = ? WHERE id = (SELECT MAX(id) FROM addresses WHERE username = ?)',
+                    (sessionid, username))
         con.commit()
         q = 0
         for product in products:
             print(product)
-            name = product[1] + ' (' + product[3] + ')'
+            name = product[1]
             cur.execute('INSERT INTO sessions (session_id, username, product_name, quantity) VALUES (?,?,?,?)',
                         (sessionid, username, name, product[2]))
             con.commit()
@@ -302,9 +296,9 @@ def success(username):
             order = cur.fetchall()
             for price in order:
                 quantity.append(price[4])
-                item1 = int(price[1])*products[y][2]
+                item1 = int(price[1]) * products[y][2]
                 subtotal += item1
-                total += (int(price[1])*products[y][2])
+                total += (int(price[1]) * products[y][2])
                 itemprice.append(price[1])
                 y += 1
             orders.append(order)
@@ -317,11 +311,13 @@ def success(username):
         p = 0
         print(itemprice)
         for product_name in productnamelist:
-            cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?', (new_quantity[p], product_name))
+            cur.execute('UPDATE inventory SET product_quantity = ? WHERE product_name = ?',
+                        (new_quantity[p], product_name))
             con.commit()
         for t in products:
-            name = t[1] + ' (' + t[3] + ')'
-            cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?', (itemprice[p], name, sessionid))
+            name = t[1]
+            cur.execute('UPDATE sessions SET price = ? WHERE product_name = ? AND session_id = ?',
+                        (itemprice[p], name, sessionid))
             con.commit()
             p += 1
 
@@ -343,12 +339,17 @@ def success(username):
         flash(msg)
         session['discount'] = None
         session['username'] = username
-        return render_template("successfultrans.html", orders=orders, sessionid=sessionid, total=total, username=username, address=address, quantity=quantity, products=products, session=session, subtotal=subtotal)
+        cur.execute('SELECT payment_timestamp FROM sessions WHERE session_id = ?', (sessionid,))
+        date = cur.fetchall()
+        return render_template("successfultrans.html", orders=orders, sessionid=sessionid, total=total,
+                               username=username, address=address, quantity=quantity, products=products,
+                               session=session, subtotal=subtotal, date=date)
     except Exception as e:
         msg = 'An Error has Occurred'
         flash(msg)
         traceback.print_exc()  # Print the error traceback
         return redirect(url_for('cart', username=username))
+
 
 # @app.route('/successfultrans/<username>')
 # def successfultrans(username):
@@ -460,7 +461,7 @@ class UserForm(FlaskForm):
     email = EmailField('Email')
     # phone_no = IntegerField("Phone Number", [validators.Length(min=8, max=8)])
     phone_no = IntegerField("Phone Number", validators=[
-       validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
+        validators.NumberRange(min=10000000, max=99999999, message="Phone number must be 8 digits!")])
     dob = DateField("Date Of Birth")
     gender = RadioField("Gender", choices=[('Male', 'Male'), ('Female', 'Female')])
     profile_pic = FileField("Profile Picture", validators=[DataRequired()])
@@ -698,6 +699,11 @@ def editblog(id):
         return render_template('editblog.html', userblogs=userblogs, id=id, form=form)
 
 
+@app.route('/test')
+def test():
+    return render_template('successfultrans.html')
+
+
 @app.route('/deleteblog/<int:id>')
 @login_required
 def deleteblog(id):
@@ -707,20 +713,20 @@ def deleteblog(id):
     # Retrieve the blog post's picture filename
     cur.execute('SELECT blog_pic FROM blog where rowid = ?', (id,))
     blog_pic = cur.fetchone()
-        # Delete the picture from the directory
+    # Delete the picture from the directory
     for pic in blog_pic:
         location = 'static/img/'
         path = os.path.join(location, pic)
         try:
             os.remove(path)
         except OSError as e:
-            if e.errno and e.errno == 2: # File not found error
+            if e.errno and e.errno == 2:  # File not found error
                 cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
                 con.commit()
                 return redirect(url_for('blog'))
             else:
                 cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
-                con.commit()    # Delete the blog post from the database
+                con.commit()  # Delete the blog post from the database
                 return redirect(url_for('blog'))
         cur.execute("DELETE FROM blog WHERE rowid = ?", (id,))
         con.commit()  # Delete the blog post from the database
@@ -774,8 +780,8 @@ def generate_charts():
         updatemenus=[
             {
                 'buttons': [
-                    {'label': 'All', 'method': 'update', 'args': [{'visible': [True] * len(month_year)}]}
-                ] + dropdown_options,
+                               {'label': 'All', 'method': 'update', 'args': [{'visible': [True] * len(month_year)}]}
+                           ] + dropdown_options,
                 'direction': 'down',
                 'showactive': True,
                 'x': 0.05,
@@ -817,6 +823,7 @@ def generate_charts():
     pie_chart_html = fig2.to_html(full_html=False)
 
     return render_template('admindashboard.html', chart_html=bar_chart_html, pie_chart_html=pie_chart_html)
+
 
 #
 # @app.route('/admindashboard')
@@ -1067,7 +1074,9 @@ def add_inventory():
                 pic_name = str(uuid.uuid1()) + "_" + pic_filename
                 saver = product_image
                 saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
-                cur.execute("INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)", (shop, product_name, product_price, pic_name, product_description, product_quantity))
+                cur.execute(
+                    "INSERT INTO inventory (shop, product_name, product_price, product_image, product_description, product_quantity) VALUES (?,?,?,?,?,?)",
+                    (shop, product_name, product_price, pic_name, product_description, product_quantity))
                 con.commit()
 
                 # for colour in product_colour:
@@ -1329,8 +1338,10 @@ def create_vouchers():
             #     return base64.b64encode(token)
             voucher_code = str(shortuuid.uuid())
             cur = con.cursor()
-            cur.execute("INSERT INTO addvouchers (username, title, value, condition, code, expiry_date) VALUES (?,?,?,?,?,?)",
-                        (username, voucher_name, discount, condition, voucher_code,expiry_date))# insert the expiry date into the table
+            cur.execute(
+                "INSERT INTO addvouchers (username, title, value, condition, code, expiry_date) VALUES (?,?,?,?,?,?)",
+                (username, voucher_name, discount, condition, voucher_code,
+                 expiry_date))  # insert the expiry date into the table
             con.commit()
             msg = f"Voucher of {voucher_name} has been added to {username}'s account"
             flash(msg)
@@ -1390,78 +1401,6 @@ def update_vouchers(code_name):
                            code_name=code_name)  # form=form passes in into updatevoucher.html
 
 
-"""
-def edit_inventory(product_name):
-    form = ProductForm()
-    if request.method == 'POST':
-        new_product_name = request.form['product_name']
-        product_price = request.form['product_price']
-        product_quantity = request.form['product_quantity']
-        if request.form['product_description']:
-            product_description = request.form['product_description']
-            try:
-                with sqlite3.connect('database.db') as con:
-                    cur = con.cursor()
-                    cur.execute(
-                        "UPDATE inventory SET product_name = ?, product_price = ?, product_description = ?, product_quantity = ? WHERE product_name = ?",
-                        (new_product_name, product_price, product_description, product_quantity, product_name))
-            except:
-                msg='Error in updating inventory'
-                flash(msg)
-                return redirect(url_for('admin_inventory'))
-            finally:
-                return redirect(url_for('admin_inventory'))
-        else:
-            try:
-                with sqlite3.connect('database.db') as con:
-                    cur = con.cursor()
-                    cur.execute(
-                        "UPDATE inventory SET product_name = ?, product_price = ?, product_quantity = ? WHERE product_name = ?",
-                        (new_product_name, product_price, product_quantity, product_name))
-            except:
-                msg='Error in updating inventory'
-                flash(msg)
-                return redirect(url_for('admin_inventory'))
-            finally:
-                return redirect(url_for('admin_inventory'))
-    else:
-        with sqlite3.connect('database.db') as con:
-            con.row_factory = sqlite3.Row
-            cur = con.cursor()
-            cur.execute('SELECT product_price, product_description, product_quantity FROM inventory WHERE product_name = ? GROUP BY product_name', (product_name,))
-            rows = cur.fetchall()
-            for row in rows:
-                product_price = row[0]
-                product_description = row[1]
-                product_quantity = row[2]
-    return render_template('edit_inventory.html', form=form, product_price=product_price, product_description=product_description, product_quantity=product_quantity, product_name=product_name)
-"""
-
-
-# @app.route('/voucher/<username>/<int:voucher>')
-# @login_required
-# def voucher(username, voucher):
-#     vouchers = [('$5 OFF DELIVERY', 5, 'Minimum purchase of $30'), ('$10 DISCOUNT', 10, 'Minimum purchase of $40'),
-#                 ('$15 DISCOUNT', 15, 'Minimum purchase of $50')]
-#
-#     with sqlite3.connect('database.db') as con:
-#         def secure_rand(len=8):
-#             token = os.urandom(len)
-#             return base64.b64encode(token)
-#
-#         voucher_code = secure_rand()
-#         cur = con.cursor()
-#         cur.execute("INSERT INTO validvouchers (code) VALUES (?)", (voucher_code,))
-#         cur.execute("INSERT INTO addvouchers (username, title, value, condition, code) VALUES (?,?,?,?,?)",
-#                     (username, vouchers[voucher][0], vouchers[voucher][1], vouchers[voucher][2], voucher_code))
-#         con.commit()
-#
-#     con.close()
-#     msg = f"Voucher of {vouchers[voucher][0]} has been added to {username}'s account"
-#     flash(msg)
-#     return redirect(url_for('addvouchers'))
-
-
 @app.route('/order_history/<username>')
 def order_history(username):
     item_list = []
@@ -1471,7 +1410,9 @@ def order_history(username):
         cur = con.cursor()
         cur.execute('SELECT * FROM sessions WHERE username = ? GROUP BY session_id ORDER BY rowid DESC', (username,))
         orders = cur.fetchall()
-        cur.execute('SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id ORDER BY rowid DESC', (username,))
+        cur.execute(
+            'SELECT session_id, COUNT(*) FROM sessions WHERE username = ? GROUP BY session_id ORDER BY rowid DESC',
+            (username,))
         sessions_list = []
         ids = cur.fetchall()
         for row in ids:
@@ -1623,7 +1564,8 @@ def tradein_form(id):
                 saver.save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
 
                 cur.execute(
-                    "INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES (?,?,?,?,?)",
+                    "INSERT INTO tradeinform (username, no_of_clothes, tradein_pic, description, tradein_id) VALUES ("
+                    "?,?,?,?,?)",
                     (username, id, pic_name, description, tradein_id))
                 con.commit()
 
@@ -1854,8 +1796,9 @@ def add_to_cart4(product_name, username):
 
             if not product_exists:
                 # Product does not exist in the cart, so insert it
-                cur.execute("INSERT INTO cart (username, product_name, product_quantity, product_size) VALUES (?, ?, ?, ?)",
-                            (username, product_name, 1, size))
+                cur.execute(
+                    "INSERT INTO cart (username, product_name, product_quantity, product_size) VALUES (?, ?, ?, ?)",
+                    (username, product_name, 1, size))
                 con.commit()
 
                 flash("Product added to cart successfully")
@@ -2005,7 +1948,8 @@ def cart(username):
             con.row_factory = sqlite3.Row
             cur = con.cursor()
             cur.execute(
-                "SELECT product_name, product_quantity, COALESCE(product_size, 'Free Size') AS product_size FROM cart WHERE username = ?",
+                "SELECT product_name, product_quantity, COALESCE(product_size, 'Free Size') AS product_size FROM cart "
+                "WHERE username = ?",
                 (username,))
             products = cur.fetchall()
             for product in products:
@@ -2023,11 +1967,11 @@ def cart(username):
                     'image': row['product_image'],
                     'quantity': quantity[i]  # Access the corresponding quantity from the quantity list
                 }
-                total = total + (row['product_price']*quantity[i])
+                total = total + (row['product_price'] * quantity[i])
                 lists.append(list_1)
 
             cur.execute("SELECT rowid, * FROM addvouchers WHERE username = ?", (username,))
-            vouchers = cur.fetchall() #/fetchall()
+            vouchers = cur.fetchall()  # /fetchall()
 
             cur.execute('SELECT * FROM addresses WHERE username = ? ORDER BY id DESC LIMIT 1', (username,))
             addresses = cur.fetchall()
@@ -2037,7 +1981,8 @@ def cart(username):
         flash(msg)
         return redirect(url_for('shop'))
 
-    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers, addresses=addresses, quantity=quantity, session=session)
+    return render_template('cart.html', products=products, rows=rows, lists=lists, total=total, vouchers=vouchers,
+                           addresses=addresses, quantity=quantity, session=session)
 
 
 @app.route('/wishlist/<username>')
@@ -2083,10 +2028,12 @@ def increment(item, size):
     cur.execute('SELECT product_quantity FROM inventory WHERE product_name = ?', (item,))
     quantities = cur.fetchall()
     if size == 'Free Size':
-        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?', (item, session['username']))
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?',
+                    (item, session['username']))
         cartquantities = cur.fetchall()
     else:
-        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?', (item, size, session['username']))
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?',
+                    (item, size, session['username']))
         cartquantities = cur.fetchall()
     cart_item = cartquantities[0][0]
     for quantity in quantities:
@@ -2098,11 +2045,12 @@ def increment(item, size):
             cart_item = cart_item + 1
             if size == 'Free Size':
                 cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ?',
-                        (cart_item, item, session['username']))
+                            (cart_item, item, session['username']))
                 con.commit()
             else:
-                cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND product_size = ?',
-                        (cart_item, item, session['username'], size))
+                cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND '
+                            'product_size = ?',
+                            (cart_item, item, session['username'], size))
                 con.commit()
             msg = 'Item quantity updated!'
             flash(msg)
@@ -2114,10 +2062,12 @@ def decrement(item, size):
     con = get_db()
     cur = con.cursor()
     if size == 'Free Size':
-        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?', (item, session['username']))
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND username = ?',
+                    (item, session['username']))
         cartquantities = cur.fetchall()
     else:
-        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?', (item, size, session['username']))
+        cur.execute('SELECT product_quantity FROM cart WHERE product_name = ? AND product_size = ? AND username = ?',
+                    (item, size, session['username']))
         cartquantities = cur.fetchall()
     cart_item = cartquantities[0][0]
     if cart_item == 1:
@@ -2131,7 +2081,8 @@ def decrement(item, size):
                         (cart_item, item, session['username']))
             con.commit()
         else:
-            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND product_size = ?',
+            cur.execute('UPDATE cart SET product_quantity = ? WHERE product_name = ? AND username = ? AND '
+                        'product_size = ?',
                         (cart_item, item, session['username'], size))
             con.commit()
         msg = 'Item quantity updated!'
@@ -2179,7 +2130,8 @@ def search():
 
     # Execute the search query
     cursor.execute(
-        "SELECT title, content, COUNT(*) AS count FROM pages WHERE content LIKE ? GROUP BY title, content ORDER BY count DESC",
+        "SELECT title, content, COUNT(*) AS count FROM pages WHERE content LIKE ? GROUP BY title, content ORDER BY "
+        "count DESC",
         ('%' + query + '%',))
     results = cursor.fetchall()
 
