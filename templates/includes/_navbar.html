@@ -18,7 +18,7 @@
       flex-direction: row;
     }
     .sidebar{
-      display: flex;
+      display: none;
       position: fixed;
       top: 0;
       right: 0;
@@ -56,13 +56,18 @@
     .navbar-nav {
       display: flex;
       flex-direction: column;
+      justify-content: center;
     }
     .navbar-nav li {
       text-align: center;
-      margin: 5px 0;
-      display: inline;
+      margin: 1%;5px 0
+      transform: translate -25%, -5%;
+      font-size:2em;
+      display: inline-block;
+      vertical-align: middle;
       float: left;
-      height:50px
+      height:50px;
+      list-style: none;
     }
     .navbar-brand p {
       text-align: center;
@@ -71,10 +76,12 @@
     ul.navbar-nav {
       margin-left: 100px;
       width:100%;
+      text-align:center;
     }
 
     .navbar-nav li a {
-      margin-left: 30px;
+      margin-left: 80px;
+      margin-right: 5%px;
       position: relative;
     }
     .navbar-brand img {
