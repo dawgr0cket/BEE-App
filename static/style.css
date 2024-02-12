@@ -10,7 +10,7 @@
 /* CONTENT IS CLOSE */
 .chatbox__support {
     position: fixed;
-    bottom: 80px; /* Initial position */
+    bottom: 90px; /* Initial position */
     right: -400px; /* Initial position */
     width: 300px;
     background-color: #f2f3f4;
@@ -20,7 +20,7 @@
 }
 
 .chatbox--active {
-    right: 20px; /* Slide in the chatbox */
+    right: 30px; /* Slide in the chatbox */
 }
 
 /* BUTTON */
@@ -30,7 +30,8 @@
 
 .send__button {
     padding: 6px;
-    background: transparent;
+    background: hotpink;
+    border-radius: 20px;
     border: none;
     outline: none;
     cursor: pointer;
@@ -132,7 +133,7 @@
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border-bottom-left-radius: 20px;
-    background: var(--primary);
+    background: pink;
     color: black;
 }
 
@@ -142,12 +143,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 20px;
+    padding: 15px 15px;
     background: var(--secondaryGradient);
     box-shadow: var(--secondaryBoxShadow);
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
-    margin-top: 20px;
+    margin-bottom: 20px
 }
 
 .chatbox__footer input {
@@ -156,10 +157,11 @@
     padding: 10px 10px;
     border-radius: 30px;
     text-align: left;
+    background-color: lavenderblush;
 }
 
 .chatbox__send--footer {
-    color: black;
+    color: white;
 }
 
 .chatbox__button button,
