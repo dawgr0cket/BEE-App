@@ -28,6 +28,7 @@ input[type=text], input[type=password] {
   margin: 5px 0 22px 0;
   display: inline-block;
   border-radius: 25px; /* Increase border radius for rounder corners */
+  border: none;
 }
 
 .registerbtn, .registerbtn:enabled {
@@ -70,7 +71,7 @@ padding: 17px;
   visibility: hidden;
   position: fixed;
   top: 50%;
-  right: 50%;
+  right: 58%;
   transform: translateX(-50%);
   background-color: #555;
   color: #fff;
@@ -141,6 +142,7 @@ padding: 17px;
       popup.classList.add("show");
       submitButton.disabled = true;
     } else {
+      popup.innerHTML = ""; // Clear the popup message
       popup.classList.remove("show");
       submitButton.disabled = false;
     }
