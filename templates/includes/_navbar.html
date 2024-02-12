@@ -9,7 +9,7 @@
     /* Add the following styles for the mobile navbar */
    @media (max-width: 768px) {
     .navbar-toggler {
-      background-color:#CCCCFF;
+      background-color:black;
       border-color: #000000;
       display: block;
     }
@@ -82,10 +82,13 @@
     }
     .bg {
       background-color: #F1DDDD !important;
+      position: sticky;
+      top: 0;
+      z-index: 1; /* Set a lower z-index value */
     }
     .navbar-dark .navbar-nav .nav-link {
       color: #000000 !important;
-      font-size: 15px;
+      font-size: 17px;
       width: 100%;
     }
     .navbar-brand p {
@@ -93,7 +96,7 @@
     }
 
     .rightnav {
-      margin-left: 700px;
+      margin-left: 600px;
     }
 
     .rounded {
@@ -199,7 +202,7 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
+          <a class="nav-link" href="/contactus">Contact Us</a>
         </li>
         {% if 'adminappdev' in session.values() %}
         <li class="nav-item">
@@ -234,7 +237,7 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="mailto:testingemail@gmail.com">Contact Us</a>
+          <a class="nav-link" href="/contactus">Contact Us</a>
         </li>
         {% if 'adminappdev' in session.values() %}
         <li class="nav-item">

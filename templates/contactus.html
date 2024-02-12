@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}B.E.E - Sign Up{% endblock %}
+
+{% block content %}
+<head>
+    <title>Leaflet Map - Orchard Road, Singapore</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+    body {
+        background-color: #ffffea;
+    }
+
+    div.map {
+        border:
+    }
+    h2 {
+        margin-top: 50px;
+    }
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #FFFEA;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+        }
+
+.copyright-container {
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.copyright {
+    margin: 0;
+    font-size: 14px;
+}
+
+    footer div {
+        flex: 1;
+        margin: 10px;
+    }
+
+    footer p {
+        margin: 5px 0;
+    }
+
+    .newsletter {
+  padding: 40px;
+  text-align: center;
+  color: black;
+  margin-top: 50px;
+  border-radius: 10px;
+}
+
+.newsletter h2 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.newsletter h3 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.newsletter p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.newsletter input[type="email"] {
+  width: 300px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 1.2em;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+.newsletter button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s;
+}
+
+.newsletter button[type="submit"]:hover {
+  background-color: #45A049;
+}
+#map {
+    height: 400px;
+    width: 50%;
+    float: left;
+    margin: 50px;
+    z-index: 0; /* Set a lower z-index value */
+}
+.social-icons {
+    display: flex;
+    flex-direction: column;
+    margin-left: 60%;
+    margin-top: 50px;
+}
+.social-icons a {
+    margin-top: 30px;
+    text-decoration: none;
+    color: black;
+}
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.hours {
+    margin-top: 50px;
+    margin-left: 61%;
+}
+.hours h3 {
+    margin-bottom: 20px;
+}
+    </style>
+</head>
+<body>
+<h2 align="center">Contact Us</h2>
+    <div id="map" class="map"></div>
+
+    <div class="social-icons">
+        <a href="https://www.facebook.com/your-facebook-page-url">
+            <img src="/static/img/img_9.png" alt="Facebook" width="50px"><i> Facebook @b.e.e_different</i>
+        </a>
+        <a href="https://www.instagram.com/your-instagram-page-url" style="margin-left:5px;">
+            <img src="/static/img/img_10.png" alt="Instagram" width="40px"><i> Instagram @b.e.e_different</i>
+        </a>
+        <a href="https://www.x.com/your-instagram-page-url" style="margin-left:7px;">
+            <img src="/static/img/img_11.png" alt="X" width="35px"><i> X @b.e.e_different</i>
+        </a>
+    </div>
+    <div class="hours">
+    <h3>Opening Hours</h3>
+    <p>Mon-Fri: 1000 to 1800</p>
+    <p>Sat: 1100 to 1900</p>
+    <p>Closed on Sundays!</p>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Create a map centered on Orchard Road, Singapore
+        var map = L.map('map').setView([1.304, 103.832], 15);
+
+        // Add a tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add a marker for Orchard Road
+        L.marker([1.304, 103.832]).addTo(map)
+            .bindPopup('B.E.E, Singapore')
+            .openPopup();
+    </script>
+</body>
+    <div class="clearfix"></div>
+<footer >
+    <div style="margin-bottom: 20px;">
+        <img src="static/img/img.png" alt="B.E.E Logo" style="width: 130px; height: auto;">
+        <p style="font-size: 30px;">B.E.E</p>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <p>Follow Us</p>
+        <p>Instagram: @b.e.e_different</p>
+        <p>Facebook: @b.e.e_different</p>
+    </div>
+    <div class="newsletter">
+        <div class="newsletter-content">
+            <P>NEWSLETTER</P>
+            <h5>JOIN OUR BEE Community</h5>
+            <p>Keep up-to-date with new products and look out for seasonal vouchers!</p>
+            <form>
+                <input type="email" placeholder="E-mail">
+                <button type="submit">SUBSCRIBE</button>
+            </form>
+        </div>
+    </div>
+</footer>
+    <div class="copyright-container">
+        <p class="copyright">&copy;2024</p>
+    </div>
+{% endblock %}

@@ -1760,6 +1760,11 @@ def editprofile():
     return render_template('editprofile.html', form=form, details=details)
 
 
+@app.route('/contactus')
+def contactus():
+    return render_template('contactus.html')
+
+
 @app.route('/editprofilepic/<username>', methods=['GET', 'POST'])
 @login_required
 def editprofilepic(username):
