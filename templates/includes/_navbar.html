@@ -99,10 +99,11 @@
     }
 
     .rounded {
-      clip-path: circle();
       width: 50px;
       height: 50px;
       object-fit: cover;
+      object-position: center;
+      clip-path: circle(50%);
     }
     .item {
       position: absolute;
@@ -265,7 +266,7 @@
         {% if 'profile_pic' in session %}
         <a href="/profile">
           <div class="item">
-            <img src="/static/img/{{ session['profile_pic'] }}" width="50px" class="rounded"/>
+            <img src="/static/img/{{ session['profile_pic'] }}" class="rounded"/>
           </div>
         </a>
         {% endif %}

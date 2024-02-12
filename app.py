@@ -592,14 +592,19 @@ def login_required(view):
 def blog():
     con = sqlite3.connect('database.db')
     con.row_factory = sqlite3.Row
-
+    pfp = []
     cur = con.cursor()
     cur.execute("SELECT rowid, * FROM blog ORDER BY rowid DESC")
 
     rows = cur.fetchall()
+    for row in rows:
+        cur.execute('SELECT profile_pic FROM user WHERE username = ?', (row['username'],))
+        pic = cur.fetchall()
+        for p in pic:
+            pfp.append(p[0])
     con.close()
 
-    return render_template('blog.html', rows=rows)
+    return render_template('blog.html', rows=rows, pfp=pfp)
 
 
 @app.route('/addblog', methods=['GET', 'POST'])
