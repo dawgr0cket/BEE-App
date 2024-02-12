@@ -6,6 +6,7 @@
 
 body {
   margin: 0;
+  background-color: #ffffea;
 }
 
 ul.admin {
@@ -40,7 +41,8 @@ ul.admin {
 }
 
 .chart {
-width: auto;
+text-align: center;
+width: 500px;
 margin-bottom: 30px;
 }
 
@@ -62,7 +64,7 @@ margin-bottom: 30px;
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
 
-<div style="margin-left:20%; padding:30px 16px;">
+<div style="margin-left:43%; padding:30px 16px;">
     <div class="chart">
         <h2>Revenue Bar Chart</h2>
         {{ chart_html | safe }}

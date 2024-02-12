@@ -760,6 +760,8 @@ def generate_charts():
         title="Monthly Revenues",
         xaxis_title="Month",
         yaxis_title="Revenue ($)",
+        plot_bgcolor='rgb(211,211,211)',  # Set the background color of the plot area
+        paper_bgcolor='rgb(255,255,234)'  # Set the background color of the entire chart
     )
 
     # Add dropdown filter for month
@@ -807,6 +809,8 @@ def generate_charts():
     # Add title for the pie chart
     fig2.update_layout(
         title="Product Purchase Distribution",
+        plot_bgcolor='#ffffea',  # Set the background color of the plot area
+        paper_bgcolor='#ffffea'  # Set the background color of the entire chart
     )
 
     # Convert the pie chart to HTML

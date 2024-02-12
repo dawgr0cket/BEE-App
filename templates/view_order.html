@@ -70,7 +70,7 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: #f37a27;
     }
@@ -81,18 +81,9 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: grey;
-    }
-
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
     }
 
     .item-text {
@@ -123,7 +114,7 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: #f37a27;
     }
@@ -134,18 +125,9 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: grey;
-    }
-
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
     }
 
     .item-text {
@@ -172,16 +154,7 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
-      height: 2px;
-      background-color: #f37a27;
-    }
-
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
+      width: 127px;
       height: 2px;
       background-color: #f37a27;
     }
@@ -216,7 +189,7 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: #f37a27;
     }
@@ -227,18 +200,9 @@ body {
       top: 50%;
       left: 100%;
       transform: translateY(-50%);
-      width: 90px;
+      width: 127px;
       height: 2px;
       background-color: grey;
-    }
-
-    .line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #f37a27;
     }
 
     .item-text {
@@ -253,17 +217,18 @@ body {
     <li><a href="/view_tradeins/{{ session['username'] }}" >Trade-In</a></li>
     <li><a href="/view_vouchers/{{ session['username'] }}">Vouchers</a></li>
 </ul>
-<div style="float: left;margin-left:5%;width:80%;background-color: #FFFFEA;">
+<div style="float: left;margin-left:5%;">
     <h1 class="display-4">Order History</h1>
-    <p>{{session['username']}}'s Order History</p>
-<section class="h-100 h-custom" style="background-color: #FFFFEA;">
-      <div class="col-lg-8 col-xl-6" style="position: absolute; top: 43%; left: 50%; transform: translate(-25%, -5%)">
+
+    <p>Order #{{ orderid }}</p>
+<section class="width" style="background-color: #FFFFEA;">
+      <div class="col-lg-8 col-xl-6" style="position: absolute; top: 43%; left: 40%; transform: translate(-25%, -5%)">
         <div class="card border-top border-bottom border-3" style="border-color: #70a5c2 !important;">
           <div class="card-body p-5">
 
-            <p class="lead fw-bold mb-5" style="color: black;">Purchase Reciept</p>
+            <p class="lead fw-bold mb-5" style="color:black;">Purchase Receipt</p>
             <div class="mb-4">
-              <p class="muted mb-1" style="font-size: 18px;">Shipping Address</p>
+              <p class="muted mb-1" style="font-size: 18px;">Shipping Address:</p>
               <p>{% for address in addresses %}{{ address[1] }} {{ address[3] }}<br>{{ address[2] }}, {{ address[4] }} {{ address[5] }}{% endfor %}</p>
             </div>
             <div class="row">
@@ -311,40 +276,42 @@ body {
                 <p class="lead fw-bold mb-0" style="color: #f37a27;">${{ order_details[0][3] }}.00</p>
               </div>
             </div>
+            {% if order_details[0][7] != 'Cancelled' %}
+              <p class="lead fw-bold mb-4 pb-2" style="color: black;">Tracking Order</p>
 
-            <p class="lead fw-bold mb-4 pb-2" style="color: #f37a27;">Tracking Order</p>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="horizontal-timeline">
+                    <ul class="list-inline items d-flex justify-content-between">
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Ordered</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Shipped</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">On The Way</p>
+                        </div>
+                      </li>
+                      <li class="list-inline-item items-list">
+                        <div class="circle">
+                          <p class="item-text">Delivered</p>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="horizontal-timeline">
-                  <ul class="list-inline items d-flex justify-content-between">
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Ordered</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Shipped</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">On The Way</p>
-                      </div>
-                    </li>
-                    <li class="list-inline-item items-list">
-                      <div class="circle">
-                        <p class="item-text">Delivered</p>
-                      </div>
-                    </li>
-                  </ul>
                 </div>
               </div>
-
-              </div>
-            </div>
-
+            {% else %}
+              <h3>Sorry, your order has been cancelled. Refunds will be processed within 2-3 business days.</h3>
+            {% endif %}
             <p class="mt-4 pt-2 mb-0">Want any help? <a href="#!" style="color: #f37a27;">Please contact
                 us</a></p>
 
