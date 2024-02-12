@@ -39,13 +39,18 @@ form {
     padding: 10px;
     border: none;
     border-radius: 4px;
-    color: #fff;
-    background-color: #333;
+    color: black;
+    background-color: lightpink;
+}
+.btn:hover{
+    background-color: pink;
+    color: grey;
+
 }
 </style>
-<h1 class="display-4">Trade-In Form</h1>
+<h1 class="display-4" style="margin-top: 50px;">Trade-In Form</h1>
 <p align="center">Hello {{session['username']}}! What do you want to trade in?</p>
-<hr>
+
 <form action="/tradeinno" method="POST">
     {{ form.hidden_tag() }}
     <br>
