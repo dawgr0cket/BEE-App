@@ -105,6 +105,9 @@ table {
 <div style="float: left;margin-left:5%;">
     <h1 class="display-4">Order History</h1>
     <p>{{session['username']}}'s Order History</p>
+  {% if orders|length == 0 %}
+  <h3>You haven't ordered from us!</h3>
+  {% else %}
       <div class="container">
         <h1>Past Orders</h1>
         <table id="tradein">
@@ -136,5 +139,6 @@ table {
           </tbody>
         </table>
       </div>
+  {% endif %}
 </div>
 {% endblock %}

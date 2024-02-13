@@ -25,6 +25,46 @@
     padding: 40px 13px;
     text-decoration: none;
 }
+            .form-control {
+                list-style: none;
+                border-radius: 10px;
+
+            }
+
+
+  .btn.btn-secondary {
+    background-color: darkturquoise;
+    color: white;
+    border: none;
+  }
+  .btn.btn-secondary:hover {
+    background-color: lightblue;
+    color: black;
+    border: none;
+  }
+hr{
+    margin-right: 400px;
+}
+
+            form{
+                margin: 0 400px 5px 0;
+            }
+
+              a.delete-button {
+    margin-top: 20px;
+    border: solid
+    border-radius 5px;
+    text-decoration: none;
+    background-color: pink;
+    padding: 5px;
+    color: #fff;
+  }
+  a.delete-button:hover {
+    background-color: #F1DDDD;
+    color: black;
+    text-decoration: none;
+  }
+
 </style>
 </head>
 <body>
@@ -63,7 +103,7 @@
             <hr>
             {{ form.submit(class="btn btn-secondary") }}
     </form>
-    <a href="/profile">Discard Changes</a>
+    <a href="/profile" class="delete-button">Discard Changes</a>
 </div>
 {% endblock %}
 </body>

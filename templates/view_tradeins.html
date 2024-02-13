@@ -104,6 +104,9 @@ table {
 <div style="float: left;margin-left:5%;">
   <h1 class="display-4">Trade-In Forms</h1>
   <p>{{session['username']}}'s Trade-In Forms</p>
+  {% if tradeins|length == 0 %}
+  <h2>You haven't submitted any trade-ins!</h2>
+  {% else %}
   <table id="tradein">
     <thead>
       <tr>
@@ -136,5 +139,6 @@ table {
     </tr>
     {% endfor %}
   </table>
+  {% endif %}
 </div>
 {% endblock %}

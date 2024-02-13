@@ -1435,6 +1435,8 @@ def order_history(username):
         pfp = cur.fetchall()
         for pic in pfp:
             session['profile_pic'] = pic[0]
+
+        print(session['profile_pic'])
         session['username'] = username
     except:
         msg = 'Failed to get orders'
@@ -1729,7 +1731,7 @@ def editprofile():
             print("Error occurred during update:", str(e))
         msg = 'Update Successful!'
         flash(msg)
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=username))
 
     else:
         with sqlite3.connect('database.db') as con:
@@ -1765,8 +1767,8 @@ def editprofilepic(username):
             except OSError as e:
                 cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
                 con.commit()
-            cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
-            con.commit()
+        cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
+        con.commit()
         session['profile_pic'] = pic_name
         return redirect(url_for('profile', username=username))
     else:
