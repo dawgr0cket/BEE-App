@@ -162,7 +162,9 @@
             <li><a class="active" href="/admin_inventory">Inventory</a></li>
             <li><a href="/add_vouchers">Add Vouchers</a></li>
         </ul>
-        <div style="float: left;margin-left:5%;width:75%;margin-top:20px;">
+        <div class="backbtn"><a href="/admin_inventory" style="text-decoration: none;"><img src="/static/img/img_12.png" width="30px"></a></div>
+
+<div style="margin-left:25%;padding:30px 16px;height:868px;">
         <h2>Add Product</h2>
 
         <form name="inventoryForm" action="/add_inventory" method="POST" enctype="multipart/form-data"
@@ -211,8 +213,6 @@
             <br>
             <hr>
             {{ form.submit(class="submit") }}
-            <a class="disc" href="/admin_inventory">Discard Changes</a>
-
             <!-- Error message for empty fields -->
             <div id="emptyFieldsError" class="error-message"></div>
         </form>

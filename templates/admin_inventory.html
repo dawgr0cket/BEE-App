@@ -2,8 +2,9 @@
 <html>
 <head>
 <style>
-body {
+html {
   margin: 0;
+  background-color: #ffffea;
 }
 
 ul.admin {
@@ -127,11 +128,12 @@ ul.admin {
 }
 </style>
 </head>
-<body>
+
 {% extends "base.html" %}
 {% block title %}B.E.E - Admin/Forms{% endblock %}
 
 {% block content %}
+<body>
 <ul class="admin" style="float: left;">
   <li><a href="/admindashboard">Dashboard</a></li>
   <li>
@@ -143,12 +145,12 @@ ul.admin {
   <li><a href="/add_vouchers">Add Vouchers</a></li>
 </ul>
 
-<div style="margin-left:25%;padding:30px 16px;height:868px;">
+<div style="margin-left:25%;padding:30px 16px;">
   <h2>Inventory <a class="plus" href="/add_inventory"><img src="static/img/plus_PNG83.png"></a></h2>
   <div class="container">
     <div class="row">
       {% for row in rows %}
-        <div class="col-md-3">
+        <div class="col-md-3" style="margin-top: 10px;">
           <div class="card" style="height: 100%;">
             <div style="height: 300px; overflow: hidden;">
               <img src="static/img/{{ row['product_image'] }}" class="card-img-top" alt="Product Image" style="width: 100%; height: auto;">
