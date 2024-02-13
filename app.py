@@ -1762,7 +1762,7 @@ def editprofilepic(username):
             cur.execute('UPDATE user SET profile_pic = ? WHERE username = ?', (pic_name, username))
             con.commit()
         session['profile_pic'] = pic_name
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile', username=username))
     else:
 
         return render_template('editpfp.html', form=form)
