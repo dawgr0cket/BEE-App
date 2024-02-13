@@ -178,10 +178,10 @@ document.getElementById('search-form').addEventListener('submit', function(e) {
     </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-km2H2tjC1G3ZfSjy3y5k1uN2xq7lBxUzKr6e6vZvZ0D3CXmWcD9kxZPq+M8xwZ2y" crossorigin="anonymous"></script>
 
-    <script>
-        $SCRIPT_ROOT = {{ request.script_root|tojson }};
-    </script>
-    <script>
+<script>
+    $SCRIPT_ROOT = {{ request.script_root|tojson }};
+</script>
+<script>
 class Chatbox {
     constructor() {
         this.args = {
@@ -273,6 +273,6 @@ class Chatbox {
 
 const chatbox = new Chatbox();
 chatbox.display();
-    </script>
+</script>
 </body>
 </html>

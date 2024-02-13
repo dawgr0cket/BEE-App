@@ -330,15 +330,21 @@ def success(username):
             for v in voucher:
                 total = total - int(v[2])
             cur.execute('DELETE FROM addvouchers WHERE code = ?', (discount_code,))
-
-        cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
-        con.commit()
+            cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
+            con.commit()
+        else:
+            cur.execute('UPDATE sessions SET total = ? WHERE session_id = ?', (total, sessionid))
+            con.commit()
         cur.execute('DELETE FROM cart WHERE username = ?', (username,))
         con.commit()
         msg = 'Purchase Completed!'
         flash(msg)
         session['discount'] = None
         session['username'] = username
+        cur.execute('SELECT profile_pic FROM user WHERE username = ?', (username,))
+        pic = cur.fetchall()
+        for pfp in pic:
+            session['profile_pic'] = pfp[0]
         cur.execute('SELECT payment_timestamp FROM sessions WHERE session_id = ?', (sessionid,))
         date = cur.fetchall()
         return render_template("successfultrans.html", orders=orders, sessionid=sessionid, total=total,
